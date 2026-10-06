@@ -59,13 +59,13 @@ window.OLIMPO = {
 
   // Cores no mesmo padrão dos VIPs: Santuário = Cavaleiro, Calabouço = Lorde, Infernal = Soberano
   chaves: {
-    "santuario": { nome: "Santuário", cor: "#00a6a2", cor2: "#3b52e0",
+    "santuario": { nome: "Santuário", cor: "#00a6a2", cor2: "#3b52e0", arma: "tridente", reliquia: "Tridente de Poseidon", perigo: 2,
       resumo: "Masmorra de templo antigo, protegida por guardiões. Boa para explorar com a facção.",
       descricao: "Abre um <b>Santuário</b> na sua localização: uma masmorra de templo antigo, cheia de corredores e guardiões. É a mais equilibrada das três e ótima para explorar junto com a sua facção." },
-    "calabouco": { nome: "Calabouço", cor: "#6eff70", cor2: "#00a800",
+    "calabouco": { nome: "Calabouço", cor: "#6eff70", cor2: "#00a800", arma: "lanca", reliquia: "Lança de Atena", perigo: 1,
       resumo: "Masmorra subterrânea de túneis e celas. Rápida de abrir e de explorar.",
       descricao: "Abre um <b>Calabouço</b> na sua localização: uma masmorra subterrânea, com túneis estreitos e celas cheias de monstros. Ideal para uma incursão rápida, sozinho ou com poucos amigos." },
-    "infernal":  { nome: "Infernal",  cor: "#d60000", cor2: "#7a0000",
+    "infernal":  { nome: "Infernal",  cor: "#d60000", cor2: "#7a0000", arma: "bidente", reliquia: "Bidente de Hades", perigo: 3,
       resumo: "Masmorra das profundezas do Nether. A mais perigosa das três.",
       descricao: "Abre uma masmorra <b>Infernal</b> na sua localização: um cenário das profundezas do Nether, com fogo, lava e os inimigos mais fortes. Para quem já está bem equipado e quer desafio." }
   },
@@ -344,28 +344,64 @@ body[data-view="home"] .nav{display:none}
 .prod.chave{position:relative;border-color:color-mix(in srgb,var(--k1) 40%,transparent)}
 .prod.chave:hover{border-color:var(--k1);box-shadow:0 0 26px color-mix(in srgb,var(--k1) 30%,transparent)}
 .prod.chave::before{content:"";position:absolute;top:-1px;left:-1px;right:-1px;height:2px;background:linear-gradient(90deg,var(--k1),var(--k2));z-index:1}
-.chave-arte{position:absolute;inset:0;overflow:hidden;display:grid;place-items:center}
-.ca-fundo{position:absolute;inset:0;background:
-  radial-gradient(circle at 50% 55%,color-mix(in srgb,var(--k1) 42%,transparent) 0,transparent 55%),
-  radial-gradient(ellipse at 50% 120%,color-mix(in srgb,var(--k2) 80%,transparent),transparent 60%),
-  linear-gradient(180deg,#070b16,#0d1426)}
-.ca-runas{position:absolute;inset:-20%;opacity:.16;background:
-  repeating-conic-gradient(from 0deg at 50% 55%,color-mix(in srgb,var(--k1) 70%,transparent) 0 2deg,transparent 2deg 15deg);
-  -webkit-mask:radial-gradient(circle at 50% 55%,#000 18%,transparent 46%);mask:radial-gradient(circle at 50% 55%,#000 18%,transparent 46%)}
-.chave-px{position:relative;width:44%;max-width:170px;margin-top:-6%;height:auto;image-rendering:pixelated;transform:rotate(-24deg);
-  filter:drop-shadow(0 0 10px color-mix(in srgb,var(--k1) 85%,transparent)) drop-shadow(0 0 28px color-mix(in srgb,var(--k1) 45%,transparent)) drop-shadow(0 8px 6px rgba(0,0,0,.5))}
-.ca-p{position:absolute;left:var(--x);top:var(--y);width:4px;height:4px;background:var(--k1);box-shadow:0 0 8px var(--k1);opacity:.0}
-.ca-tipo{position:absolute;left:10px;bottom:10px;font-family:var(--display);font-size:10px;letter-spacing:.2em;color:#0b0f1c;background:var(--k1);padding:4px 8px;
+.chave-arte{position:absolute;inset:0;overflow:hidden}
+.cv-ceu{position:absolute;inset:0;background:radial-gradient(ellipse 50% 55% at 50% 50%,color-mix(in srgb,var(--k1) 26%,transparent),transparent 70%),var(--ceu)}
+.cv-nuv{position:absolute;inset:0;width:100%;height:100%}
+.cv-raios{position:absolute;inset:-30%;opacity:.22;mix-blend-mode:screen;
+  background:repeating-conic-gradient(from 0deg at 50% 0%,color-mix(in srgb,var(--k1) 60%,#fff) 0 1.5deg,transparent 1.5deg 9deg);
+  -webkit-mask:radial-gradient(ellipse 60% 70% at 50% 0%,#000,transparent 75%);mask:radial-gradient(ellipse 60% 70% at 50% 0%,#000,transparent 75%)}
+.cv-bidente .cv-raios{opacity:.1}
+.cv-col{position:absolute;bottom:0;width:7%;height:78%;background:linear-gradient(90deg,#030805,#0c2414 40%,#030805);
+  box-shadow:inset 0 10px 0 #0e2a17,inset 0 -8px 0 #0e2a17;opacity:.85}
+.cv-aura{position:absolute;left:50%;top:50%;width:42%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--k1) 55%,transparent),transparent);filter:blur(6px)}
+.cv-arma{position:absolute;left:54%;top:44%;height:80%;transform:translate(-50%,-50%) rotate(52deg)}
+.chave-px{height:100%;width:auto;image-rendering:pixelated;
+  filter:drop-shadow(0 0 2px #fff6) drop-shadow(0 0 8px var(--k1)) drop-shadow(0 0 22px color-mix(in srgb,var(--k1) 60%,transparent)) drop-shadow(0 8px 6px rgba(0,0,0,.6))}
+.cv-p{position:absolute;bottom:-4px;width:3px;height:3px;background:var(--k1);box-shadow:0 0 6px var(--k1);opacity:0}
+.cv-tridente .cv-p{border-radius:50%;width:4px;height:4px;background:color-mix(in srgb,var(--k1) 50%,#fff)}
+.cv-bidente .cv-p{background:#ff9a3c;box-shadow:0 0 8px #ff5a00}
+.ca-tipo{position:absolute;left:10px;bottom:10px;z-index:3;font-family:var(--display);font-size:10px;letter-spacing:.2em;padding:4px 8px;
   clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px)}
-.ca-info{position:absolute;right:10px;top:10px;font-size:9px;letter-spacing:.16em;color:color-mix(in srgb,var(--k1) 60%,#fff);opacity:.85}
+.ca-info{position:absolute;right:10px;top:10px;z-index:3;font-size:9px;letter-spacing:.16em;color:#fff;opacity:.9}
+.chave-arte .ca-tipo{color:#06090f;background:linear-gradient(90deg,var(--k1),var(--k2))}
+.cv-olhos i{position:absolute;display:flex;gap:calc(var(--t) * 1.4);opacity:.0}
+.cv-olhos b{width:var(--t);height:calc(var(--t) * .55);border-radius:50%;background:var(--olho,var(--k1));box-shadow:0 0 6px var(--olho,var(--k1)),0 0 16px var(--olho,var(--k1))}
+.cv-tridente{--olho:#9ffcff}.cv-bidente{--olho:#ff3a12}.cv-lanca{--olho:#b6ff7a}
+.cv-vinheta{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 45%,transparent 45%,rgba(0,0,0,.72) 100%)}
+.cv-placa{position:absolute;left:10px;right:10px;bottom:9px;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px 5px;
+  background:linear-gradient(180deg,rgba(6,8,14,.82),rgba(6,8,14,.92));border:1px solid color-mix(in srgb,var(--k1) 55%,transparent);
+  box-shadow:0 0 14px color-mix(in srgb,var(--k1) 25%,transparent),inset 0 0 12px rgba(0,0,0,.8)}
+.cv-placa::before{content:"";position:absolute;left:6px;right:6px;top:-4px;height:4px;
+  background:repeating-linear-gradient(90deg,var(--k1) 0 3px,transparent 3px 4px,var(--k1) 4px 5px,transparent 5px 8px);opacity:.75;
+  -webkit-mask:linear-gradient(180deg,#000 50%,transparent 50%) 0 0/8px 4px,linear-gradient(90deg,#000 3px,transparent 3px) 0 0/8px 4px;}
+.cv-nome{font-family:var(--display);font-size:11px;letter-spacing:.32em;color:transparent;
+  background:linear-gradient(180deg,#fff,var(--k1) 60%,var(--k2));-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--k1) 70%,transparent))}
+.cv-perigo{display:flex;gap:2px;font-size:11px;line-height:1}
+.cv-perigo i{font-style:normal;color:#ffffff22}
+.cv-perigo i.on{color:var(--olho,var(--k1));text-shadow:0 0 6px var(--olho,var(--k1))}
 @media (prefers-reduced-motion:no-preference){
-  .chave-px{animation:caFlutua 4s ease-in-out infinite}
-  @keyframes caFlutua{0%,100%{transform:rotate(-24deg) translateY(0)}50%{transform:rotate(-20deg) translateY(-6px)}}
-  .ca-runas{animation:caGira 30s linear infinite}
-  @keyframes caGira{to{transform:rotate(360deg)}}
-  .ca-p{animation:caBrilho 3.4s ease-in-out var(--d) infinite}
-  @keyframes caBrilho{0%,100%{opacity:0;transform:translateY(6px) scale(.6)}40%{opacity:1}70%{opacity:0;transform:translateY(-14px) scale(1)}}
-  .prod.chave:hover .chave-px{animation-duration:1.6s}
+  .cv-olhos i{animation:cvOlho 7s ease-in-out var(--d) infinite}
+  @keyframes cvOlho{0%,30%{opacity:0}38%{opacity:.95}40%{opacity:.05}42%{opacity:.95}62%{opacity:.85}70%,100%{opacity:0}}
+  .cv-vinheta{animation:cvTocha 5s steps(1) infinite}
+  @keyframes cvTocha{0%,100%{opacity:1}47%{opacity:1.0}48%{opacity:.75}49%{opacity:1}52%{opacity:.8}53%{opacity:1}}
+  .cv-nome{animation:cvGlitch 6s steps(1) infinite}
+  @keyframes cvGlitch{0%,93%,100%{transform:none;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--k1) 70%,transparent))}94%{transform:translateX(2px) skewX(-8deg);filter:drop-shadow(-2px 0 0 #f00) drop-shadow(2px 0 0 #0ff)}96%{transform:translateX(-2px)}}
+  .cv-perigo i.on{animation:cvPulso 1.6s ease-in-out infinite}
+  @keyframes cvPulso{50%{opacity:.55}}
+}
+.ca-info{text-shadow:0 1px 4px #000}
+@media (prefers-reduced-motion:no-preference){
+  .cv-arma{animation:cvFlutua 4.2s ease-in-out infinite}
+  @keyframes cvFlutua{0%,100%{transform:translate(-50%,-50%) rotate(52deg)}50%{transform:translate(-50%,calc(-50% - 5px)) rotate(48deg)}}
+  .cv-aura{animation:cvAura 4.2s ease-in-out infinite}
+  @keyframes cvAura{50%{opacity:.55;transform:translate(-50%,-50%) scale(1.15)}}
+  .cv-raios{animation:cvRaios 9s ease-in-out infinite alternate}
+  @keyframes cvRaios{to{transform:rotate(6deg)}}
+  .cv-p{animation:cvSobe var(--t) linear var(--d) infinite}
+  @keyframes cvSobe{0%{opacity:0;transform:translateY(0)}15%{opacity:1}100%{opacity:0;transform:translateY(-130px) translateX(10px)}}
+  .cv-bidente .cv-p{animation-duration:2s}
+  .prod.chave:hover .cv-arma{animation-duration:1.8s}
 }
 .mp-arte{position:relative;aspect-ratio:16/9;margin-bottom:14px;border:1px solid var(--ouro-sutil);overflow:hidden}
 .et-item.chave-arte{position:absolute}
@@ -450,6 +486,145 @@ body[data-view="home"] .nav{display:none}
   .cs-est{animation:caBrilho 3s ease-in-out var(--d) infinite}
 }
 @media (prefers-reduced-motion:reduce){ .cs-raio{opacity:1} .cs-clarao{opacity:.5} }
+
+/* ---------- botões de comprar com efeito ---------- */
+.bt-wrap{position:relative;margin-top:8px}
+.bt-wrap .btn{width:100%;margin-top:0;position:relative;overflow:hidden;z-index:1;transition:color .25s,border-color .25s,box-shadow .25s}
+.bt-wrap .bt-txt{position:relative;z-index:2}
+.bt-wrap .btn::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none}
+.bt-wrap .fx{position:absolute;inset:0;pointer-events:none;z-index:2}
+.prod:hover .bt-wrap .btn{background:transparent}
+
+/* lava escorrendo — Infernal */
+.fx-lava .btn{border-color:#ff4a12;color:#ffb27a;background:linear-gradient(180deg,rgba(70,8,0,.55),rgba(20,2,0,.85));box-shadow:0 0 12px rgba(255,60,0,.25),inset 0 -3px 0 rgba(255,80,0,.5)}
+.fx-lava .btn::before{background:linear-gradient(90deg,#5a0700,#d42200,#ff8a00,#ffd04a,#ff8a00,#d42200,#5a0700);background-size:300% 100%;opacity:0;transition:opacity .35s}
+.fx-lava .btn:hover,.prod:hover .fx-lava .btn{color:#1a0300;border-color:#ffb000;box-shadow:0 0 24px rgba(255,90,0,.7)}
+.fx-lava .btn:hover::before,.prod:hover .fx-lava .btn::before{opacity:1}
+.fx-lava .gota{position:absolute;top:calc(100% - 3px);width:5px;height:0;border-radius:0 0 4px 4px;background:linear-gradient(180deg,#ff4a12,#ffb000);box-shadow:0 0 8px #ff5a00}
+.fx-lava .gota::after{content:"";position:absolute;left:50%;bottom:-3px;width:6px;height:7px;transform:translateX(-50%);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#ffb000;box-shadow:0 0 8px #ff7a00;opacity:0}
+
+/* água subindo — Santuário */
+.fx-agua .btn{border-color:#00a6a2;color:#9ffcff;box-shadow:inset 0 0 14px rgba(0,166,162,.25)}
+.fx-agua .btn::before{top:100%;inset-inline:0;bottom:auto;height:140%;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 8'%3E%3Cpath d='M0 4 Q10 0 20 4 T40 4 V8 H0z' fill='%2300a6a2'/%3E%3C/svg%3E") repeat-x 0 0/40px 8px,
+             linear-gradient(180deg,#00a6a2,#3b52e0) 0 7px/100% 100% no-repeat;transition:top .55s cubic-bezier(.3,.7,.3,1)}
+.fx-agua .btn:hover,.prod:hover .fx-agua .btn{color:#03121a;border-color:#7ff}
+.fx-agua .btn:hover::before,.prod:hover .fx-agua .btn::before{top:-25%}
+.fx-agua .bolha{position:absolute;bottom:6px;width:6px;height:6px;border-radius:50%;border:1px solid #bff;opacity:0}
+
+/* chamas espectrais — Calabouço */
+.fx-espectro .btn{border-color:#2fd04a;color:#b6ff9a;box-shadow:0 0 10px rgba(80,255,110,.15)}
+.fx-espectro .btn::before{background:radial-gradient(ellipse 80% 120% at 50% 130%,rgba(110,255,112,.9),rgba(0,168,0,.6) 45%,transparent 75%);opacity:0;transform:translateY(40%);transition:opacity .35s,transform .45s}
+.fx-espectro .btn:hover,.prod:hover .fx-espectro .btn{color:#021a06;border-color:#6eff70;box-shadow:0 0 24px rgba(110,255,112,.55)}
+.fx-espectro .btn:hover::before,.prod:hover .fx-espectro .btn::before{opacity:1;transform:none}
+.fx-espectro .chama{position:absolute;top:2px;width:10px;height:16px;border-radius:50% 50% 40% 40%/70% 70% 30% 30%;background:radial-gradient(circle at 50% 70%,#e6ffd8,#6eff70 45%,transparent 70%);filter:blur(1px);opacity:0}
+
+/* raio — Cash */
+.fx-raio .btn{border-color:#FFB020;color:#FFD54A}
+.fx-raio .btn::before{background:linear-gradient(105deg,transparent 30%,rgba(255,240,180,.7) 48%,transparent 62%) -150% 0/60% 100% no-repeat,linear-gradient(90deg,#FFD54A,#FF8A00);background-color:transparent;opacity:1;
+  background-blend-mode:normal;clip-path:inset(0 100% 0 0);transition:clip-path .35s cubic-bezier(.6,0,.2,1)}
+.fx-raio .btn:hover,.prod:hover .fx-raio .btn{color:#2a1500;box-shadow:0 0 22px rgba(255,170,0,.65)}
+.fx-raio .btn:hover::before,.prod:hover .fx-raio .btn::before{clip-path:inset(0 0 0 0)}
+.fx-raio .zap{position:absolute;top:-14px;width:12px;height:28px;fill:#fff7c8;filter:drop-shadow(0 0 4px #FFD54A) drop-shadow(0 0 10px #FF8A00);opacity:0}
+.fx-raio .z1{left:8px;transform:rotate(-14deg)}.fx-raio .z2{right:8px;transform:rotate(14deg) scaleX(-1)}
+.fx-raio .moedinha{position:absolute;top:40%;width:6px;height:6px;background:#FFD54A;box-shadow:0 0 6px #FF8A00;opacity:0}
+
+/* brilho na cor do VIP */
+.fx-vip .btn{border-color:color-mix(in srgb,var(--g1) 70%,transparent);color:color-mix(in srgb,var(--g1) 55%,#fff)}
+.fx-vip .btn::before{background:linear-gradient(90deg,var(--g1),var(--g2));opacity:0;transition:opacity .3s}
+.fx-vip .btn::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%) -160% 0/60% 100% no-repeat;pointer-events:none}
+.fx-vip .btn:hover,.prod:hover .fx-vip .btn{color:#fff;border-color:var(--g2);box-shadow:0 0 22px color-mix(in srgb,var(--g1) 55%,transparent);text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.fx-vip .btn:hover::before,.prod:hover .fx-vip .btn::before{opacity:1}
+.fx-vip .faisca{position:absolute;top:-6px;font-style:normal;font-size:11px;color:#fff;text-shadow:0 0 6px var(--g1),0 0 12px var(--g2);opacity:0}
+
+@media (prefers-reduced-motion:no-preference){
+  .fx-lava .btn::before{animation:lavaFlui 2.4s linear infinite}
+  @keyframes lavaFlui{to{background-position:300% 0}}
+  .fx-lava .gota{animation:lavaPinga 3.6s ease-in var(--d) infinite}
+  .fx-lava .gota::after{animation:lavaCai 3.6s ease-in var(--d) infinite}
+  @keyframes lavaPinga{0%{height:0}45%{height:var(--h)}70%{height:var(--h)}85%,100%{height:0}}
+  @keyframes lavaCai{0%,60%{opacity:0;transform:translate(-50%,0)}65%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,34px)}}
+  .prod:hover .fx-lava .gota,.prod:hover .fx-lava .gota::after{animation-duration:1.6s}
+  .fx-agua .btn::before{animation:aguaOnda 1.6s linear infinite}
+  @keyframes aguaOnda{to{background-position:40px 0,0 7px}}
+  .prod:hover .fx-agua .bolha{animation:aguaBolha 1.4s ease-in var(--d) infinite}
+  @keyframes aguaBolha{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:.9}100%{opacity:0;transform:translateY(-34px) scale(1.1)}}
+  .fx-espectro .btn{animation:espPulso 3s ease-in-out infinite}
+  @keyframes espPulso{50%{box-shadow:0 0 18px rgba(80,255,110,.35)}}
+  .prod:hover .fx-espectro .chama{animation:espChama 1.2s ease-out var(--d) infinite}
+  @keyframes espChama{0%{opacity:0;transform:translateY(0) scale(.6)}25%{opacity:.95}100%{opacity:0;transform:translateY(-30px) scaleX(.5) scaleY(1.4)}}
+  .fx-raio .btn::before{animation:raioBrilho 1.6s linear infinite}
+  @keyframes raioBrilho{to{background-position:260% 0,0 0}}
+  .prod:hover .fx-raio .zap{animation:raioZap 1.1s steps(1) infinite}
+  .prod:hover .fx-raio .z2{animation-delay:.45s}
+  @keyframes raioZap{0%{opacity:1}12%{opacity:.2}18%{opacity:1}30%,100%{opacity:0}}
+  .prod:hover .fx-raio .moedinha{animation:raioMoeda .9s ease-out var(--d) infinite}
+  @keyframes raioMoeda{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(calc((var(--d) * 80px) - 14px),-30px) rotate(180deg)}}
+  .fx-vip .btn::after{animation:vipBrilho 3.2s ease-in-out infinite}
+  @keyframes vipBrilho{0%,55%{background-position:-160% 0}100%{background-position:260% 0}}
+  .prod:hover .fx-vip .faisca{animation:vipFaisca 1.2s ease-out var(--d) infinite}
+  @keyframes vipFaisca{0%{opacity:0;transform:translateY(4px) scale(.5) rotate(0)}30%{opacity:1}100%{opacity:0;transform:translateY(-18px) scale(1.1) rotate(90deg)}}
+}
+
+/* ---------- arte dos VIPs ---------- */
+.vip-arte{position:absolute;inset:0;overflow:hidden}
+.va-ceu{position:absolute;inset:0;background:
+  radial-gradient(ellipse 50% 60% at 50% 42%,color-mix(in srgb,var(--g1) 38%,transparent),transparent 70%),
+  radial-gradient(ellipse 80% 45% at 50% 115%,color-mix(in srgb,var(--g2) 50%,transparent),transparent 70%),
+  linear-gradient(180deg,#03060d,color-mix(in srgb,var(--g2) 16%,#070e1c) 60%,color-mix(in srgb,var(--g1) 20%,#0c1629))}
+.va-nuv{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:screen}
+.va-raios{position:absolute;inset:-40%;opacity:.3;mix-blend-mode:screen;
+  background:repeating-conic-gradient(from 0deg at 50% 50%,color-mix(in srgb,var(--g1) 60%,#fff) 0 1.6deg,transparent 1.6deg 10deg);
+  -webkit-mask:radial-gradient(circle at 50% 50%,#000 8%,transparent 40%);mask:radial-gradient(circle at 50% 50%,#000 8%,transparent 40%)}
+.va-halo{position:absolute;left:50%;top:44%;width:60%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--g1) 50%,transparent),transparent);filter:blur(6px)}
+.va-emb{position:absolute;left:50%;top:44%;height:74%;width:auto;aspect-ratio:1;transform:translate(-50%,-50%);overflow:visible;
+  filter:drop-shadow(0 0 8px color-mix(in srgb,var(--g1) 70%,transparent)) drop-shadow(0 6px 10px rgba(0,0,0,.65))}
+.va-faixa{position:absolute;left:50%;bottom:9px;transform:translateX(-50%);z-index:2;padding:4px 22px 3px;
+  background:linear-gradient(90deg,var(--g1),var(--g2));box-shadow:0 0 14px color-mix(in srgb,var(--g1) 60%,transparent),0 4px 10px rgba(0,0,0,.5);
+  clip-path:polygon(0 0,100% 0,94% 50%,100% 100%,0 100%,6% 50%)}
+.va-faixa span{font-family:var(--display);font-size:10px;letter-spacing:.34em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.va-rank{position:absolute;left:10px;top:9px;z-index:3;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fff3c0,#e0a92c 55%,#7a4a05);box-shadow:0 0 10px rgba(244,197,66,.6),inset 0 0 0 1.5px #2a1800}
+.va-rank b{font-family:var(--display);font-weight:400;font-size:9px;color:#2a1600;letter-spacing:.04em}
+.va-p{position:absolute;bottom:-4px;width:3px;height:3px;border-radius:50%;background:color-mix(in srgb,var(--g1) 45%,#fff);box-shadow:0 0 6px var(--g1);opacity:0}
+.va-lorde .va-p{width:7px;height:3px;border-radius:50%;background:#e9ffe9}
+.va-soberano .va-p{border-radius:0;width:2px;height:7px;background:#ffd0c8;box-shadow:0 0 6px #ff2a1a}
+.prod.vip:hover .va-emb{filter:drop-shadow(0 0 14px var(--g1)) drop-shadow(0 6px 10px rgba(0,0,0,.65))}
+@media (prefers-reduced-motion:no-preference){
+  .va-raios{animation:vaGira 30s linear infinite}
+  @keyframes vaGira{to{transform:rotate(360deg)}}
+  .va-emb{animation:vaFlutua 4.5s ease-in-out infinite}
+  @keyframes vaFlutua{50%{transform:translate(-50%,calc(-50% - 5px))}}
+  .va-halo{animation:cvAura 4.5s ease-in-out infinite}
+  .va-p{animation:cvSobe 3.8s linear var(--d) infinite}
+  .va-soberano .va-emb{animation:vaFlutua 4.5s ease-in-out infinite,vaChoque 3.4s steps(1) infinite}
+  @keyframes vaChoque{0%,88%,100%{filter:drop-shadow(0 0 8px color-mix(in srgb,var(--g1) 70%,transparent)) drop-shadow(0 6px 10px rgba(0,0,0,.65))}90%,94%{filter:drop-shadow(0 0 18px #fff) drop-shadow(0 0 30px var(--g1)) brightness(1.4)}}
+  .va-lorde .va-p{animation-duration:5s}
+}
+
+/* ---------- todos os botões no estilo "vivo" (base igual à lava), cada um na sua cor ---------- */
+.fx-lava{--c1:#ff4a12;--c2:#ffb000;--c0:#3a0600}
+.fx-agua{--c1:#00d8ff;--c2:#3b7bff;--c0:#021a2a}
+.fx-espectro{--c1:#3dff5c;--c2:#b6ff9a;--c0:#032a0a}
+.fx-raio{--c1:#FFB020;--c2:#FFE27A;--c0:#2a1600}
+.fx-vip{--c1:var(--g1);--c2:var(--g2);--c0:color-mix(in srgb,var(--g2) 30%,#05070d)}
+.bt-wrap[class*="fx-"] .btn{border-color:var(--c1);color:color-mix(in srgb,var(--c1) 45%,#fff);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c0) 70%,transparent),color-mix(in srgb,var(--c0) 95%,#000));
+  box-shadow:0 0 14px color-mix(in srgb,var(--c1) 40%,transparent),inset 0 -3px 0 color-mix(in srgb,var(--c1) 65%,transparent),inset 0 0 16px color-mix(in srgb,var(--c1) 18%,transparent)}
+.bt-wrap[class*="fx-"] .gota{position:absolute;top:calc(100% - 3px);width:5px;height:0;border-radius:0 0 4px 4px;background:linear-gradient(180deg,var(--c1),var(--c2));box-shadow:0 0 8px var(--c1)}
+.bt-wrap[class*="fx-"] .gota::after{content:"";position:absolute;left:50%;bottom:-3px;width:6px;height:7px;transform:translateX(-50%);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--c2);box-shadow:0 0 8px var(--c1);opacity:0}
+.fx-agua .gota{border-radius:0 0 50% 50%}
+.fx-raio .gota{width:3px}.fx-raio .gota::after{border-radius:1px;width:6px;height:6px}
+.fx-vip .gota{background:linear-gradient(180deg,var(--g1),var(--g2))}
+.bt-wrap[class*="fx-"] .btn:hover,.prod:hover .bt-wrap[class*="fx-"] .btn{box-shadow:0 0 26px color-mix(in srgb,var(--c1) 75%,transparent)}
+@media (prefers-reduced-motion:no-preference){
+  .bt-wrap[class*="fx-"] .gota{animation:lavaPinga 3.6s ease-in var(--d) infinite}
+  .bt-wrap[class*="fx-"] .gota::after{animation:lavaCai 3.6s ease-in var(--d) infinite}
+  .prod:hover .bt-wrap[class*="fx-"] .gota,.prod:hover .bt-wrap[class*="fx-"] .gota::after{animation-duration:1.6s}
+  .bt-wrap[class*="fx-"] .btn{animation:btPulso 3s ease-in-out infinite}
+  @keyframes btPulso{50%{box-shadow:0 0 22px color-mix(in srgb,var(--c1) 60%,transparent),inset 0 -3px 0 color-mix(in srgb,var(--c1) 80%,transparent),inset 0 0 20px color-mix(in srgb,var(--c1) 26%,transparent)}}
+}
 /* rodapé */
 .rodape{position:relative;z-index:2;margin-top:60px;border-top:1px solid var(--ouro-sutil);background:rgba(11,10,7,.95);padding:22px 20px;text-align:center;font-size:11px;letter-spacing:.14em;color:var(--texto-3)}
 .rodape a{color:var(--texto-2);text-decoration:none;margin:0 8px}
@@ -1157,34 +1332,102 @@ const corVip = nome => { const n=String(nome||"").toLowerCase(); const k=Object.
 const vipStyle = nome => { const c=corVip(nome); return c ? `style="--g1:${c[0]};--g2:${c[1]}"` : ""; };
 const semAcento = t => String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 const chaveDe = nome => { const n=semAcento(nome); if (!/chave/.test(n)) return null; const k=Object.keys(C.chaves||{}).find(k=>n.includes(semAcento(k))); return k ? C.chaves[k] : null; };
-// chave em pixel art (cada letra é um pixel: O contorno, L luz, M meio, D sombra, B brilho)
-const CHAVE_PX = [
-  "....OOOOO..........",
-  "...OBLLLLO.........",
-  "..OLLMMMLLO........",
-  ".OLMOOOOOMLO.......",
-  ".OLMO...OMLOOOOOOOO",
-  ".OLMO...OMLLBLLLLLLO",
-  ".OMDO...ODMMMMMMMMMO",
-  ".OMDOOOOODMDDDDDDDDO",
-  "..OMDDDDDMO.OMOO.OMO",
-  "...OMMMMMO..OMO..OMO",
-  "....OOOOO...ODO..ODO",
-  "............OO...OO."
+// chaves-relíquia em pixel art: a cabeça é a arma de um deus, o cabo termina numa chave (dentes + argola)
+const CABECAS = {
+  tridente: [
+    "B.....B.....B..",
+    "OO....OO....OO.",
+    "OLO..OLDO..OLO.",
+    "OLO..OLDO..OLO.",
+    "OLO..OLDO..OLO.",
+    "OMO..OLDO..OMO.",
+    "OMO..OLDO..OMO.",
+    "OMDO.OLDO.ODMO.",
+    "OMMDOOLDOODMMO.",
+    ".OMMMMMMMMMMO..",
+    "..OOOGGGGOOO...",
+    "....OGLGGO....."],
+  bidente: [
+    "..B.......B....",
+    "..OO......OO...",
+    "..OLO....OLO...",
+    "..OLO....OLO...",
+    "..OLO....OLO...",
+    "..OMO....OMO...",
+    ".OMDO....ODMO..",
+    "OMDO......ODMO.",
+    ".OMMOOOOOOMMO..",
+    "..OMMMMMMMMO...",
+    "...OOOGGGOO....",
+    ".....OGLGO....."],
+  lanca: [
+    "......B........",
+    "......OO.......",
+    ".....OLDO......",
+    ".....OLDO......",
+    "....OLMMDO.....",
+    "....OLMMDO.....",
+    "...OLMMMMDO....",
+    "...OLMMMMDO....",
+    "...OLMMMMDO....",
+    "....OLMMDO.....",
+    "....OLMMDO.....",
+    ".....OLDO......",
+    "..OOOGGGGOOO...",
+    "..OGGGLGGGGO...",
+    "....OOGGOO....."]
+};
+const _haste = ".....OLDO......", _anel = ".....OGGO......";
+const CORPO = [
+  _haste,_haste,_haste,_anel,_haste,_haste,_haste,_haste,_haste,_anel,_haste,_haste,_haste,_haste,_haste,_anel,_haste,_haste,_haste,_haste,
+  ".....OLDOOOO...", ".....OLMMMMDO..", ".....OLDOODO...", ".....OLDO.OO...", _haste,
+  "....OGGGGO.....", "...OLMMMMDO....", "..OLO....ODO...", "..OLO....ODO...", "..OMO....ODO...", "...OMDDDDDO....", "....OOOOOO....."
 ];
-function chaveSVG(k, idx){
-  const cores={O:"#0b0f1c",L:"color-mix(in srgb,"+k.cor+" 55%,#fff)",M:k.cor,D:k.cor2,B:"#ffffff"};
+function chaveSVG(k){
+  const cores={O:"#070a14",L:`color-mix(in srgb,${k.cor} 45%,#fff)`,M:k.cor,D:k.cor2,G:"#F4C542",B:"#fff"};
+  const px=[...(CABECAS[k.arma]||CABECAS.tridente),...CORPO];
   let r="";
-  CHAVE_PX.forEach((linha,y)=>[...linha].forEach((c,x)=>{ if (cores[c]) r+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${cores[c]}"/>`; }));
-  return `<svg class="chave-px" viewBox="0 0 20 12" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+  px.forEach((linha,y)=>[...linha].forEach((c,x)=>{ if (cores[c]) r+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${cores[c]}"/>`; }));
+  return `<svg class="chave-px" viewBox="0 0 15 ${px.length}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
 }
+let chaveSeq=0;
+// olhos que observam do escuro: kraken no mar, cérbero no submundo, medusa no templo
+const OLHOS = {
+  tridente: [[16,22,5],[82,16,4]],
+  bidente:  [[12,20,4],[20,16,4],[28,21,4],[86,24,3]],
+  lanca:    [[22,30,3],[80,26,4]]
+};
+const TEMAS = {
+  tridente: { ceu:"#020a14,#052434 45%,#0a4a5c 75%,#127482", nuv:"0 0 0 0 .55  0 0 0 0 .85  0 0 0 0 .95  0 0 0 -2.3 1.45", chao:"0 0 0 0 .75  0 0 0 0 .98  0 0 0 0 1  0 0 0 -2.6 1.6", freq:".02 .16" },
+  bidente:  { ceu:"#080102,#250504 45%,#5a0d05 75%,#a8320a", nuv:"0 0 0 0 .22  0 0 0 0 .18  0 0 0 0 .2  0 0 0 -2 1.3",  chao:"0 0 0 0 1  0 0 0 0 .55  0 0 0 0 .1  0 0 0 -2.4 1.55", freq:".03 .07" },
+  lanca:    { ceu:"#020604,#08180d 45%,#103320 75%,#1c5a2c", nuv:"0 0 0 0 .55  0 0 0 0 .95  0 0 0 0 .6  0 0 0 -2.4 1.4",  chao:"0 0 0 0 .5  0 0 0 0 .9  0 0 0 0 .55  0 0 0 -2.6 1.5", freq:".025 .1" }
+};
 const chaveArte = (nome) => { const k=chaveDe(nome); if (!k) return "";
-  return `<div class="chave-arte" style="--k1:${k.cor};--k2:${k.cor2}">
-    <div class="ca-fundo"></div><div class="ca-runas"></div>
-    ${chaveSVG(k)}
-    <i class="ca-p" style="--x:18%;--y:70%;--d:0s"></i><i class="ca-p" style="--x:78%;--y:30%;--d:1.1s"></i><i class="ca-p" style="--x:66%;--y:76%;--d:2s"></i><i class="ca-p" style="--x:30%;--y:24%;--d:2.7s"></i>
-    <span class="ca-tipo">${esc(k.nome.toUpperCase())}</span><span class="ca-info">NÍVEL ALEATÓRIO · 30s</span>
+  const t=TEMAS[k.arma]||TEMAS.tridente, id="ch"+(++chaveSeq);
+  const parts = Array.from({length:10},(_,i)=>`<i class="cv-p" style="left:${(i*29+7)%96}%;--d:${(i*.37).toFixed(2)}s;--t:${(3+(i%4)*.8).toFixed(1)}s"></i>`).join("");
+  const colunas = k.arma==="lanca" ? `<i class="cv-col" style="left:6%"></i><i class="cv-col" style="right:6%"></i>` : "";
+  return `<div class="chave-arte cv-${k.arma}" style="--k1:${k.cor};--k2:${k.cor2};--ceu:linear-gradient(180deg,${t.ceu})">
+    <div class="cv-ceu"></div>
+    <svg class="cv-nuv" viewBox="0 0 100 62.5" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+      <filter id="${id}a" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="${t.freq}" numOctaves="5" seed="${4+chaveSeq}"/><feColorMatrix values="${t.nuv}"/></filter>
+      <filter id="${id}b" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="${t.freq}" numOctaves="4" seed="${11+chaveSeq}"/><feColorMatrix values="${t.chao}"/></filter>
+      <linearGradient id="${id}g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <linearGradient id="${id}g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff"/></linearGradient>
+      <mask id="${id}m1"><rect width="100" height="28" fill="url(#${id}g1)"/></mask><mask id="${id}m2"><rect y="40" width="100" height="23" fill="url(#${id}g2)"/></mask>
+    </defs>
+      <rect width="100" height="28" filter="url(#${id}a)" mask="url(#${id}m1)"/>
+      <rect y="40" width="100" height="23" filter="url(#${id}b)" mask="url(#${id}m2)"/>
+    </svg>
+    <div class="cv-raios"></div>${colunas}
+    <div class="cv-olhos">${(OLHOS[k.arma]||[]).map(([x,y,t],i)=>`<i style="left:${x}%;top:${y}%;--t:${t}px;--d:${(i*1.3).toFixed(1)}s"><b></b><b></b></i>`).join("")}</div>
+    <div class="cv-aura"></div>
+    <div class="cv-arma">${chaveSVG(k)}</div>
+    ${parts}
+    <div class="cv-vinheta"></div>
+    <div class="cv-placa"><span class="cv-nome">${esc(k.nome.toUpperCase())}</span><span class="cv-perigo" title="Perigo ${k.perigo||1} de 3">${[1,2,3].map(n=>`<i class="${n<=(k.perigo||1)?"on":""}">☠</i>`).join("")}</span></div>
+    <span class="ca-info">NÍVEL ALEATÓRIO · 30s</span>
   </div>`; };
+
 const ehCash = nome => /\bcash\b/.test(semAcento(nome)) && !!C.cash;
 const qtdCash = nome => (String(nome).match(/[\d.,]+\s*(k|mil)?/i)||[""])[0].trim();
 // moeda em pixel art: círculo com contorno, luz em cima, sombra embaixo e a estrela do cash no meio
@@ -1303,6 +1546,95 @@ function tabelaVips(destaque){
   const linhas = Object.entries(V.niveis).map(([chave,n])=>`<tr><td><span class="cmp-n">${ico(chave)}${n.nome}</span></td>${ordem.map(k=>`<td class="${k===destaque?"on":""}">${valorVip(chave,k)}</td>`).join("")}</tr>`).join("")
     + V.comuns.map(([i,t])=>`<tr><td><span class="cmp-n">${ico(i)}${t.replace(/<[^>]+>/g,"")}</span></td>${ordem.map(k=>`<td class="${k===destaque?"on":""}"><span class="ok-x">✓</span></td>`).join("")}</tr>`).join("");
   return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th>VANTAGEM</th>${cab}</tr></thead><tbody>${linhas}</tbody></table></div>`;
+}
+// ===== arte dos VIPs: emblemas gregos em vetor (sem pixel), um diferente para cada patente =====
+function defsVip(id,c){
+  return `<defs>
+    <linearGradient id="${id}o" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6cf"/><stop offset=".28" stop-color="#f7cf55"/><stop offset=".6" stop-color="#b8780e"/><stop offset=".85" stop-color="#f2c04a"/><stop offset="1" stop-color="#7a4a05"/></linearGradient>
+    <linearGradient id="${id}oh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a5506"/><stop offset=".45" stop-color="#ffe9a0"/><stop offset=".55" stop-color="#f6c94e"/><stop offset="1" stop-color="#8a5506"/></linearGradient>
+    <linearGradient id="${id}v" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient>
+    <radialGradient id="${id}e" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#1b2236"/><stop offset="1" stop-color="#03050b"/></radialGradient>
+    <filter id="${id}s" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2"/></filter>
+  </defs>`;
+}
+const EMBLEMAS = {
+  // Cavaleiro: elmo coríntio com crista e lanças cruzadas
+  cavaleiro: (id) => `
+    <g stroke="url(#${id}o)" stroke-width="5" stroke-linecap="round"><path d="M38 182 L162 22"/><path d="M162 182 L38 22"/></g>
+    <path d="M162 22 l-12 6 6 6z M38 22 l12 6 -6 6z" fill="url(#${id}o)"/>
+    <path d="M52 76 Q100 -8 148 76 L134 76 Q100 18 66 76 Z" fill="url(#${id}v)" stroke="#0a0c14" stroke-width="2"/>
+    <g stroke="#0a0c1455" stroke-width="1.2" fill="none">${Array.from({length:9},(_,i)=>`<path d="M${62+i*9.5} ${74-Math.sin(i/8*Math.PI)*40} l${-2+i*.5} 8"/>`).join("")}</g>
+    <path d="M60 78 Q60 34 100 32 Q140 34 140 78 L143 122 Q143 152 128 166 L113 172 L113 128 Q113 120 106 117 L106 100 L94 100 L94 117 Q87 120 87 128 L87 172 L72 166 Q57 152 57 122 Z" fill="url(#${id}o)" stroke="#2a1800" stroke-width="2.4"/>
+    <path d="M70 92 Q100 82 130 92 L127 104 Q115 100 106 104 L106 154 L94 154 L94 104 Q85 100 73 104 Z" fill="url(#${id}e)"/>
+    <path d="M66 70 Q72 44 100 40" fill="none" stroke="#fff8d8" stroke-width="3" stroke-linecap="round" opacity=".75"/>
+    <path d="M60 80 Q100 70 140 80" fill="none" stroke="url(#${id}v)" stroke-width="4"/>
+    <g fill="#fff3c4">${[70,82,118,130].map(x=>`<circle cx="${x}" cy="84" r="2"/>`).join("")}</g>`,
+  // Lorde: asas de Pégaso em volta de um medalhão com louros
+  lorde: (id) => {
+    const asa = `<path d="M92 96 C70 62 40 50 8 56 C26 64 36 70 42 76 C24 76 14 82 6 94 C24 92 36 94 46 98 C32 102 24 110 18 122 C40 114 58 110 80 114 Z" fill="url(#${id}v)" stroke="url(#${id}o)" stroke-width="2.4" stroke-linejoin="round"/>
+      <g fill="none" stroke="#ffffff55" stroke-width="1.3"><path d="M84 92 C64 74 42 66 20 62"/><path d="M82 100 C62 88 40 84 18 88"/><path d="M80 108 C62 102 46 104 30 112"/></g>`;
+    return `<g transform="translate(0 6)">${asa}<g transform="translate(200 0) scale(-1 1)">${asa}</g></g>
+      <circle cx="100" cy="102" r="36" fill="url(#${id}o)" stroke="#2a1800" stroke-width="2.4"/>
+      <circle cx="100" cy="102" r="28" fill="url(#${id}e)" stroke="url(#${id}oh)" stroke-width="2"/>
+      <g fill="url(#${id}v)">${Array.from({length:7},(_,i)=>{const a=(200+i*20)*Math.PI/180, x=100+Math.cos(a)*22, y=104+Math.sin(a)*-22; return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="5" ry="2.4" transform="rotate(${(i*20+110).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})"/><ellipse cx="${(200-x).toFixed(1)}" cy="${y.toFixed(1)}" rx="5" ry="2.4" transform="rotate(${(-(i*20+110)).toFixed(0)} ${(200-x).toFixed(1)} ${y.toFixed(1)})"/>`;}).join("")}</g>
+      <text x="100" y="114" text-anchor="middle" font-family="Michroma, sans-serif" font-size="30" fill="url(#${id}o)">Ω</text>`;
+  },
+  // Soberano: o raio de Zeus (keraunos) com energia
+  soberano: (id) => { const raio="M88 94 L104 56 L92 56 L113 4 L119 7 L108 48 L122 48 L112 94 Z";
+    return `
+    <g filter="url(#${id}s)" opacity=".95" transform="translate(100 0) scale(1.75 1.04) translate(-100 -4)"><path d="${raio}" fill="url(#${id}v)"/><path d="${raio}" fill="url(#${id}v)" transform="rotate(180 100 102)"/></g>
+    <g fill="none" stroke="url(#${id}v)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity=".95">
+      <path d="M118 30 L146 22 L136 36 L166 30"/><path d="M84 72 L56 66 L66 80 L34 78"/><path d="M82 174 L54 182 L64 168 L34 174"/><path d="M116 132 L144 138 L134 124 L166 126"/></g>
+    <g transform="translate(100 0) scale(1.6 1) translate(-100 0)">
+    <path d="${raio}" fill="url(#${id}o)" stroke="#2a1800" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="${raio}" fill="url(#${id}o)" stroke="#2a1800" stroke-width="1.8" stroke-linejoin="round" transform="rotate(180 100 102)"/>
+    <path d="M112 12 L104 46" stroke="#fff8d8" stroke-width="1.8" stroke-linecap="round" opacity=".8"/></g>
+    <rect x="84" y="92" width="32" height="20" rx="4" fill="url(#${id}v)" stroke="url(#${id}o)" stroke-width="2.6"/>
+    <g stroke="url(#${id}o)" stroke-width="2"><path d="M84 99h32M84 105h32"/></g>
+    <circle cx="100" cy="102" r="3" fill="#fff"/>`; },
+  // Imperador: o templo do Olimpo com estrela radiante no frontão
+  imperador: (id) => `
+    <path d="M100 18 L182 64 L18 64 Z" fill="url(#${id}o)" stroke="#2a1800" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M100 32 L156 58 L44 58 Z" fill="url(#${id}e)"/>
+    <g transform="translate(100 47)"><path d="M0 -10 L3 -3 L10 0 L3 3 L0 10 L-3 3 L-10 0 L-3 -3 Z" fill="url(#${id}v)"/><circle r="2.4" fill="#fff"/></g>
+    <rect x="22" y="64" width="156" height="12" fill="url(#${id}oh)" stroke="#2a1800" stroke-width="2"/>
+    <rect x="22" y="70" width="156" height="3" fill="url(#${id}v)"/>
+    ${[36,64,92,120,148].map(x=>`<g><rect x="${x}" y="80" width="16" height="78" fill="url(#${id}oh)" stroke="#2a1800" stroke-width="1.8"/><path d="M${x+5} 84 v70 M${x+11} 84 v70" stroke="#7a4a0577" stroke-width="1.4"/><rect x="${x-3}" y="76" width="22" height="6" fill="url(#${id}o)" stroke="#2a1800" stroke-width="1.4"/></g>`).join("")}
+    <rect x="16" y="158" width="168" height="10" fill="url(#${id}oh)" stroke="#2a1800" stroke-width="2"/>
+    <rect x="8" y="168" width="184" height="12" fill="url(#${id}o)" stroke="#2a1800" stroke-width="2"/>
+    <rect x="8" y="172" width="184" height="3" fill="url(#${id}v)"/>`
+};
+const NOMES_EMB = { cavaleiro:"Elmo do Cavaleiro", lorde:"Asas de Pégaso", soberano:"Raio de Zeus", imperador:"Templo do Olimpo" };
+let vipSeq=0;
+function vipArte(nome){
+  const k=chaveVip(nome); if (!k || !EMBLEMAS[k]) return "";
+  const c=C.vips[k], ordem=ORDEM_VIPS(), n=ordem.indexOf(k)+1, id="va"+(++vipSeq), romano=["I","II","III","IV","V"][n-1]||n;
+  const parts=Array.from({length:9},(_,i)=>`<i class="va-p" style="left:${(i*31+9)%94}%;--d:${(i*.45).toFixed(2)}s"></i>`).join("");
+  return `<div class="vip-arte va-${k}" style="--g1:${c[0]};--g2:${c[1]};--k1:${c[0]};--k2:${c[1]}">
+    <div class="va-ceu"></div>
+    <svg class="va-nuv" viewBox="0 0 100 62.5" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+      <filter id="${id}f" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".028 .12" numOctaves="5" seed="${20+vipSeq}"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -2.5 1.45"/></filter>
+      <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff"/></linearGradient>
+      <mask id="${id}m"><rect y="34" width="100" height="29" fill="url(#${id}g)"/></mask></defs>
+      <rect y="34" width="100" height="29" filter="url(#${id}f)" mask="url(#${id}m)" opacity=".5"/>
+    </svg>
+    <div class="va-raios"></div>
+    <div class="va-halo"></div>
+    <svg class="va-emb" viewBox="0 0 200 200" aria-hidden="true">${defsVip(id,c)}${EMBLEMAS[k](id)}</svg>
+    <div class="va-faixa"><span>${esc(k.toUpperCase())}</span></div>
+    ${parts}
+  </div>`;
+}
+// botão de comprar com efeito do tema: lava (Infernal), água (Santuário), espectro (Calabouço), raio (Cash), brilho (VIPs)
+function botaoFx(p, vip, ch, cs){
+  const fx = vip ? "vip" : ch ? ({bidente:"lava",tridente:"agua",lanca:"espectro"}[ch.arma]||"") : cs ? "raio" : "";
+  // gotas escorrendo por baixo em todos os botões (na cor do tema)
+  let extra = fx ? [12,31,58,74,90].map((x,i)=>`<i class="gota" style="left:${x}%;--d:${(i*.7+(p.id%3)*.3).toFixed(1)}s;--h:${8+((i+p.id)*5)%9}px"></i>`).join("") : "";
+  if (fx==="agua") extra+=[15,35,55,72,88].map((x,i)=>`<i class="bolha" style="left:${x}%;--d:${(i*.35).toFixed(2)}s"></i>`).join("");
+  if (fx==="espectro") extra+=[10,26,44,60,78,92].map((x,i)=>`<i class="chama" style="left:${x}%;--d:${(i*.27).toFixed(2)}s"></i>`).join("");
+  if (fx==="raio") extra+=`<svg class="zap z1" viewBox="0 0 10 24"><path d="M6 0 1 13h4l-2 11 6-15H5z"/></svg><svg class="zap z2" viewBox="0 0 10 24"><path d="M6 0 1 13h4l-2 11 6-15H5z"/></svg>`+[20,40,60,80].map((x,i)=>`<i class="moedinha" style="left:${x}%;--d:${(i*.12).toFixed(2)}s"></i>`).join("");
+  if (fx==="vip") extra+=[18,50,82].map((x,i)=>`<i class="faisca" style="left:${x}%;--d:${(i*.4).toFixed(1)}s">✦</i>`).join("");
+  return `<div class="bt-wrap ${fx?"fx-"+fx:""}"><button class="btn" data-ver="${p.id}"><span class="bt-txt">&gt; COMPRAR</span></button>${extra?`<span class="fx" aria-hidden="true">${extra}</span>`:""}</div>`;
 }
 const resumoProd = p => { const kv=chaveVip(p.name); if (kv && C.vantagens) return resumoVip(kv); const k=chaveDe(p.name); if (k) return k.resumo; if (ehCash(p.name)) return C.cash.resumo; const t=String(p.description||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim(); return t; };
 const nomeHTMLbase = nome => corVip(nome) ? `<span class="vip-nome" ${vipStyle(nome)}>${esc(nome)}</span>` : esc(nome);
@@ -1856,7 +2188,7 @@ const demoCats=[{id:1,name:"VIPs"},{id:2,name:"Chaves"},{id:3,name:"Cash"}];
 const demoProds=[
   {id:1,category_id:1,name:"VIP Cavaleiro",description:"",pricing:{price:14.9},stock:{available:true},fields:[]},
   {id:2,category_id:1,name:"VIP Lorde",description:"",pricing:{price:24.9},stock:{available:true},fields:[]},
-  {id:3,category_id:1,name:"VIP Soberano",description:"",pricing:{price:39.9,compare_at:49.9,percent_discount:-20},stock:{available:true},fields:[]},
+  {id:3,category_id:1,name:"VIP Soberano",description:"",pricing:{price:39.9},stock:{available:true},fields:[]},
   {id:4,category_id:1,name:"VIP Imperador",description:"",pricing:{price:69.9},stock:{available:true},fields:[]},
   {id:5,category_id:2,name:"Chave de Masmorra Santuário",description:"",pricing:{price:4.9},stock:{available:true},fields:[]},
   {id:6,category_id:2,name:"Chave de Masmorra Infernal",description:"",pricing:{price:4.9},stock:{available:true},fields:[]},
@@ -1890,17 +2222,24 @@ async function iniciarLoja(){
 }
 function renderLoja(){
   $("#cats").innerHTML = [{id:"all",name:"TUDO"},...cats].map(c => `<button class="cat" data-cat="${c.id}" aria-pressed="${String(c.id)===String(catAtual)}">${esc(c.name)}</button>`).join("");
-  const lista = catAtual==="all" ? prods : prods.filter(p=>String(p.category_id)===String(catAtual));
+  // ordem fixa: VIPs (Cavaleiro → Imperador), depois as chaves na mesma ordem de cor dos VIPs
+  // (Santuário embaixo do Cavaleiro, Calabouço embaixo do Lorde, Infernal embaixo do Soberano), depois o resto
+  const ordemVip=ORDEM_VIPS(), ordemCh=Object.keys(C.chaves||{});
+  const peso = p => { const v=chaveVip(p.name); if (v) return ordemVip.indexOf(v);
+    const n=semAcento(p.name), k=/chave/.test(n) ? ordemCh.find(x=>n.includes(semAcento(x))) : null; if (k) return 10+ordemCh.indexOf(k);
+    if (ehCash(p.name)) return 20; return 30; };
+  const lista = (catAtual==="all" ? prods : prods.filter(p=>String(p.category_id)===String(catAtual)))
+    .map((p,i)=>({p,i})).sort((a,b)=>peso(a.p)-peso(b.p) || a.i-b.i).map(x=>x.p);
   if (!lista.length){ $("#produtos").innerHTML='<p class="vazio">Nenhum produto nesta categoria ainda.</p>'; return; }
   $("#produtos").innerHTML = lista.map(p => {
     const pr=p.pricing||{}, disp=p.stock?.available!==false;
     const preco = pr.min!=null&&pr.max!=null&&pr.min!==pr.max ? `${brl(pr.min)} – ${brl(pr.max)}` : brl(pr.price);
     const vip = corVip(p.name), rotulo = vip ? Object.keys(C.vips).find(k=>p.name.toLowerCase().includes(k.toLowerCase())).toUpperCase() : "";
     const ch = chaveDe(p.name), cs = !vip && !ch && ehCash(p.name);
-    return `<article class="painel prod${vip?" vip":""}${ch?" chave":""}${cs?" chave cash":""}" ${vip?vipStyle(p.name):(ch?`style="--k1:${ch.cor};--k2:${ch.cor2}"`:(cs?`style="--k1:${C.cash.cor};--k2:${C.cash.cor2}"`:""))}><div class="img">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy">`:(vip?(tagHTML(p.name) || `<span class="ph vip-nome">${rotulo}</span>`):(ch?chaveArte(p.name):(cs?cashArte(p.name):'<span class="ph">⚡</span>')))}
+    return `<article class="painel prod${vip?" vip":""}${ch?" chave":""}${cs?" chave cash":""}" ${vip?vipStyle(p.name):(ch?`style="--k1:${ch.cor};--k2:${ch.cor2}"`:(cs?`style="--k1:${C.cash.cor};--k2:${C.cash.cor2}"`:""))}><div class="img">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy">`:(vip?(vipArte(p.name) || tagHTML(p.name) || `<span class="ph vip-nome">${rotulo}</span>`):(ch?chaveArte(p.name):(cs?cashArte(p.name):'<span class="ph">⚡</span>')))}
       ${pr.percent_discount?`<span class="selo-desc">${Math.round(pr.percent_discount)}%</span>`:""}</div>
       <div class="info"><h3>${nomeHTML(p.name)}</h3>${resumoProd(p)?`<p class="resumo">${esc(resumoProd(p))}</p>`:""}<div class="preco"><strong>${preco}</strong>${pr.compare_at?`<s>${brl(pr.compare_at)}</s>`:""}</div>
-      ${disp?`<button class="btn" data-ver="${p.id}">&gt; COMPRAR</button>`:'<span class="esgotado">ESGOTADO</span>'}</div></article>`;
+      ${disp?botaoFx(p, vip, ch, cs):'<span class="esgotado">ESGOTADO</span>'}</div></article>`;
   }).join("");
   window.etReaplicar && window.etReaplicar();
   const temVip = lista.some(p=>chaveVip(p.name));
@@ -2336,12 +2675,12 @@ const SOM = (() => {
     estado="abduzindo";
     for (const [k,card] of lista.entries()){
       if (estado!=="abduzindo") return;
-      const cr=card.getBoundingClientRect(), alvo=card.querySelector(".img > img, .img > .tag-vip, .img > span, .img > .chave-arte, .img > .cash-arte");
+      const cr=card.getBoundingClientRect(), alvo=card.querySelector(".img > img, .img > .vip-arte, .img > .tag-vip, .img > span, .img > .chave-arte, .img > .cash-arte");
       const ax=cr.left+cr.width/2+sx, ay=cr.top+sy+cr.height*.28;
       const f=feixe(ux,uy+18,ax,ay+20); SOM.raio(false);
       if (alvo){
         const ar=alvo.getBoundingClientRect();
-        const cl = alvo.cloneNode(true); if (alvo.tagName!=="IMG" && !alvo.classList.contains("chave-arte") && !alvo.classList.contains("cash-arte")) cl.classList.add("et-item-txt");
+        const cl = alvo.cloneNode(true); if (alvo.tagName!=="IMG" && !/chave-arte|cash-arte|vip-arte/.test(alvo.className)) cl.classList.add("et-item-txt");
         cl.classList.add("et-item"); cl.removeAttribute("id");
         Object.assign(cl.style,{left:(ar.left+sx)+"px",top:(ar.top+sy)+"px",width:ar.width+"px",height:ar.height+"px"});
         document.body.appendChild(cl); itens.push({el:cl,card,w:ar.width,h:ar.height});
@@ -2367,7 +2706,7 @@ const SOM = (() => {
     nave.classList.remove("treme"); faiscas(ux,uy,28);
     // raios dourados devolvem cada produto, com quique e faíscas
     for (const it of itens){
-      const cr=it.card.getBoundingClientRect(), alvo=it.card.querySelector(".img > img, .img > .tag-vip, .img > span, .img > .chave-arte, .img > .cash-arte");
+      const cr=it.card.getBoundingClientRect(), alvo=it.card.querySelector(".img > img, .img > .vip-arte, .img > .tag-vip, .img > span, .img > .chave-arte, .img > .cash-arte");
       const ar=alvo ? alvo.getBoundingClientRect() : cr;
       const f=feixe(ux,uy+18,cr.left+cr.width/2+sx,cr.top+sy+cr.height*.28+20,"dourado"); SOM.raio(true);
       it.el.classList.add("cai");
