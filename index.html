@@ -27,6 +27,19 @@ window.OLIMPO = {
   // Cores dos VIPs (mesmas do <gradient> do servidor). Vale para qualquer produto
   // da CentralCart cujo nome contenha a palavra (ex: "VIP Cavaleiro 30 dias").
   // As tags (imagens) de cada VIP ficam no bloco TAGS logo abaixo desta configuração.
+  // Chaves de masmorra: arte gerada no site para qualquer produto cujo nome tenha o tipo
+  // Cores no mesmo padrão dos VIPs: Santuário = Cavaleiro, Calabouço = Lorde, Infernal = Soberano
+  chaves: {
+    "santuario": { nome: "Santuário", cor: "#00a6a2", cor2: "#3b52e0",
+      resumo: "Masmorra de templo antigo, protegida por guardiões. Boa para explorar com a facção.",
+      descricao: "Abre um <b>Santuário</b> na sua localização: uma masmorra de templo antigo, cheia de corredores e guardiões. É a mais equilibrada das três e ótima para explorar junto com a sua facção." },
+    "calabouco": { nome: "Calabouço", cor: "#6eff70", cor2: "#00a800",
+      resumo: "Masmorra subterrânea de túneis e celas. Rápida de abrir e de explorar.",
+      descricao: "Abre um <b>Calabouço</b> na sua localização: uma masmorra subterrânea, com túneis estreitos e celas cheias de monstros. Ideal para uma incursão rápida, sozinho ou com poucos amigos." },
+    "infernal":  { nome: "Infernal",  cor: "#d60000", cor2: "#7a0000",
+      resumo: "Masmorra das profundezas do Nether. A mais perigosa das três.",
+      descricao: "Abre uma masmorra <b>Infernal</b> na sua localização: um cenário das profundezas do Nether, com fogo, lava e os inimigos mais fortes. Para quem já está bem equipado e quer desafio." }
+  },
   vips: {
     cavaleiro: ["#00a6a2", "#3b52e0"],
     lorde:     ["#00a800", "#6eff70"],
@@ -297,6 +310,41 @@ body[data-view="home"] .nav{display:none}
 .faq-tag{color:var(--ciano);font-weight:700;text-decoration:none;border-bottom:1px dashed rgba(143,211,255,.6)}
 .faq-tag:hover{color:#fff;border-bottom-color:#fff}
 .faq-tag::after{content:" ↗";font-size:.85em}
+
+/* ---------- chaves de masmorra ---------- */
+.prod.chave{position:relative;border-color:color-mix(in srgb,var(--k1) 40%,transparent)}
+.prod.chave:hover{border-color:var(--k1);box-shadow:0 0 26px color-mix(in srgb,var(--k1) 30%,transparent)}
+.prod.chave::before{content:"";position:absolute;top:-1px;left:-1px;right:-1px;height:2px;background:linear-gradient(90deg,var(--k1),var(--k2));z-index:1}
+.chave-arte{position:absolute;inset:0;overflow:hidden;display:grid;place-items:center}
+.ca-fundo{position:absolute;inset:0;background:
+  radial-gradient(circle at 50% 55%,color-mix(in srgb,var(--k1) 42%,transparent) 0,transparent 55%),
+  radial-gradient(ellipse at 50% 120%,color-mix(in srgb,var(--k2) 80%,transparent),transparent 60%),
+  linear-gradient(180deg,#070b16,#0d1426)}
+.ca-runas{position:absolute;inset:-20%;opacity:.16;background:
+  repeating-conic-gradient(from 0deg at 50% 55%,color-mix(in srgb,var(--k1) 70%,transparent) 0 2deg,transparent 2deg 15deg);
+  -webkit-mask:radial-gradient(circle at 50% 55%,#000 18%,transparent 46%);mask:radial-gradient(circle at 50% 55%,#000 18%,transparent 46%)}
+.chave-px{position:relative;width:44%;max-width:170px;margin-top:-6%;height:auto;image-rendering:pixelated;transform:rotate(-24deg);
+  filter:drop-shadow(0 0 10px color-mix(in srgb,var(--k1) 85%,transparent)) drop-shadow(0 0 28px color-mix(in srgb,var(--k1) 45%,transparent)) drop-shadow(0 8px 6px rgba(0,0,0,.5))}
+.ca-p{position:absolute;left:var(--x);top:var(--y);width:4px;height:4px;background:var(--k1);box-shadow:0 0 8px var(--k1);opacity:.0}
+.ca-tipo{position:absolute;left:10px;bottom:10px;font-family:var(--display);font-size:10px;letter-spacing:.2em;color:#0b0f1c;background:var(--k1);padding:4px 8px;
+  clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px)}
+.ca-info{position:absolute;right:10px;top:10px;font-size:9px;letter-spacing:.16em;color:color-mix(in srgb,var(--k1) 60%,#fff);opacity:.85}
+@media (prefers-reduced-motion:no-preference){
+  .chave-px{animation:caFlutua 4s ease-in-out infinite}
+  @keyframes caFlutua{0%,100%{transform:rotate(-24deg) translateY(0)}50%{transform:rotate(-20deg) translateY(-6px)}}
+  .ca-runas{animation:caGira 30s linear infinite}
+  @keyframes caGira{to{transform:rotate(360deg)}}
+  .ca-p{animation:caBrilho 3.4s ease-in-out var(--d) infinite}
+  @keyframes caBrilho{0%,100%{opacity:0;transform:translateY(6px) scale(.6)}40%{opacity:1}70%{opacity:0;transform:translateY(-14px) scale(1)}}
+  .prod.chave:hover .chave-px{animation-duration:1.6s}
+}
+.mp-arte{position:relative;aspect-ratio:16/9;margin-bottom:14px;border:1px solid var(--ouro-sutil);overflow:hidden}
+.et-item.chave-arte{position:absolute}
+.prod .resumo{margin:2px 0 8px;font-size:12px;line-height:1.55;color:var(--texto-2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mp-desc{margin-bottom:16px;color:var(--texto-2);font-size:13px;line-height:1.7}
+.mp-desc b{color:var(--texto)}
+.ch-lista{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.ch-lista li{padding:8px 10px;border:1px solid var(--ouro-sutil);background:rgba(3,8,20,.4);font-size:12px}
 /* rodapé */
 .rodape{position:relative;z-index:2;margin-top:60px;border-top:1px solid var(--ouro-sutil);background:rgba(11,10,7,.95);padding:22px 20px;text-align:center;font-size:11px;letter-spacing:.14em;color:var(--texto-3)}
 .rodape a{color:var(--texto-2);text-decoration:none;margin:0 8px}
@@ -1000,9 +1048,43 @@ const imgHead = (n,s,cls="av") => `<img class="${cls}" src="${cabeca(n,s)}" alt=
 // history pode falhar em pré-visualizações (iframe/srcdoc); nunca deixa o site quebrar
 const corVip = nome => { const n=String(nome||"").toLowerCase(); const k=Object.keys(C.vips||{}).find(k=>n.includes(k.toLowerCase())); return k ? C.vips[k] : null; };
 const vipStyle = nome => { const c=corVip(nome); return c ? `style="--g1:${c[0]};--g2:${c[1]}"` : ""; };
+const semAcento = t => String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const chaveDe = nome => { const n=semAcento(nome); if (!/chave/.test(n)) return null; const k=Object.keys(C.chaves||{}).find(k=>n.includes(semAcento(k))); return k ? C.chaves[k] : null; };
+// chave em pixel art (cada letra é um pixel: O contorno, L luz, M meio, D sombra, B brilho)
+const CHAVE_PX = [
+  "....OOOOO..........",
+  "...OBLLLLO.........",
+  "..OLLMMMLLO........",
+  ".OLMOOOOOMLO.......",
+  ".OLMO...OMLOOOOOOOO",
+  ".OLMO...OMLLBLLLLLLO",
+  ".OMDO...ODMMMMMMMMMO",
+  ".OMDOOOOODMDDDDDDDDO",
+  "..OMDDDDDMO.OMOO.OMO",
+  "...OMMMMMO..OMO..OMO",
+  "....OOOOO...ODO..ODO",
+  "............OO...OO."
+];
+function chaveSVG(k, idx){
+  const cores={O:"#0b0f1c",L:"color-mix(in srgb,"+k.cor+" 55%,#fff)",M:k.cor,D:k.cor2,B:"#ffffff"};
+  let r="";
+  CHAVE_PX.forEach((linha,y)=>[...linha].forEach((c,x)=>{ if (cores[c]) r+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${cores[c]}"/>`; }));
+  return `<svg class="chave-px" viewBox="0 0 20 12" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+}
+const chaveArte = (nome) => { const k=chaveDe(nome); if (!k) return "";
+  return `<div class="chave-arte" style="--k1:${k.cor};--k2:${k.cor2}">
+    <div class="ca-fundo"></div><div class="ca-runas"></div>
+    ${chaveSVG(k)}
+    <i class="ca-p" style="--x:18%;--y:70%;--d:0s"></i><i class="ca-p" style="--x:78%;--y:30%;--d:1.1s"></i><i class="ca-p" style="--x:66%;--y:76%;--d:2s"></i><i class="ca-p" style="--x:30%;--y:24%;--d:2.7s"></i>
+    <span class="ca-tipo">${esc(k.nome.toUpperCase())}</span><span class="ca-info">NÍVEL ALEATÓRIO · 30s</span>
+  </div>`; };
 const chaveVip = nome => { const n=String(nome||"").toLowerCase(); return Object.keys(C.vips||{}).find(k=>n.includes(k.toLowerCase())) || null; };
 const tagHTML = (nome, cls="tag-vip") => { const k=chaveVip(nome), src=k && (window.OLIMPO_TAGS||{})[k]; return src ? `<img class="${cls}" src="${src}" alt="VIP ${esc(k[0].toUpperCase()+k.slice(1))}">` : ""; };
-const nomeHTML = nome => corVip(nome) ? `<span class="vip-nome" ${vipStyle(nome)}>${esc(nome)}</span>` : esc(nome);
+const nomeHTML = nome => { const k=chaveDe(nome); if (k && !corVip(nome)) return `<span class="vip-nome" style="--g1:${k.cor};--g2:${k.cor2}">${esc(nome)}</span>`; return nomeHTMLbase(nome); };
+// texto que explica cada chave (usado no card, na janela do produto e quando a CentralCart não tiver descrição)
+const textoChave = k => `${k.descricao}<ul class="ch-lista"><li><b>Nível:</b> sorteado na hora em que a masmorra abre.</li><li><b>Entrada:</b> liberada 30 segundos depois de usar a chave.</li><li><b>Como usar:</b> vá até o lugar onde quer abrir a masmorra e use a chave. Leve sua facção!</li><li><b>Entrega:</b> a chave cai direto no seu nick assim que o pagamento é aprovado.</li></ul>`;
+const resumoProd = p => { const k=chaveDe(p.name); if (k) return k.resumo; const t=String(p.description||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim(); return t; };
+const nomeHTMLbase = nome => corVip(nome) ? `<span class="vip-nome" ${vipStyle(nome)}>${esc(nome)}</span>` : esc(nome);
 const hist = url => { try { history.replaceState(null, "", url); } catch {} };
 
 /* ---------- textos ---------- */
@@ -1555,8 +1637,10 @@ const demoProds=[
   {id:2,category_id:1,name:"VIP Lorde",description:"Tudo do Cavaleiro, kit de guerra e prioridade na fila.",pricing:{price:24.9},stock:{available:true},fields:[]},
   {id:3,category_id:1,name:"VIP Soberano",description:"Tudo do Lorde, /fly no lobby e 3 homes extras.",pricing:{price:39.9,compare_at:49.9,percent_discount:-20},stock:{available:true},fields:[]},
   {id:4,category_id:1,name:"VIP Imperador",description:"O topo do Olimpo: tudo dos outros VIPs, /nick e cosméticos exclusivos.",pricing:{price:69.9},stock:{available:true},fields:[]},
-  {id:5,category_id:2,name:"Chave do Olimpo",description:"Abre a caixa lendária no spawn.",pricing:{price:4.9},stock:{available:true},fields:[]},
-  {id:6,category_id:3,name:"5.000 Cash",description:"Moeda para o /loja dentro do jogo.",pricing:{price:9.9},stock:{available:true},fields:[]}
+  {id:5,category_id:2,name:"Chave de Masmorra Santuário",description:"",pricing:{price:4.9},stock:{available:true},fields:[]},
+  {id:6,category_id:2,name:"Chave de Masmorra Infernal",description:"",pricing:{price:4.9},stock:{available:true},fields:[]},
+  {id:7,category_id:2,name:"Chave de Masmorra Calabouço",description:"",pricing:{price:4.9},stock:{available:true},fields:[]},
+  {id:8,category_id:3,name:"5.000 Cash",description:"Moeda para o /loja dentro do jogo.",pricing:{price:9.9},stock:{available:true},fields:[]}
 ];
 let cats=[], prods=[], catAtual="all", resolvidos={}, cupom="", lojaOk=false, lojaP=null;
 let cart=[]; try { cart=JSON.parse(localStorage.getItem("olimpo_cart")||"[]"); } catch {}
@@ -1591,9 +1675,10 @@ function renderLoja(){
     const pr=p.pricing||{}, disp=p.stock?.available!==false;
     const preco = pr.min!=null&&pr.max!=null&&pr.min!==pr.max ? `${brl(pr.min)} – ${brl(pr.max)}` : brl(pr.price);
     const vip = corVip(p.name), rotulo = vip ? Object.keys(C.vips).find(k=>p.name.toLowerCase().includes(k.toLowerCase())).toUpperCase() : "";
-    return `<article class="painel prod${vip?" vip":""}" ${vipStyle(p.name)}><div class="img">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy">`:(vip?(tagHTML(p.name) || `<span class="ph vip-nome">${rotulo}</span>`):'<span class="ph">⚡</span>')}
+    const ch = chaveDe(p.name);
+    return `<article class="painel prod${vip?" vip":""}${ch?" chave":""}" ${vip?vipStyle(p.name):(ch?`style="--k1:${ch.cor};--k2:${ch.cor2}"`:"")}><div class="img">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy">`:(vip?(tagHTML(p.name) || `<span class="ph vip-nome">${rotulo}</span>`):(ch?chaveArte(p.name):'<span class="ph">⚡</span>'))}
       ${pr.percent_discount?`<span class="selo-desc">${Math.round(pr.percent_discount)}%</span>`:""}</div>
-      <div class="info"><h3>${nomeHTML(p.name)}</h3><div class="preco"><strong>${preco}</strong>${pr.compare_at?`<s>${brl(pr.compare_at)}</s>`:""}</div>
+      <div class="info"><h3>${nomeHTML(p.name)}</h3>${resumoProd(p)?`<p class="resumo">${esc(resumoProd(p))}</p>`:""}<div class="preco"><strong>${preco}</strong>${pr.compare_at?`<s>${brl(pr.compare_at)}</s>`:""}</div>
       ${disp?`<button class="btn" data-ver="${p.id}">&gt; COMPRAR</button>`:'<span class="esgotado">ESGOTADO</span>'}</div></article>`;
   }).join("");
   window.etReaplicar && window.etReaplicar();
@@ -1619,8 +1704,8 @@ const campoHTML=(f,pre)=>{
 function abrirProduto(id){
   const p=prods.find(x=>x.id===id); if (!p) return;
   $("#mp-t").innerHTML=(tagHTML(p.name) || nomeHTML(p.name.toUpperCase())); const fields=p.fields||[];
-  $("#mp-c").innerHTML=`${p.image?`<img src="${esc(p.image)}" alt="" style="margin-bottom:14px;border:1px solid var(--ouro-sutil)">`:""}
-    <div style="margin-bottom:16px;color:var(--texto-2)">${p.description||""}</div>
+  $("#mp-c").innerHTML=`${p.image?`<img src="${esc(p.image)}" alt="" style="margin-bottom:14px;border:1px solid var(--ouro-sutil)">`:(chaveDe(p.name)?`<div class="mp-arte">${chaveArte(p.name)}</div>`:"")}
+    <div class="mp-desc">${p.description || (chaveDe(p.name) ? textoChave(chaveDe(p.name)) : "")}</div>
     <form id="f-prod">${fields.map(f=>campoHTML(f,"pf-")).join("")}
       <div class="campo"><label for="pf-q">Quantidade</label><input id="pf-q" type="number" min="${p.stock?.min_amount||1}" value="${p.stock?.min_amount||1}"></div>
       <div class="total" style="margin-bottom:14px"><span>PREÇO</span><strong>${brl(p.pricing?.price)}</strong></div>
@@ -2012,12 +2097,12 @@ const SOM = (() => {
     estado="abduzindo";
     for (const [k,card] of lista.entries()){
       if (estado!=="abduzindo") return;
-      const cr=card.getBoundingClientRect(), alvo=card.querySelector(".img > img, .img > .tag-vip, .img > span");
+      const cr=card.getBoundingClientRect(), alvo=card.querySelector(".img > img, .img > .tag-vip, .img > span, .img > .chave-arte");
       const ax=cr.left+cr.width/2+sx, ay=cr.top+sy+cr.height*.28;
       const f=feixe(ux,uy+18,ax,ay+20); SOM.raio(false);
       if (alvo){
         const ar=alvo.getBoundingClientRect();
-        const cl = alvo.tagName==="IMG" ? alvo.cloneNode() : Object.assign(document.createElement("div"),{textContent:alvo.textContent,className:"et-item-txt"});
+        const cl = alvo.cloneNode(true); if (alvo.tagName!=="IMG" && !alvo.classList.contains("chave-arte")) cl.classList.add("et-item-txt");
         cl.classList.add("et-item"); cl.removeAttribute("id");
         Object.assign(cl.style,{left:(ar.left+sx)+"px",top:(ar.top+sy)+"px",width:ar.width+"px",height:ar.height+"px"});
         document.body.appendChild(cl); itens.push({el:cl,card,w:ar.width,h:ar.height});
@@ -2043,7 +2128,7 @@ const SOM = (() => {
     nave.classList.remove("treme"); faiscas(ux,uy,28);
     // raios dourados devolvem cada produto, com quique e faíscas
     for (const it of itens){
-      const cr=it.card.getBoundingClientRect(), alvo=it.card.querySelector(".img > img, .img > .tag-vip, .img > span");
+      const cr=it.card.getBoundingClientRect(), alvo=it.card.querySelector(".img > img, .img > .tag-vip, .img > span, .img > .chave-arte");
       const ar=alvo ? alvo.getBoundingClientRect() : cr;
       const f=feixe(ux,uy+18,cr.left+cr.width/2+sx,cr.top+sy+cr.height*.28+20,"dourado"); SOM.raio(true);
       it.el.classList.add("cai");
