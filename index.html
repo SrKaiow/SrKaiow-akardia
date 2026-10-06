@@ -28,6 +28,35 @@ window.OLIMPO = {
   // da CentralCart cujo nome contenha a palavra (ex: "VIP Cavaleiro 30 dias").
   // As tags (imagens) de cada VIP ficam no bloco TAGS logo abaixo desta configuração.
   // Chaves de masmorra: arte gerada no site para qualquer produto cujo nome tenha o tipo
+  // Vantagens dos VIPs (iguais às do jogo). "comuns" vale para todos; "niveis" muda por VIP.
+  vantagens: {
+    comuns: [
+      ["tag",     "Tag exclusiva dentro do servidor e no Discord"],
+      ["back",    "Acesso ao comando <b>/back</b>"],
+      ["voar",    "Voo nos claims com <b>/f voar</b> e voo no spawn"],
+      ["tempo",   "Sem espera para <b>/compactar</b>, teleportar e mandar mensagens globais"],
+      ["kit",     "Acesso a <b>kits exclusivos</b>"],
+      ["replay",  "Replays de invasões finalizadas"],
+      ["fila",    "Entra nos servidores <b>sem enfrentar fila</b>"],
+      ["global",  "Anúncios do mercado divulgados globalmente"]
+    ],
+    // ordem: Cavaleiro, Lorde, Soberano, Imperador
+    niveis: {
+      homes:    { nome: "Limite de homes",               sufixo: "",              valores: { cavaleiro: 10, lorde: 15, soberano: 20, imperador: 25 } },
+      mercado:  { nome: "Itens anunciados no mercado",   sufixo: " itens",        valores: { cavaleiro: 5,  lorde: 7,  soberano: 9,  imperador: 11 } },
+      bau:      { nome: "Baú do fim",                    sufixo: " linhas",       valores: { cavaleiro: 3,  lorde: 4,  soberano: 5,  imperador: 6 } },
+      morte:    { nome: "Experiência mantida ao morrer", sufixo: "%",             valores: { cavaleiro: 70, lorde: 80, soberano: 90, imperador: 100 } },
+      xp:       { nome: "Bônus de XP em habilidades",    sufixo: "%", mais: true, valores: { cavaleiro: 5,  lorde: 10, soberano: 15, imperador: 20 } },
+      vendas:   { nome: "Bônus em vendas na loja",       sufixo: "%", mais: true, valores: { cavaleiro: 5,  lorde: 10, soberano: 15, imperador: 20 } },
+      desconto: { nome: "Desconto em compras na loja",   sufixo: "%", mais: true, valores: { cavaleiro: 5,  lorde: 10, soberano: 15, imperador: 20 } }
+    }
+  },
+
+  // Cash: arte de "meteoro de moedas" gerada no site para produtos com "cash" no nome
+  cash: { cor: "#FFD54A", cor2: "#FF8A00",
+    resumo: "Moeda premium que cai direto do céu na sua conta. Troque no /kit por itens valiosos ou Caixas Divinas dos Deuses.",
+    descricao: "O <b>Cash</b> é a moeda premium do Factions Olimpo. Ele cai direto na sua conta assim que o pagamento é aprovado e pode ser trocado no <b>/kit</b>, dentro do jogo, por <b>itens valiosos</b> ou <b>Caixas Divinas dos Deuses</b>." },
+
   // Cores no mesmo padrão dos VIPs: Santuário = Cavaleiro, Calabouço = Lorde, Infernal = Soberano
   chaves: {
     "santuario": { nome: "Santuário", cor: "#00a6a2", cor2: "#3b52e0",
@@ -345,6 +374,82 @@ body[data-view="home"] .nav{display:none}
 .mp-desc b{color:var(--texto)}
 .ch-lista{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px}
 .ch-lista li{padding:8px 10px;border:1px solid var(--ouro-sutil);background:rgba(3,8,20,.4);font-size:12px}
+
+/* ---------- vantagens dos VIPs ---------- */
+.caixa.larga{width:min(760px,100%)}
+.pv{position:relative;height:300px;margin-bottom:18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--g1) 45%,transparent);display:flex;flex-direction:column;align-items:center}
+.pv-ceu{position:absolute;inset:0;background:
+  radial-gradient(ellipse 60% 55% at 50% 62%,color-mix(in srgb,var(--g1) 38%,transparent),transparent 70%),
+  radial-gradient(ellipse 70% 30% at 50% 100%,color-mix(in srgb,var(--g2) 45%,transparent),transparent 70%),
+  linear-gradient(180deg,#081022,#0f1a33)}
+.pv-tagnome{position:relative;z-index:2;margin-top:18px;display:flex;align-items:center;gap:8px;padding:5px 10px;background:rgba(0,0,0,.45);font:700 15px var(--mono);letter-spacing:.02em}
+.pv-tag{height:18px;image-rendering:pixelated}
+.pv-skin{position:relative;z-index:1;height:190px;width:auto;margin-top:6px;image-rendering:pixelated;filter:drop-shadow(0 0 18px color-mix(in srgb,var(--g1) 55%,transparent)) drop-shadow(0 10px 12px rgba(0,0,0,.6))}
+@media (prefers-reduced-motion:no-preference){ .pv-skin{animation:pvBob 3s ease-in-out infinite} @keyframes pvBob{50%{transform:translateY(-5px)}} }
+.pv-chat{position:absolute;left:12px;bottom:46px;z-index:2;display:grid;gap:4px;max-width:calc(100% - 24px)}
+.pv-chat > div{background:rgba(0,0,0,.5);padding:4px 8px;font:600 12px var(--mono);display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:max-content;max-width:100%}
+.pv-tag-p{height:13px;image-rendering:pixelated}
+.pv-msg{color:#f2f2f2}
+.pv-sis{color:#9dff8a!important;font-weight:500!important}
+.pv-campo{position:absolute;left:12px;right:12px;bottom:10px;z-index:3}
+.pv-campo input{width:100%;font:500 12px var(--mono);padding:7px 10px;background:rgba(3,8,20,.75);border:1px solid var(--ouro-sutil);color:var(--texto)}
+.pv-campo input:focus{outline:none;border-color:var(--g1)}
+.vt-tit,.vt-sub{font-size:11px;letter-spacing:.24em;color:var(--ouro);font-weight:700;margin:4px 0 10px}
+.vt-sub{color:var(--texto-2);margin-top:18px}
+.vt-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.vt{position:relative;display:flex;flex-direction:column;gap:2px;padding:12px 12px 11px;background:rgba(3,8,20,.5);border:1px solid var(--ouro-sutil);
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.vt svg{width:18px;height:18px;color:var(--ouro);margin-bottom:6px}
+.vt b{font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:.04em;background:linear-gradient(90deg,var(--g1,#F4C542),var(--g2,#F4C542));-webkit-background-clip:text;background-clip:text;color:transparent}
+.vt span{font-size:11px;color:var(--texto-2);line-height:1.4}
+.vt em{font-style:normal;font-size:10px;color:var(--ok);margin-top:4px;letter-spacing:.04em}
+.vt-lista{list-style:none;margin:0 0 14px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px}
+.vt-lista li{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--ouro-sutil);background:rgba(3,8,20,.35);font-size:12px;color:var(--texto-2)}
+.vt-lista li svg{width:16px;height:16px;flex:none;color:var(--ok)}
+.vt-lista b{color:var(--texto)}
+.vt-comparar{width:100%;margin-bottom:16px}
+.cmp-wrap{overflow-x:auto;border:1px solid var(--ouro-sutil);background:var(--painel);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.cmp{width:100%;border-collapse:collapse;min-width:640px;font-size:12px}
+.cmp th,.cmp td{padding:10px 12px;border-bottom:1px solid var(--ouro-sutil);text-align:center}
+.cmp th:first-child,.cmp td:first-child{text-align:left;color:var(--texto-2)}
+.cmp-n{display:flex;align-items:center;gap:8px}
+.cmp-n svg{width:15px;height:15px;color:var(--ouro);flex:none}
+.cmp th{font-size:10px;letter-spacing:.2em;color:var(--texto-2);font-weight:700;position:sticky;top:0;background:rgba(7,14,30,.95)}
+.cmp th img{height:16px;image-rendering:pixelated;display:inline-block}
+.cmp td{font-family:var(--display);font-size:13px;color:var(--texto)}
+.cmp .on{background:rgba(244,197,66,.08)}
+.cmp th.on{box-shadow:inset 0 -2px 0 var(--ouro)}
+.ok-x{color:var(--ok);font-family:var(--mono)}
+
+/* ---------- cash: moeda entregue por um raio, céu de tempestade realista ---------- */
+.cash-arte{position:absolute;inset:0;overflow:hidden}
+.cs-ceu{position:absolute;inset:0;background:
+  radial-gradient(ellipse 45% 40% at 50% 92%,rgba(255,170,70,.55),transparent 70%),
+  linear-gradient(180deg,#03060f 0%,#0b1630 38%,#2a2c48 66%,#7a5440 86%,#c98a4a 100%)}
+.cs-est{position:absolute;width:2px;height:2px;background:#e8f0ff;opacity:.6}
+.cs-nuv{position:absolute;inset:0;width:100%;height:100%}
+.cs-clarao{position:absolute;inset:0;background:radial-gradient(ellipse 55% 45% at 51% 18%,rgba(255,240,200,.55),transparent 70%);mix-blend-mode:screen;opacity:.0}
+.cs-raio{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 3px var(--k1)) drop-shadow(0 0 10px var(--k2))}
+.cs-impacto{position:absolute;left:50%;top:78%;width:46%;aspect-ratio:2.6;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,240,190,.9),color-mix(in srgb,var(--k2) 60%,transparent) 45%,transparent);filter:blur(4px);mix-blend-mode:screen}
+.cs-moeda{position:absolute;left:50%;top:66%;width:22%;max-width:110px;aspect-ratio:1;transform:translate(-50%,-50%) rotate(-8deg)}
+.moeda-px{width:100%;height:100%;image-rendering:pixelated;filter:drop-shadow(0 0 5px #fff8) drop-shadow(0 0 16px var(--k1)) drop-shadow(0 0 34px var(--k2))}
+.cs-fa{position:absolute;left:50%;top:66%;width:4px;height:4px;background:var(--k1);box-shadow:0 0 6px var(--k1);opacity:0}
+.cash-arte .ca-tipo{color:#2a1500;background:linear-gradient(90deg,var(--k1),var(--k2))}
+@media (prefers-reduced-motion:no-preference){
+  .cs-raio{animation:csRaio 3.2s steps(1) infinite}
+  @keyframes csRaio{0%,6%,10%{opacity:1}4%,8%{opacity:.25}14%,100%{opacity:.0}}
+  .cs-clarao{animation:csClarao 3.2s ease-out infinite}
+  @keyframes csClarao{0%{opacity:.95}3%{opacity:.3}7%{opacity:.9}20%,100%{opacity:0}}
+  .cs-impacto{animation:csImp 3.2s ease-out infinite}
+  @keyframes csImp{0%{opacity:1;transform:translate(-50%,-50%) scale(.7)}25%{opacity:.35;transform:translate(-50%,-50%) scale(1.15)}100%{opacity:.25;transform:translate(-50%,-50%) scale(1)}}
+  .cs-moeda{animation:csMoeda 3.2s ease-out infinite}
+  @keyframes csMoeda{0%{filter:brightness(1.8)}12%{filter:brightness(1)}50%{transform:translate(-50%,calc(-50% - 4px)) rotate(-4deg)}100%{transform:translate(-50%,-50%) rotate(-8deg)}}
+  .cs-fa{animation:csFa 3.2s ease-out var(--d) infinite}
+  @keyframes csFa{0%{opacity:1;transform:translate(0,0)}22%{opacity:0;transform:translate(var(--dx),var(--dy))}100%{opacity:0}}
+  .cs-est{animation:caBrilho 3s ease-in-out var(--d) infinite}
+}
+@media (prefers-reduced-motion:reduce){ .cs-raio{opacity:1} .cs-clarao{opacity:.5} }
 /* rodapé */
 .rodape{position:relative;z-index:2;margin-top:60px;border-top:1px solid var(--ouro-sutil);background:rgba(11,10,7,.95);padding:22px 20px;text-align:center;font-size:11px;letter-spacing:.14em;color:var(--texto-3)}
 .rodape a{color:var(--texto-2);text-decoration:none;margin:0 8px}
@@ -799,6 +904,7 @@ body[data-view="home"] .hero-pe{min-height:calc(100vh - 8px)}
     <div id="aviso"></div>
     <div class="cats" id="cats"></div>
     <div class="grade" id="produtos" aria-live="polite"></div>
+    <div id="cmp-secao"></div>
   </section>
 
   <!-- ============ BLOG ============ -->
@@ -991,6 +1097,7 @@ body[data-view="home"] .hero-pe{min-height:calc(100vh - 8px)}
   </div>
 </aside>
 <div class="modal" id="m-prod" role="dialog" aria-modal="true"><div class="caixa"><div class="m-cab"><span class="pontos"><i></i><i></i><i></i></span><span id="mp-t">PRODUTO</span><button class="x" data-x aria-label="Fechar">×</button></div><div class="c" id="mp-c"></div></div></div>
+<div class="modal" id="m-cmp" role="dialog" aria-modal="true"><div class="caixa larga"><div class="m-cab"><span class="pontos"><i></i><i></i><i></i></span><span>COMPARAR VIPs</span><button class="x" data-x aria-label="Fechar">×</button></div><div class="c" id="cmp-c"></div></div></div>
 <div class="modal" id="m-conta" role="dialog" aria-modal="true"><div class="caixa"><div class="m-cab"><span class="pontos"><i></i><i></i><i></i></span><span id="mk-t">MINHA CONTA</span><button class="x" data-x aria-label="Fechar">×</button></div><div class="c" id="mk-c"></div></div></div>
 <div class="modal" id="m-check" role="dialog" aria-modal="true"><div class="caixa"><div class="m-cab"><span class="pontos"><i></i><i></i><i></i></span><span id="mc-t">PAGAMENTO</span><button class="x" data-x aria-label="Fechar">×</button></div><div class="c" id="mc-c"></div></div></div>
 <div class="toast" id="toast" role="status"></div>
@@ -1078,12 +1185,126 @@ const chaveArte = (nome) => { const k=chaveDe(nome); if (!k) return "";
     <i class="ca-p" style="--x:18%;--y:70%;--d:0s"></i><i class="ca-p" style="--x:78%;--y:30%;--d:1.1s"></i><i class="ca-p" style="--x:66%;--y:76%;--d:2s"></i><i class="ca-p" style="--x:30%;--y:24%;--d:2.7s"></i>
     <span class="ca-tipo">${esc(k.nome.toUpperCase())}</span><span class="ca-info">NÍVEL ALEATÓRIO · 30s</span>
   </div>`; };
+const ehCash = nome => /\bcash\b/.test(semAcento(nome)) && !!C.cash;
+const qtdCash = nome => (String(nome).match(/[\d.,]+\s*(k|mil)?/i)||[""])[0].trim();
+// moeda em pixel art: círculo com contorno, luz em cima, sombra embaixo e a estrela do cash no meio
+function moedaSVG(){
+  const N=16, c=7.5, r=7.6, cores={O:"#3a1c00",L:"#FFF1A8",M:"#F4C542",D:"#C26F00",S:"#9A4A00",B:"#ffffff"};
+  const estrela=["...S...","...S...","SSSSSSS",".SSSSS.","..SSS..",".SS.SS.",".S...S."];
+  let r2="";
+  for (let y=0;y<N;y++) for (let x=0;x<N;x++){
+    const d=Math.hypot(x+.5-c-.5,y+.5-c-.5); if (d>r) continue;
+    let k = d>r-1.15 ? "O" : (d>r-2.3 ? ((x+y)<14 ? "L" : (x+y)>17 ? "D" : "M") : "M");
+    const ex=x-4, ey=y-4; if (k==="M" && estrela[ey] && estrela[ey][ex]==="S") k="S";
+    if (x===4&&y===3) k="B";
+    r2+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${cores[k]}"/>`;
+  }
+  return `<svg class="moeda-px" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${r2}</svg>`;
+}
+let cashSeq=0;
+// raio em zigue-zague (com galhos) do topo até a moeda
+function raioCaminho(x1,y1,x2,y2,seed){
+  let r=seed; const rnd=()=>(r=(r*9301+49297)%233280)/233280;
+  const pts=[[x1,y1]], n=9;
+  for (let i=1;i<n;i++){ const t=i/n; pts.push([x1+(x2-x1)*t+(rnd()-.5)*9, y1+(y2-y1)*t+(rnd()-.5)*2]); }
+  pts.push([x2,y2]);
+  const galhos=[];
+  [3,5,6].forEach(k=>{ const [gx,gy]=pts[k], dir=rnd()<.5?-1:1; galhos.push(`M${gx} ${gy} L${gx+dir*(5+rnd()*5)} ${gy+4+rnd()*4} L${gx+dir*(9+rnd()*6)} ${gy+9+rnd()*5}`); });
+  return { tronco:"M"+pts.map(p=>p.map(v=>v.toFixed(1)).join(" ")).join(" L"), galhos };
+}
+const cashArte = (nome) => {
+  const q=qtdCash(nome), id="cs"+(++cashSeq), rz=raioCaminho(53,-2,50,37,7+cashSeq*13);
+  const est = Array.from({length:16},(_,i)=>`<i class="cs-est" style="left:${(i*37+11)%100}%;top:${(i*23)%38}%;--d:${(i%5)*.6}s"></i>`).join("");
+  const fa = Array.from({length:8},(_,i)=>{ const a=i/8*Math.PI*2; return `<i class="cs-fa" style="--dx:${(Math.cos(a)*34).toFixed(0)}px;--dy:${(Math.sin(a)*24-10).toFixed(0)}px;--d:${(i*.08).toFixed(2)}s"></i>`; }).join("");
+  return `<div class="cash-arte" style="--k1:${C.cash.cor};--k2:${C.cash.cor2}">
+    <div class="cs-ceu"></div>${est}
+    <svg class="cs-nuv" viewBox="0 0 100 62.5" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <filter id="${id}a" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".035 .09" numOctaves="5" seed="${3+cashSeq}"/><feColorMatrix values="0 0 0 0 .55  0 0 0 0 .6  0 0 0 0 .78  0 0 0 -2.4 1.55"/></filter>
+        <filter id="${id}b" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".03 .11" numOctaves="5" seed="${9+cashSeq}"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 .82  0 0 0 0 .62  0 0 0 -2.2 1.5"/></filter>
+        <linearGradient id="${id}m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+        <linearGradient id="${id}m2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff"/></linearGradient>
+        <mask id="${id}k1"><rect width="100" height="30" fill="url(#${id}m1)"/></mask>
+        <mask id="${id}k2"><rect y="38" width="100" height="25" fill="url(#${id}m2)"/></mask>
+      </defs>
+      <rect width="100" height="30" filter="url(#${id}a)" mask="url(#${id}k1)" opacity=".9"/>
+      <rect y="38" width="100" height="25" filter="url(#${id}b)" mask="url(#${id}k2)"/>
+    </svg>
+    <div class="cs-clarao"></div>
+    <svg class="cs-raio" viewBox="0 0 100 62.5" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="${rz.tronco}" stroke="var(--k2)" stroke-width="3.2" opacity=".35"/>
+        <path d="${rz.tronco}" stroke="var(--k1)" stroke-width="1.4" opacity=".85"/>
+        ${rz.galhos.map(g=>`<path d="${g}" stroke="var(--k1)" stroke-width=".7" opacity=".7"/>`).join("")}
+        <path d="${rz.tronco}" stroke="#fff" stroke-width=".55"/>
+      </g>
+    </svg>
+    <div class="cs-impacto"></div>
+    <div class="cs-moeda">${moedaSVG()}</div>${fa}
+    <span class="ca-tipo">${esc((q?q+" ":"")+"CASH")}</span><span class="ca-info">MOEDA PREMIUM</span>
+  </div>`; };
 const chaveVip = nome => { const n=String(nome||"").toLowerCase(); return Object.keys(C.vips||{}).find(k=>n.includes(k.toLowerCase())) || null; };
 const tagHTML = (nome, cls="tag-vip") => { const k=chaveVip(nome), src=k && (window.OLIMPO_TAGS||{})[k]; return src ? `<img class="${cls}" src="${src}" alt="VIP ${esc(k[0].toUpperCase()+k.slice(1))}">` : ""; };
-const nomeHTML = nome => { const k=chaveDe(nome); if (k && !corVip(nome)) return `<span class="vip-nome" style="--g1:${k.cor};--g2:${k.cor2}">${esc(nome)}</span>`; return nomeHTMLbase(nome); };
+const nomeHTML = nome => { if (!corVip(nome) && !chaveDe(nome) && ehCash(nome)) return `<span class="vip-nome" style="--g1:${C.cash.cor};--g2:${C.cash.cor2}">${esc(nome)}</span>`; const k=chaveDe(nome); if (k && !corVip(nome)) return `<span class="vip-nome" style="--g1:${k.cor};--g2:${k.cor2}">${esc(nome)}</span>`; return nomeHTMLbase(nome); };
 // texto que explica cada chave (usado no card, na janela do produto e quando a CentralCart não tiver descrição)
 const textoChave = k => `${k.descricao}<ul class="ch-lista"><li><b>Nível:</b> sorteado na hora em que a masmorra abre.</li><li><b>Entrada:</b> liberada 30 segundos depois de usar a chave.</li><li><b>Como usar:</b> vá até o lugar onde quer abrir a masmorra e use a chave. Leve sua facção!</li><li><b>Entrega:</b> a chave cai direto no seu nick assim que o pagamento é aprovado.</li></ul>`;
-const resumoProd = p => { const k=chaveDe(p.name); if (k) return k.resumo; const t=String(p.description||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim(); return t; };
+const ICONES = {
+  tag:'<path d="M3 3h8l10 10-8 8L3 11z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+  back:'<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
+  voar:'<path d="M2 16l20-8-7 12-3-5z"/>',
+  tempo:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>',
+  kit:'<rect x="3" y="7" width="18" height="13"/><path d="M8 7V4h8v3M3 12h18"/>',
+  replay:'<rect x="3" y="5" width="18" height="14"/><path d="M10 9l5 3-5 3z"/>',
+  fila:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  global:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  homes:'<path d="M3 11 12 4l9 7v9H3z"/><path d="M9 20v-6h6v6"/>',
+  mercado:'<path d="M3 9h18l-2 11H5z"/><path d="M8 9a4 4 0 0 1 8 0"/>',
+  bau:'<rect x="3" y="6" width="18" height="14"/><path d="M3 11h18M11 11v3h2v-3"/>',
+  morte:'<path d="M12 21s-8-5-8-11a5 5 0 0 1 8-3 5 5 0 0 1 8 3c0 6-8 11-8 11z"/>',
+  xp:'<path d="M12 2 15 9l7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/>',
+  vendas:'<path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+  desconto:'<path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>'
+};
+const ico = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">${ICONES[k]||""}</svg>`;
+const ORDEM_VIPS = () => Object.keys(C.vips||{});
+const valorVip = (chave, k) => { const n=C.vantagens?.niveis?.[chave]; if (!n || n.valores[k]==null) return null; return `${n.mais?"+":""}${n.valores[k]}${n.sufixo}`; };
+function resumoVip(k){ return [ `${valorVip("homes",k)} homes`, `${valorVip("mercado",k)} no mercado`, `${valorVip("desconto",k)} de desconto na loja` ].join(" · ").replace(/\+/g,""); }
+// prévia do nick com a tag, como aparece no jogo
+let nickPrevia = "";
+function previaVip(k, nome){
+  const cor=C.vips[k], nick = nickPrevia || (conta && conta.nick) || "SeuNick";
+  const tag = tagHTML(nome,"pv-tag") || `<b class="vip-nome" style="--g1:${cor[0]};--g2:${cor[1]}">[${k.toUpperCase()}]</b>`;
+  return `<div class="pv" style="--g1:${cor[0]};--g2:${cor[1]}">
+    <div class="pv-ceu"></div>
+    <div class="pv-tagnome">${tag}<span class="pv-nick vip-nome" style="--g1:${cor[0]};--g2:${cor[1]}">${esc(nick)}</span></div>
+    <img class="pv-skin" src="https://mc-heads.net/body/${enc(nick)}/240" alt="" onerror="this.style.opacity=.0">
+    <div class="pv-chat">
+      <div>${tagHTML(nome,"pv-tag-p")||""}<span class="vip-nome" style="--g1:${cor[0]};--g2:${cor[1]}">${esc(nick)}</span><span class="pv-msg">: cheguei no Olimpo 👑</span></div>
+      <div class="pv-sis">» ${esc(nick)} entrou no servidor sem enfrentar fila.</div>
+    </div>
+    <div class="pv-campo"><input id="pv-input" maxlength="16" placeholder="Digite seu nick para ver" value="${esc(nickPrevia || (conta&&conta.nick) || "")}"></div>
+  </div>`;
+}
+function vantagensVip(k){
+  const V=C.vantagens||{comuns:[],niveis:{}}, ordem=ORDEM_VIPS(), idx=ordem.indexOf(k);
+  const blocos=Object.entries(V.niveis).map(([chave,n])=>{
+    const ant = idx>0 ? n.valores[ordem[idx-1]] : null, at=n.valores[k];
+    const sobe = ant!=null && at>ant ? `<em>▲ ${at-ant}${n.sufixo.trim()==="%"?"%":""} a mais que o ${ordem[idx-1][0].toUpperCase()+ordem[idx-1].slice(1)}</em>` : "";
+    return `<div class="vt">${ico(chave)}<b>${valorVip(chave,k)}</b><span>${n.nome}</span>${sobe}</div>`;
+  }).join("");
+  const comuns=V.comuns.map(([i,t])=>`<li>${ico(i)}<span>${t}</span></li>`).join("");
+  return `<div class="vt-grade" style="--g1:${C.vips[k][0]};--g2:${C.vips[k][1]}">${blocos}</div>
+    <div class="vt-sub">INCLUSO EM TODOS OS VIPs</div><ul class="vt-lista">${comuns}</ul>
+    <button type="button" class="btn vt-comparar" data-comparar>&gt; COMPARAR TODOS OS VIPs</button>`;
+}
+function tabelaVips(destaque){
+  const V=C.vantagens, ordem=ORDEM_VIPS();
+  const cab = ordem.map(k=>`<th class="${k===destaque?"on":""}" style="--g1:${C.vips[k][0]};--g2:${C.vips[k][1]}">${(window.OLIMPO_TAGS||{})[k]?`<img src="${window.OLIMPO_TAGS[k]}" alt="${k}">`:k}</th>`).join("");
+  const linhas = Object.entries(V.niveis).map(([chave,n])=>`<tr><td><span class="cmp-n">${ico(chave)}${n.nome}</span></td>${ordem.map(k=>`<td class="${k===destaque?"on":""}">${valorVip(chave,k)}</td>`).join("")}</tr>`).join("")
+    + V.comuns.map(([i,t])=>`<tr><td><span class="cmp-n">${ico(i)}${t.replace(/<[^>]+>/g,"")}</span></td>${ordem.map(k=>`<td class="${k===destaque?"on":""}"><span class="ok-x">✓</span></td>`).join("")}</tr>`).join("");
+  return `<div class="cmp-wrap"><table class="cmp"><thead><tr><th>VANTAGEM</th>${cab}</tr></thead><tbody>${linhas}</tbody></table></div>`;
+}
+const resumoProd = p => { const kv=chaveVip(p.name); if (kv && C.vantagens) return resumoVip(kv); const k=chaveDe(p.name); if (k) return k.resumo; if (ehCash(p.name)) return C.cash.resumo; const t=String(p.description||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim(); return t; };
 const nomeHTMLbase = nome => corVip(nome) ? `<span class="vip-nome" ${vipStyle(nome)}>${esc(nome)}</span>` : esc(nome);
 const hist = url => { try { history.replaceState(null, "", url); } catch {} };
 
@@ -1633,14 +1854,14 @@ $("#voltar-blog").onclick = () => { $("#leitor").hidden=true; $("#blog-lista").h
 /* ================= LOJA ================= */
 const demoCats=[{id:1,name:"VIPs"},{id:2,name:"Chaves"},{id:3,name:"Cash"}];
 const demoProds=[
-  {id:1,category_id:1,name:"VIP Cavaleiro",description:"Kit semanal, tag exclusiva e 1 home extra.",pricing:{price:14.9},stock:{available:true},fields:[]},
-  {id:2,category_id:1,name:"VIP Lorde",description:"Tudo do Cavaleiro, kit de guerra e prioridade na fila.",pricing:{price:24.9},stock:{available:true},fields:[]},
-  {id:3,category_id:1,name:"VIP Soberano",description:"Tudo do Lorde, /fly no lobby e 3 homes extras.",pricing:{price:39.9,compare_at:49.9,percent_discount:-20},stock:{available:true},fields:[]},
-  {id:4,category_id:1,name:"VIP Imperador",description:"O topo do Olimpo: tudo dos outros VIPs, /nick e cosméticos exclusivos.",pricing:{price:69.9},stock:{available:true},fields:[]},
+  {id:1,category_id:1,name:"VIP Cavaleiro",description:"",pricing:{price:14.9},stock:{available:true},fields:[]},
+  {id:2,category_id:1,name:"VIP Lorde",description:"",pricing:{price:24.9},stock:{available:true},fields:[]},
+  {id:3,category_id:1,name:"VIP Soberano",description:"",pricing:{price:39.9,compare_at:49.9,percent_discount:-20},stock:{available:true},fields:[]},
+  {id:4,category_id:1,name:"VIP Imperador",description:"",pricing:{price:69.9},stock:{available:true},fields:[]},
   {id:5,category_id:2,name:"Chave de Masmorra Santuário",description:"",pricing:{price:4.9},stock:{available:true},fields:[]},
   {id:6,category_id:2,name:"Chave de Masmorra Infernal",description:"",pricing:{price:4.9},stock:{available:true},fields:[]},
   {id:7,category_id:2,name:"Chave de Masmorra Calabouço",description:"",pricing:{price:4.9},stock:{available:true},fields:[]},
-  {id:8,category_id:3,name:"5.000 Cash",description:"Moeda para o /loja dentro do jogo.",pricing:{price:9.9},stock:{available:true},fields:[]}
+  {id:8,category_id:3,name:"5.000 Cash",description:"",pricing:{price:9.9},stock:{available:true},fields:[]}
 ];
 let cats=[], prods=[], catAtual="all", resolvidos={}, cupom="", lojaOk=false, lojaP=null;
 let cart=[]; try { cart=JSON.parse(localStorage.getItem("olimpo_cart")||"[]"); } catch {}
@@ -1675,13 +1896,15 @@ function renderLoja(){
     const pr=p.pricing||{}, disp=p.stock?.available!==false;
     const preco = pr.min!=null&&pr.max!=null&&pr.min!==pr.max ? `${brl(pr.min)} – ${brl(pr.max)}` : brl(pr.price);
     const vip = corVip(p.name), rotulo = vip ? Object.keys(C.vips).find(k=>p.name.toLowerCase().includes(k.toLowerCase())).toUpperCase() : "";
-    const ch = chaveDe(p.name);
-    return `<article class="painel prod${vip?" vip":""}${ch?" chave":""}" ${vip?vipStyle(p.name):(ch?`style="--k1:${ch.cor};--k2:${ch.cor2}"`:"")}><div class="img">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy">`:(vip?(tagHTML(p.name) || `<span class="ph vip-nome">${rotulo}</span>`):(ch?chaveArte(p.name):'<span class="ph">⚡</span>'))}
+    const ch = chaveDe(p.name), cs = !vip && !ch && ehCash(p.name);
+    return `<article class="painel prod${vip?" vip":""}${ch?" chave":""}${cs?" chave cash":""}" ${vip?vipStyle(p.name):(ch?`style="--k1:${ch.cor};--k2:${ch.cor2}"`:(cs?`style="--k1:${C.cash.cor};--k2:${C.cash.cor2}"`:""))}><div class="img">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy">`:(vip?(tagHTML(p.name) || `<span class="ph vip-nome">${rotulo}</span>`):(ch?chaveArte(p.name):(cs?cashArte(p.name):'<span class="ph">⚡</span>')))}
       ${pr.percent_discount?`<span class="selo-desc">${Math.round(pr.percent_discount)}%</span>`:""}</div>
       <div class="info"><h3>${nomeHTML(p.name)}</h3>${resumoProd(p)?`<p class="resumo">${esc(resumoProd(p))}</p>`:""}<div class="preco"><strong>${preco}</strong>${pr.compare_at?`<s>${brl(pr.compare_at)}</s>`:""}</div>
       ${disp?`<button class="btn" data-ver="${p.id}">&gt; COMPRAR</button>`:'<span class="esgotado">ESGOTADO</span>'}</div></article>`;
   }).join("");
   window.etReaplicar && window.etReaplicar();
+  const temVip = lista.some(p=>chaveVip(p.name));
+  $("#cmp-secao").innerHTML = (temVip && C.vantagens) ? `<div class="secao-t" style="margin-top:34px"><h2>COMPARAR VIPs</h2><span>// veja o que cada VIP libera no servidor</span></div>${tabelaVips(null)}` : "";
 }
 $("#cats").onclick = e => { const b=e.target.closest("[data-cat]"); if (!b) return; catAtual=b.dataset.cat; renderLoja(); };
 $("#produtos").onclick = e => { const b=e.target.closest("[data-ver]"); if (b) abrirProduto(+b.dataset.ver); };
@@ -1694,6 +1917,9 @@ $("#fundo").onclick = fecharM;
 document.addEventListener("click", e => { if (e.target.closest("[data-x]")) fecharM(); });
 $$(".modal").forEach(m => m.addEventListener("click", e => { if (e.target===m) fecharM(); }));
 document.addEventListener("keydown", e => { if (e.key==="Escape") fecharM(); });
+document.addEventListener("click", e => { const b=e.target.closest("[data-comparar]"); if (!b) return;
+  const atual=$("#m-prod.on") ? chaveVip($("#mp-t").textContent+" "+($("#mp-t img")?.alt||"")) : null;
+  fecharM(); $("#cmp-c").innerHTML=tabelaVips(atual); abrirM("#m-cmp"); });
 
 const campoHTML=(f,pre)=>{
   const id=pre+f.name, req=f.required?"required":"", lb=esc(f.label||f.description||f.name);
@@ -1704,12 +1930,25 @@ const campoHTML=(f,pre)=>{
 function abrirProduto(id){
   const p=prods.find(x=>x.id===id); if (!p) return;
   $("#mp-t").innerHTML=(tagHTML(p.name) || nomeHTML(p.name.toUpperCase())); const fields=p.fields||[];
-  $("#mp-c").innerHTML=`${p.image?`<img src="${esc(p.image)}" alt="" style="margin-bottom:14px;border:1px solid var(--ouro-sutil)">`:(chaveDe(p.name)?`<div class="mp-arte">${chaveArte(p.name)}</div>`:"")}
-    <div class="mp-desc">${p.description || (chaveDe(p.name) ? textoChave(chaveDe(p.name)) : "")}</div>
+  const kv = C.vantagens ? chaveVip(p.name) : null;
+  $("#m-prod .caixa").classList.toggle("larga", !!kv);
+  $("#mp-c").innerHTML=`${kv ? previaVip(kv,p.name) : (p.image?`<img src="${esc(p.image)}" alt="" style="margin-bottom:14px;border:1px solid var(--ouro-sutil)">`:(chaveDe(p.name)?`<div class="mp-arte">${chaveArte(p.name)}</div>`:(ehCash(p.name)?`<div class="mp-arte">${cashArte(p.name)}</div>`:"")))}
+    ${kv ? `<div class="vt-tit">VANTAGENS DO VIP</div>${vantagensVip(kv)}` : ""}
+    <div class="mp-desc">${p.description || (chaveDe(p.name) ? textoChave(chaveDe(p.name)) : (ehCash(p.name) ? C.cash.descricao+`<ul class="ch-lista"><li><b>Onde usar:</b> digite <b>/kit</b> dentro do servidor e troque em <b>Itens valiosos</b> ou <b>Caixas Divinas dos Deuses</b>.</li><li><b>Entrega:</b> o cash cai direto no seu nick assim que o pagamento é aprovado.</li></ul>` : ""))}</div>
     <form id="f-prod">${fields.map(f=>campoHTML(f,"pf-")).join("")}
       <div class="campo"><label for="pf-q">Quantidade</label><input id="pf-q" type="number" min="${p.stock?.min_amount||1}" value="${p.stock?.min_amount||1}"></div>
       <div class="total" style="margin-bottom:14px"><span>PREÇO</span><strong>${brl(p.pricing?.price)}</strong></div>
       <button class="btn btn-cheio" style="width:100%">ADICIONAR AO CARRINHO</button></form>`;
+  if (kv){
+    const inp=$("#pv-input");
+    inp.addEventListener("input",()=>{ clearTimeout(inp._t); inp._t=setTimeout(()=>{
+      const n=inp.value.trim(); if (n && !/^[A-Za-z0-9_]{1,16}$/.test(n)) return; nickPrevia=n;
+      const box=$("#mp-c .pv"), novo=document.createElement("div"); novo.innerHTML=previaVip(kv,p.name);
+      box.querySelector(".pv-tagnome").replaceWith(novo.querySelector(".pv-tagnome"));
+      box.querySelector(".pv-chat").replaceWith(novo.querySelector(".pv-chat"));
+      box.querySelector(".pv-skin").src=novo.querySelector(".pv-skin").src;
+    },350); });
+  }
   $("#f-prod").onsubmit=e=>{
     e.preventDefault(); const options={};
     fields.forEach(f=>{ const v=e.target.elements[f.name]?.value?.trim(); if (v) options[f.name]=v; });
@@ -2097,12 +2336,12 @@ const SOM = (() => {
     estado="abduzindo";
     for (const [k,card] of lista.entries()){
       if (estado!=="abduzindo") return;
-      const cr=card.getBoundingClientRect(), alvo=card.querySelector(".img > img, .img > .tag-vip, .img > span, .img > .chave-arte");
+      const cr=card.getBoundingClientRect(), alvo=card.querySelector(".img > img, .img > .tag-vip, .img > span, .img > .chave-arte, .img > .cash-arte");
       const ax=cr.left+cr.width/2+sx, ay=cr.top+sy+cr.height*.28;
       const f=feixe(ux,uy+18,ax,ay+20); SOM.raio(false);
       if (alvo){
         const ar=alvo.getBoundingClientRect();
-        const cl = alvo.cloneNode(true); if (alvo.tagName!=="IMG" && !alvo.classList.contains("chave-arte")) cl.classList.add("et-item-txt");
+        const cl = alvo.cloneNode(true); if (alvo.tagName!=="IMG" && !alvo.classList.contains("chave-arte") && !alvo.classList.contains("cash-arte")) cl.classList.add("et-item-txt");
         cl.classList.add("et-item"); cl.removeAttribute("id");
         Object.assign(cl.style,{left:(ar.left+sx)+"px",top:(ar.top+sy)+"px",width:ar.width+"px",height:ar.height+"px"});
         document.body.appendChild(cl); itens.push({el:cl,card,w:ar.width,h:ar.height});
@@ -2128,7 +2367,7 @@ const SOM = (() => {
     nave.classList.remove("treme"); faiscas(ux,uy,28);
     // raios dourados devolvem cada produto, com quique e faíscas
     for (const it of itens){
-      const cr=it.card.getBoundingClientRect(), alvo=it.card.querySelector(".img > img, .img > .tag-vip, .img > span, .img > .chave-arte");
+      const cr=it.card.getBoundingClientRect(), alvo=it.card.querySelector(".img > img, .img > .tag-vip, .img > span, .img > .chave-arte, .img > .cash-arte");
       const ar=alvo ? alvo.getBoundingClientRect() : cr;
       const f=feixe(ux,uy+18,cr.left+cr.width/2+sx,cr.top+sy+cr.height*.28+20,"dourado"); SOM.raio(true);
       it.el.classList.add("cai");
