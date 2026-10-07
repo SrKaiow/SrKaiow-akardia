@@ -3103,9 +3103,10 @@ function formCheckout(erro){
     ${g.require_address?`<div class="duas"><div class="campo"><label for="a-cep">CEP</label><input id="a-cep" required></div><div class="campo"><label for="a-rua">Rua</label><input id="a-rua" required></div>
       <div class="campo"><label for="a-num">Número</label><input id="a-num" required></div><div class="campo"><label for="a-bairro">Bairro</label><input id="a-bairro" required></div>
       <div class="campo"><label for="a-cid">Cidade</label><input id="a-cid" required></div><div class="campo"><label for="a-uf">Estado</label><input id="a-uf" required maxlength="2"></div></div>`:""}
-    <div class="campo"><label for="c-dc">ID do Discord (opcional)</label><input id="c-dc" inputmode="numeric" value="${v("c-dc")}"><small>Para receber o cargo de VIP no Discord.</small></div>
+    <div class="campo"><label for="c-dc">ID do Discord <span style="color:var(--texto-3);font-weight:400">(recomendado)</span></label><input id="c-dc" inputmode="numeric" placeholder="ex: 123456789012345678" value="${v("c-dc")}">
+      <small>Coloque seu ID e receba a <b>tag do VIP no Discord automaticamente</b> junto com a compra. <a href="https://support.discord.com/hc/pt-br/articles/206346498" target="_blank" rel="noopener" style="color:var(--ciano)">Como achar meu ID?</a></small></div>
     <div class="campo"><label for="c-criador">Apoie um criador</label><input id="c-criador" placeholder="código do criador" value="${v("c-criador")}"><small>Digite o código do seu criador favorito. Uma parte da sua compra vai para ele, e o preço continua o mesmo para você.</small></div>
-    ${checkoutFields.map(f=>campoHTML(f,"cf-")).join("")}
+    ${checkoutFields.filter(f=>!campoDuplicado(f)).map(f=>campoHTML(f,"cf-")).join("")}
     <div class="total" style="margin:6px 0 14px"><span>TOTAL</span><strong>${total}</strong></div>
     <p class="termos">Ao realizar uma compra, você concorda com os <a href="#termos" data-ir="termos" data-x>Termos de Serviço</a> e <a href="#reembolso" data-ir="reembolso" data-x>Reembolso</a>.<small>Não é um produto oficial, afiliado ou associado à Microsoft ou Mojang AB.</small></p>
     <button class="btn btn-cheio" id="pagar" style="width:100%" ${gateways.length?"":"disabled"}>COMPRE AGORA · ${total}</button>
@@ -3113,11 +3114,17 @@ function formCheckout(erro){
   $$("#f-check [data-gw]").forEach(b=>b.onclick=()=>{ gw=gateways.find(x=>x.gateway===b.dataset.gw); formCheckout(); });
   $("#f-check").onsubmit=pagar;
 }
+// campo de checkout da loja que pede de novo o nick ou o Discord: não mostra, usa o que a pessoa já digitou
+function campoDuplicado(f){ const t=semAcento(`${f.name||""} ${f.label||""} ${f.title||""} ${f.description||""} ${f.placeholder||""}`);
+  if (/nick|usuario|username|jogador|minecraft/.test(t)) return "nick";
+  if (/discord/.test(t)) return "discord"; return ""; }
 async function pagar(e){
   e.preventDefault(); const f=e.target, val=id=>document.getElementById(id)?.value.trim();
   const falta=[...f.querySelectorAll("[required]")].find(i=>!i.value.trim());
   if (falta){ falta.focus(); toast("> preencha os campos obrigatórios"); return; }
   if (!/^\S+@\S+\.\S+$/.test(val("c-email"))){ $("#c-email").focus(); toast("> confira o e-mail"); return; }
+  const dcv=(document.getElementById("c-dc")?.value||"").trim();
+  if (dcv && !/^\d{17,20}$/.test(dcv)){ toast("> o ID do Discord tem só números (17 a 20 dígitos)"); document.getElementById("c-dc").focus(); return; }
   if (!f.querySelector('input[name="c-tipo"]:checked')){ toast("> escolha o tipo de conta: Original ou Pirata"); return; }
   if (DEMO){ toast("> modo demonstração: configure o storeDomain"); return; }
   const body={gateway:gw.gateway,client_name:val("c-nome"),client_email:val("c-email"),client_identifier:val("c-nick"),
@@ -3131,7 +3138,9 @@ async function pagar(e){
   if (C.campoTipoConta){ body.fields=Object.assign(body.fields||{}, {[C.campoTipoConta]: tipoSel==="pirata"?"Pirata":"Original"}); }
   if (cupom) body.coupon=cupom;
   if (gw.require_address) body.client_address={cep:val("a-cep"),street:val("a-rua"),number:val("a-num"),neighborhood:val("a-bairro"),city:val("a-cid"),state:val("a-uf")};
-  if (checkoutFields.length){ body.fields=body.fields||{}; checkoutFields.forEach(cf=>{ const x=f.elements[cf.name]?.value?.trim(); if (x) body.fields[cf.name]=x; }); }
+  if (checkoutFields.length){ body.fields=body.fields||{}; checkoutFields.forEach(cf=>{
+    const dup=campoDuplicado(cf); const x = dup==="nick" ? val("c-nick") : dup==="discord" ? val("c-dc") : f.elements[cf.name]?.value?.trim();
+    if (x) body.fields[cf.name]=x; }); }
   const b=$("#pagar"); b.disabled=true; b.textContent="GERANDO PAGAMENTO...";
   try {
     const r=await api("/webstore/checkout",{method:"POST",body:JSON.stringify(body)});
