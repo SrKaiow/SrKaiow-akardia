@@ -7,7 +7,11 @@
 <meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'; form-action 'self'; upgrade-insecure-requests">
 <script>
   // impede o site de ser aberto dentro de iframe de outro domínio (anti-clickjacking)
-  if (window.top!==window.self){ try { if (window.top.location.hostname!==location.hostname) throw 0; } catch(e){ document.documentElement.style.display="none"; window.top.location=window.location; } }
+  // só age no domínio real (na pré-visualização/arquivo local não faz nada) e nunca deixa a página em branco
+  (function(){ if (window.top===window.self || !/akardia\.net$/.test(location.hostname)) return;
+    let mesmo=false; try { mesmo = window.top.location.hostname===location.hostname; } catch(e){}
+    if (mesmo) return;
+    try { window.top.location.href=location.href; } catch(e){} })();
 </script>
 <title>Akardia — Servidor de Minecraft</title>
 <meta name="description" content="Servidor de Minecraft Factions: forme sua facção, domine o mapa e acompanhe loja, blog e guias.">
@@ -26,7 +30,7 @@ window.OLIMPO = {
   dominio: "akardia.net",            // aparece no rodapé
   ip: "akardia.net",
   versao: "1.21.11",                  // versão do Minecraft (aparece na landing)
-  storeDomain: "",                    // ex: "olimpo.centralcart.ai"  (vazio = modo demonstração)
+  storeDomain: "akardianet.centralcart.ai",                    // ex: "olimpo.centralcart.ai"  (vazio = modo demonstração)
   discord: "https://akardia.net/discord",
   faq: "https://discord.gg/VePCDTWVje",
   // Rádio do site: cole aqui os links do YouTube (vídeo, shorts ou youtu.be). Toca em sequência, baixinho.
@@ -1099,6 +1103,32 @@ img.cab-fixa{object-fit:cover;object-position:50% 2%;image-rendering:pixelated;b
   @keyframes etCanta{50%{height:2px}}
   .ra-aba:hover .ra-braco{animation:etDJ .3s ease-in-out infinite}
 }
+
+/* selos do rodapé (estilo pílula) */
+.selos-rod{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:18px;letter-spacing:normal}
+.selo-rod{display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 8px;border-radius:999px;text-decoration:none;
+  background:linear-gradient(180deg,rgba(18,26,44,.9),rgba(8,12,24,.95));border:1px solid rgba(143,211,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 4px 14px rgba(0,0,0,.35);transition:border-color .25s,box-shadow .25s,transform .25s;margin:0!important}
+.selo-rod:hover{transform:translateY(-2px);border-color:rgba(143,211,255,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 18px rgba(78,166,255,.25),0 6px 18px rgba(0,0,0,.4)}
+.sr-ico{width:22px;height:22px;display:grid;place-items:center;color:#4ea6ff;filter:drop-shadow(0 0 6px rgba(78,166,255,.55))}
+.sr-ico svg{width:22px;height:22px}
+.sr-verde{color:#4be38a;filter:drop-shadow(0 0 6px rgba(75,227,138,.5))}
+.sr-ouro{color:#F4C542;filter:drop-shadow(0 0 6px rgba(244,197,66,.5))}
+.sr-txt{font-size:12px;color:#c9d4e8;font-weight:500;letter-spacing:.01em;text-transform:none}
+.sr-marca{display:inline-flex;align-items:center;padding-left:8px;border-left:1px solid rgba(255,255,255,.12)}
+.sr-marca b{font-family:var(--display);font-weight:400;font-size:11px;letter-spacing:.16em;color:#fff}
+@media (prefers-reduced-motion:no-preference){
+  .selo-rod .sr-ico{animation:srPulso 3s ease-in-out infinite}
+  .selo-rod:nth-child(2) .sr-ico{animation-delay:-1s}.selo-rod:nth-child(3) .sr-ico{animation-delay:-2s}
+  @keyframes srPulso{50%{transform:scale(1.08)}}
+}
+
+/* aviso Tebex no rodapé */
+.tebex-aviso{display:flex;align-items:center;justify-content:center;gap:14px;max-width:760px;margin:0 auto 18px;padding:0 0 18px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;letter-spacing:normal}
+.tebex-marca{flex:none;display:inline-flex;align-items:center;gap:5px;font:600 15px/1 system-ui,-apple-system,"Segoe UI",sans-serif;color:#d7dbe3;letter-spacing:.01em;text-transform:none}
+.tebex-marca svg{width:11px;height:16px}
+.tebex-aviso p{margin:0;font:400 12.5px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#aab2c2;text-transform:none;letter-spacing:0}
+@media (max-width:560px){.tebex-aviso{flex-direction:column;text-align:center;gap:8px}}
 /* rodapé */
 .rodape{position:relative;z-index:2;margin-top:60px;border-top:1px solid var(--ouro-sutil);background:rgba(11,10,7,.95);padding:22px 20px;text-align:center;font-size:11px;letter-spacing:.14em;color:var(--texto-3)}
 .rodape a{color:var(--texto-2);text-decoration:none;margin:0 8px}
