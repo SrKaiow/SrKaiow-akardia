@@ -6,8 +6,7 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'; form-action 'self'; upgrade-insecure-requests">
 <script>
-  // força HTTPS e impede o site de ser aberto dentro de iframe de outro domínio (anti-clickjacking)
-  if (location.protocol==="http:" && !/^(localhost|127\.|192\.168\.)/.test(location.hostname) && location.hostname!=="") location.replace("https:"+location.href.slice(5));
+  // impede o site de ser aberto dentro de iframe de outro domínio (anti-clickjacking)
   if (window.top!==window.self){ try { if (window.top.location.hostname!==location.hostname) throw 0; } catch(e){ document.documentElement.style.display="none"; window.top.location=window.location; } }
 </script>
 <title>Akardia — Servidor de Minecraft</title>
@@ -36,7 +35,12 @@ window.OLIMPO = {
     "https://www.youtube.com/watch?v=K4DyBUG242c",
     "https://www.youtube.com/watch?v=WzQBAc8i73E"
   ],
-  volumeMusica: 15,                     // 0 a 100   // link do canal #faq (aparece nas Diretrizes)
+  volumeMusica: 15,                     // 0 a 100
+  // Opcional (recomendado): MP3 dentro do repositório, ex. pasta "musicas". Se tiver algum aqui, a rádio usa estes no lugar do YouTube.
+  // As músicas da NCS (NoCopyrightSounds) podem ser baixadas grátis em ncs.io — basta manter o crédito.
+  musicasArquivos: [
+    // { arquivo: "musicas/spektrem-shine.mp3", titulo: "Spektrem - Shine", credito: "NCS" },
+  ],   // link do canal #faq (aparece nas Diretrizes)
 
   // Cores dos VIPs (mesmas do <gradient> do servidor). Vale para qualquer produto
   // da CentralCart cujo nome contenha a palavra (ex: "VIP Cavaleiro 30 dias").
@@ -1059,7 +1063,7 @@ img.cab-fixa{object-fit:cover;object-position:50% 2%;image-rendering:pixelated;b
 /* ---------- rádio: tela de sinal, ET animado e botão vivo ---------- */
 .ra-tela{position:relative}
 .ra-sinal{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;transition:opacity .6s;background:#020806}
-.radio.on .ra-sinal{opacity:0}
+
 .ra-aba-wrap{position:relative;--c1:#7BE36A;--c2:#F4C542}
 .ra-gotas{position:absolute;left:0;right:0;bottom:0;height:0;pointer-events:none}
 .ra-gotas .gota{position:absolute;top:-3px;width:4px;height:0;border-radius:0 0 4px 4px;background:linear-gradient(180deg,#7BE36A,#F4C542);box-shadow:0 0 8px #7BE36A}
@@ -3560,49 +3564,80 @@ const SOM = (() => {
 })();
 
 
-/* ================= RÁDIO OLIMPO: toca as músicas do YouTube configuradas em C.musicas ================= */
+/* ================= RÁDIO OLIMPO: começa sozinha ao entrar no site ================= */
+// Navegadores não deixam tocar com som antes da pessoa interagir. Então: a música já começa (sem som ou tentando com som)
+// e o som liga no primeiro clique, toque, tecla ou rolagem da página.
 (() => {
+  const box=$("#radio"); if (!box) return;
+  const arquivos=(C.musicasArquivos||[]).filter(m=>m && m.arquivo);
   const ids=(C.musicas||[]).map(u=>(String(u).match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/)||[])[1] || (/^[\w-]{11}$/.test(u)?u:null)).filter(Boolean);
-  const box=$("#radio"); if (!ids.length || !box) return;
+  const total = arquivos.length || ids.length; if (!total) return;
   box.hidden=false; const mus=$("#musica"); if (mus) mus.style.display="none";
-  let player=null, pronto=false, faixa=0, querer=true, apiPedida=false;
+  if (arquivos.length) box.classList.add("modo-mp3");
+  let faixa=0, querer=true, liberado=false;
   try { querer = localStorage.getItem("olimpo_radio")!=="0"; } catch {}
   let vol = (()=>{ try { const v=localStorage.getItem("olimpo_radio_vol"); return v!=null?+v:(C.volumeMusica??15); } catch { return C.volumeMusica??15; } })();
   $("#ra-vol").value=vol;
-  const ui=()=>{ const st = pronto && player.getPlayerState ? player.getPlayerState() : -1, toca = st===1||st===3;
-    box.classList.toggle("on",toca); $("#ra-play").textContent = toca ? "⏸" : "▶";
-    $("#ra-mini").textContent = toca ? "tocando agora" : (pronto ? "pausada" : "relaxando...");
-    try { const d=player.getVideoData(); if (d && d.title){ $("#ra-faixa").textContent=`${faixa+1}/${ids.length} · ${d.title}`; if (toca) $("#ra-mini").textContent=d.title; } } catch {} };
-  // aba minimizada no canto: clica e abre o painel
-  $("#ra-aba").onclick=e=>{ e.stopPropagation(); const ab=!box.classList.contains("aberta"); box.classList.toggle("aberta",ab); $("#ra-aba").setAttribute("aria-expanded",ab);
-    $("#ra-aba").setAttribute("aria-label", ab ? "Fechar a Rádio Olimpo" : "Abrir a Rádio Olimpo"); carregarApi(); };
-  document.addEventListener("click",e=>{ if (box.classList.contains("aberta") && !box.contains(e.target)){ box.classList.remove("aberta"); $("#ra-aba").setAttribute("aria-expanded","false"); } });
-  function carregarApi(){
-    if (apiPedida) return; apiPedida=true;
+
+  // ---- motor: MP3 próprio ou YouTube ----
+  let M;
+  if (arquivos.length){
+    const au=new Audio(); au.preload="auto"; au.volume=vol/100;
+    M={ pronto:true,
+      tocando:()=>!au.paused,
+      titulo:()=>{ const f=arquivos[faixa]; return f.titulo ? f.titulo+(f.credito?` [${f.credito}]`:"") : f.arquivo.split("/").pop(); },
+      carregar:i=>{ au.src=arquivos[i].arquivo; },
+      play:()=>au.play().catch(()=>{}), pause:()=>au.pause(),
+      volume:v=>{ au.volume=v/100; }, mudo:m=>{ au.muted=m; } };
+    au.addEventListener("ended",()=>proxima()); au.addEventListener("error",()=>setTimeout(proxima,800));
+    ["play","pause","playing"].forEach(ev=>au.addEventListener(ev,ui));
+    M.carregar(0);
+  } else {
+    let player=null;
+    M={ pronto:false,
+      tocando:()=>{ try { const st=player.getPlayerState(); return st===1||st===3; } catch { return false; } },
+      titulo:()=>{ try { return player.getVideoData().title||""; } catch { return ""; } },
+      carregar:i=>{ if (M.pronto) player.loadVideoById(ids[i]); },
+      play:()=>{ if (M.pronto) player.playVideo(); }, pause:()=>{ if (M.pronto) player.pauseVideo(); },
+      volume:v=>{ if (M.pronto) player.setVolume(v); }, mudo:m=>{ if (M.pronto) m ? player.mute() : player.unMute(); } };
     const tag=document.createElement("script"); tag.src="https://www.youtube.com/iframe_api"; document.head.appendChild(tag);
     const antigo=window.onYouTubeIframeAPIReady;
     window.onYouTubeIframeAPIReady=()=>{ antigo && antigo();
-      player=new YT.Player("yt-radio",{ videoId:ids[0], playerVars:{ playsinline:1, rel:0, modestbranding:1, controls:0, iv_load_policy:3 },
+      player=new YT.Player("yt-radio",{ videoId:ids[0], playerVars:{ autoplay:1, mute:1, playsinline:1, rel:0, modestbranding:1, controls:0, iv_load_policy:3, disablekb:1, fs:0 },
         events:{
-          onReady:()=>{ pronto=true; player.setVolume(vol); if (querer) player.playVideo(); ui(); },
-          onStateChange:e=>{ if (e.data===0){ proxima(); } ui(); },
+          onReady:()=>{ M.pronto=true; player.setVolume(vol); if (querer){ if (!liberado) player.mute(); player.playVideo(); } ui(); },
+          onStateChange:e=>{ if (e.data===0) proxima(); ui(); },
           onError:()=>{ $("#ra-faixa").textContent="música indisponível, pulando..."; setTimeout(proxima,1200); }
         } });
-      const fr=box.querySelector("iframe"); if (fr) fr.setAttribute("allow","autoplay; encrypted-media");
     };
   }
-  function tocarFaixa(i){ faixa=(i+ids.length)%ids.length; if (pronto){ player.loadVideoById(ids[faixa]); player.setVolume(vol); } }
+
+  function ui(){
+    const toca=M.tocando(); box.classList.toggle("on",toca); $("#ra-play").textContent = toca ? "⏸" : "▶";
+    const t=M.titulo();
+    $("#ra-faixa").textContent = t ? `${faixa+1}/${total} · ${t}` : "sintonizando...";
+    $("#ra-mini").textContent = toca ? (liberado ? (t||"tocando agora") : "clique na página p/ ouvir") : (querer ? "sintonizando..." : "pausada");
+  }
+  function tocarFaixa(i){ faixa=(i+total)%total; M.carregar(faixa); if (querer) M.play(); setTimeout(ui,300); }
   const proxima=()=>tocarFaixa(faixa+1);
-  $("#ra-prox").onclick=e=>{ e.stopPropagation(); querer=true; carregarApi(); proxima(); };
-  $("#ra-ant").onclick=e=>{ e.stopPropagation(); querer=true; carregarApi(); tocarFaixa(faixa-1); };
-  $("#ra-play").onclick=e=>{ e.stopPropagation(); carregarApi(); if (!pronto) { querer=true; return; }
-    const st=player.getPlayerState(); if (st===1||st===3){ player.pauseVideo(); querer=false; } else { player.playVideo(); querer=true; }
-    try { localStorage.setItem("olimpo_radio",querer?"1":"0"); } catch {} };
-  $("#ra-vol").oninput=e=>{ vol=+e.target.value; if (pronto) player.setVolume(vol); try { localStorage.setItem("olimpo_radio_vol",vol); } catch {} };
-  // começa no primeiro clique/toque da pessoa (regra dos navegadores)
-  const primeiro=()=>{ carregarApi(); if (pronto && querer) player.playVideo(); ["pointerdown","keydown","touchstart"].forEach(ev=>removeEventListener(ev,primeiro)); };
-  ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,primeiro,{passive:true}));
-  setInterval(()=>{ if (pronto) ui(); },1500);
+
+  // tenta começar já com som (alguns navegadores deixam para quem visita sempre); se não der, começa sem som
+  if (querer && arquivos.length){ M.play(); }
+
+  // primeira interação em qualquer lugar: liga o som
+  const liberar=()=>{ if (liberado) return; liberado=true; if (querer){ M.mudo(false); M.volume(vol); M.play(); } ui();
+    ["pointerdown","keydown","touchstart","wheel"].forEach(ev=>removeEventListener(ev,liberar,true)); };
+  ["pointerdown","keydown","touchstart","wheel"].forEach(ev=>addEventListener(ev,liberar,{passive:true,capture:true}));
+
+  $("#ra-aba").onclick=e=>{ e.stopPropagation(); const ab=!box.classList.contains("aberta"); box.classList.toggle("aberta",ab); $("#ra-aba").setAttribute("aria-expanded",ab);
+    $("#ra-aba").setAttribute("aria-label", ab ? "Fechar a Rádio Olimpo" : "Abrir a Rádio Olimpo"); };
+  document.addEventListener("click",e=>{ if (box.classList.contains("aberta") && !box.contains(e.target)){ box.classList.remove("aberta"); $("#ra-aba").setAttribute("aria-expanded","false"); } });
+  $("#ra-prox").onclick=e=>{ e.stopPropagation(); querer=true; proxima(); };
+  $("#ra-ant").onclick=e=>{ e.stopPropagation(); querer=true; tocarFaixa(faixa-1); };
+  $("#ra-play").onclick=e=>{ e.stopPropagation(); if (M.tocando()){ M.pause(); querer=false; } else { querer=true; M.mudo(false); M.volume(vol); M.play(); }
+    try { localStorage.setItem("olimpo_radio",querer?"1":"0"); } catch {} setTimeout(ui,200); };
+  $("#ra-vol").oninput=e=>{ vol=+e.target.value; M.volume(vol); try { localStorage.setItem("olimpo_radio_vol",vol); } catch {} };
+  setInterval(ui,1500); ui();
 })();
 
 
@@ -3615,8 +3650,8 @@ const SOM = (() => {
   function tam(){ const r=cv.getBoundingClientRect(), d=Math.min(devicePixelRatio||1,2); W=Math.max(40,r.width); H=Math.max(24,r.height); cv.width=W*d; cv.height=H*d; g.setTransform(d,0,0,d,0,0); }
   function quadro(){
     requestAnimationFrame(quadro);
-    if (document.getElementById("radio").classList.contains("on")) return;
     if ((t++)%2) return;
+    const tocando=document.getElementById("radio").classList.contains("on");
     const r=cv.getBoundingClientRect(); if (Math.abs(r.width-W)>1||Math.abs(r.height-H)>1) tam();
     g.fillStyle="rgba(2,8,6,.35)"; g.fillRect(0,0,W,H);
     // grade de radar
@@ -3624,14 +3659,14 @@ const SOM = (() => {
     for (let x=0;x<W;x+=W/6){ g.beginPath(); g.moveTo(x,0); g.lineTo(x,H); g.stroke(); }
     // onda do osciloscópio
     g.strokeStyle="#7BE36A"; g.shadowColor="#7BE36A"; g.shadowBlur=6; g.lineWidth=Math.max(1,H/40); g.beginPath();
-    for (let x=0;x<=W;x+=2){ const k=x/W*Math.PI*4+t*.08, burst=Math.sin(t*.03)>.75?Math.sin(x*.25+t*.2)*.6:0;
+    for (let x=0;x<=W;x+=2){ const k=x/W*Math.PI*4+t*(tocando?.16:.08), burst=tocando?Math.sin(x*.18+t*.3)*.7:(Math.sin(t*.03)>.75?Math.sin(x*.25+t*.2)*.6:0);
       const y=H*.58+Math.sin(k)*H*.13*(1+burst)+Math.sin(k*2.3+t*.05)*H*.04+(Math.random()<.004?(Math.random()-.5)*H*.3:0); x?g.lineTo(x,y):g.moveTo(x,y); }
     g.stroke(); g.shadowBlur=0;
     // barra que varre (sinal subindo)
     linha=(linha+H/60)%H; g.fillStyle="rgba(123,227,106,.08)"; g.fillRect(0,linha,W,H/10);
     // texto e código morse
     if (W>80){
-      txtT++; const m=msgs[Math.floor(txtT/90)%msgs.length], vis=m.slice(0,Math.min(m.length,(txtT%90)/2|0));
+      txtT++; const lista = tocando ? ["RECEBENDO SINAL ♪","FREQ 25565 Hz","TRANSMISSÃO ATIVA","AKARDIA.NET"] : msgs; const m=lista[Math.floor(txtT/90)%lista.length], vis=m.slice(0,Math.min(m.length,(txtT%90)/2|0));
       g.font=`700 ${Math.max(8,H/9)}px "JetBrains Mono",monospace`; g.fillStyle="#b6ff9a"; g.fillText("> "+vis+(t%20<10?"_":""),6,H*.2);
       g.fillStyle="rgba(123,227,106,.75)"; g.font=`${Math.max(7,H/12)}px "JetBrains Mono",monospace`;
       const off=Math.floor(t/4)%morse.length; g.fillText((morse+"   "+morse).slice(off,off+Math.floor(W/7)),6,H*.92);
