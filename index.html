@@ -124,6 +124,11 @@ window.OLIMPO = {
       redes: { discord: "", instagram: "", youtube: "", x: "" }
     }
   ],
+  // colaboradores: só o quadrado com a skin e o nick. "conta" = UUID ou nome da conta original (skin).
+  colaboradores: [
+    { nick: "HelmetxD",    conta: "aba5cd4d-9c66-45b1-a851-cef34a3a3255" },   // NameMC: HelmetxD.1
+    { nick: "Diviinidade", conta: "79dfc07c-0e3b-4685-82b3-b591ea460976" }    // NameMC: PONYB0T.1
+  ],
   apoiadores: [],                     // ex: ["Notch", "jeb_"]
 
   guias: [
@@ -448,6 +453,11 @@ body[data-view="home"] .nav{display:none}
 .apoio{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
 .apoio div{border:1px solid var(--ouro-sutil);padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:var(--texto-2)}
 .apoio img{width:48px;height:48px;image-rendering:pixelated}
+.colab{display:grid;grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:12px}
+.colab div{border:1px solid var(--ouro-sutil);padding:18px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:14px;transition:border-color .2s,background .2s}
+.colab div:hover{border-color:var(--ouro);background:rgba(244,197,66,.05)}
+.colab img{width:88px;height:88px;image-rendering:pixelated}
+.colab span{font-family:var(--pixel);font-size:13px;color:var(--ouro);letter-spacing:.04em;text-align:center;word-break:break-all}
 
 /* blog */
 .posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
@@ -2336,6 +2346,10 @@ html.pausa *,html.pausa *::before,html.pausa *::after{animation-play-state:pause
     <div class="insc insc-equipe" id="eq-insc" hidden><h2>Quer fazer parte da equipe?</h2>
       <p>Preencha o formulário de candidatura e aguarde a análise da nossa equipe. O resultado chega pelo Discord que você informar.</p>
       <a class="insc-link" id="eq-insc-link" target="_blank" rel="noopener">Quero me candidatar <span aria-hidden="true">→</span></a></div>
+    <div id="colab-wrap" hidden>
+      <div class="secao-t"><h2>COLABORADORES</h2><span>// quem ajuda a construir o Olimpo</span></div>
+      <div class="colab" id="colab"></div>
+    </div>
     <div id="apoio-wrap" hidden>
       <div class="secao-t"><h2>APOIADORES</h2><span>// quem fortalece o Olimpo</span></div>
       <div class="apoio" id="apoio"></div>
@@ -3395,6 +3409,11 @@ $("#eq-lista").onclick = e => { const b=e.target.closest("[data-m]"); if (b) mos
 $("#eq-ant").onclick = () => mostrarMembro(membro-1);
 $("#eq-prox").onclick = () => mostrarMembro(membro+1);
 if (C.formularioEquipe){ $("#eq-insc-link").href=C.formularioEquipe; $("#eq-insc").hidden=false; }
+if (C.colaboradores?.length){
+  $("#colab-wrap").hidden = false;
+  $("#colab").innerHTML = C.colaboradores.map(m => `<div>${cabecaConta(m,88,"")}<span>${esc(m.nick)}</span></div>`).join("");
+  atualizarCabecas();
+}
 if (C.apoiadores?.length){
   $("#apoio-wrap").hidden = false;
   $("#apoio").innerHTML = C.apoiadores.map(n => `<div>${cabecaConta({nick:n},48,"")}<span>${esc(n)}</span></div>`).join("");
