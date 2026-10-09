@@ -231,6 +231,10 @@ window.OLIMPO = {
     hashtags: ["#FactionsOlimpo", "#ParceiroAkardia"]
   },
 
+  // CRIADORES PARCEIROS: códigos aceitos no campo "Apoie um criador" (maiúsculas não importam).
+  // Para adicionar um criador novo, é só colocar o código dele aqui.
+  criadores: ["Altivinho", "KBM"],
+
   email: "suporte@akardia.net",
   campoTipoConta: "",                 // nome do campo de checkout na CentralCart para "Original/Pirata" (ex: "tipo_conta"). Vazio = não envia
   etTeste: false,                    // true = ET aparece sempre (para testar). Deixe false no site no ar
@@ -1977,6 +1981,14 @@ html.pausa *,html.pausa *::before,html.pausa *::after{animation-play-state:pause
 .gd-acc .gd-hero{justify-content:flex-start;margin:4px 0 14px}
 .gd-acc .gd-hero img{height:170px}
 @media (max-width:700px){.gd-acc .gd-box{padding:0 12px 14px}}
+/* campo "Apoie um criador": check quando o código é de um criador parceiro */
+.cr-st{display:block;min-height:1.4em;font-size:12px;color:var(--texto-3)}
+.cr-st:empty{min-height:0}
+.cr-st.ok{color:var(--ok)}.cr-st.ok b{color:var(--ok)}
+.cr-st.no{color:var(--erro)}
+.cr-check{display:inline-grid;place-items:center;width:15px;height:15px;margin-right:6px;border-radius:50%;background:var(--ok);color:#06210f;font-size:10px;font-weight:700;vertical-align:-2px}
+.campo input.cr-ok{border-color:var(--ok)!important;padding-right:38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237BE07B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:18px}
+.campo input.cr-no{border-color:var(--erro)!important}
 </style>
 </head>
 <body data-view="home">
@@ -2330,6 +2342,9 @@ html.pausa *,html.pausa *::before,html.pausa *::after{animation-play-state:pause
     <div class="campo" style="margin:0"><label for="cupom">Cupom</label>
       <div style="display:flex;gap:6px"><input id="cupom" placeholder="OLIMPO10" style="flex:1;min-width:0"><button class="btn" id="aplicar-cupom">APLICAR</button></div>
       <small id="cupom-msg"></small></div>
+    <div class="campo" style="margin:0"><label for="cr-cart">Apoie um criador</label>
+      <input id="cr-cart" placeholder="código do criador" autocomplete="off" spellcheck="false">
+      <small class="cr-st" id="cr-cart-st"></small></div>
     <div class="total"><span>TOTAL</span><strong id="total">R$ 0,00</strong></div>
     <button class="btn btn-cheio" id="ir-checkout">FINALIZAR COMPRA</button>
   </div>
@@ -2428,6 +2443,21 @@ addEventListener("DOMContentLoaded",()=>{ if (VISTA) document.querySelectorAll("
 const brl = v => (Number(v)||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const enc = encodeURIComponent;
+// ---- "Apoie um criador": só aceita os códigos da lista "criadores" da configuração
+const criadorDe = cod => { const c=String(cod||"").trim().toLowerCase(); return c ? (C.criadores||[]).find(n=>String(n).toLowerCase()===c)||null : null; };
+let criadorSalvo=""; try { criadorSalvo=localStorage.getItem("olimpo_criador")||""; } catch {}
+const salvarCriador = v => { criadorSalvo=v||""; try { v ? localStorage.setItem("olimpo_criador",v) : localStorage.removeItem("olimpo_criador"); } catch {} };
+// liga um campo de criador: mostra o check quando o código é de um criador parceiro e lembra a escolha
+function campoCriador(inp, st){
+  if (!inp || !st) return;
+  const at=()=>{ const v=inp.value.trim(), ok=criadorDe(v);
+    inp.classList.toggle("cr-ok",!!ok); inp.classList.toggle("cr-no",!!v && !ok);
+    st.className="cr-st"+(ok?" ok":v?" no":"");
+    st.innerHTML = ok ? `<span class="cr-check">✓</span>Código de criador aplicado` : v ? "Código de criador não encontrado" : "";
+    if (!v || ok) salvarCriador(ok?v:"");
+    document.querySelectorAll("[data-criador]").forEach(o=>{ if (o!==inp && document.activeElement!==o && o.value.trim().toLowerCase()!==(ok||"").toLowerCase() && (!v||ok)){ o.value=v; o.dispatchEvent(new Event("sync")); } }); };
+  inp.dataset.criador="1"; inp.addEventListener("input",at); inp.addEventListener("sync",at); at();
+}
 const corpo = n => `https://mc-heads.net/body/${enc(n)}`;
 const corpoAlt = n => `https://visage.surgeplay.com/full/320/${enc(n)}`;
 const cabeca = (n,s=40) => `https://mc-heads.net/avatar/${enc(n)}/${s}`;
@@ -3969,6 +3999,7 @@ $("#itens").onclick=e=>{
 };
 $("#abrir-cart").onclick=()=>{ $("#gaveta").classList.add("on"); $("#fundo").classList.add("on"); atualizarCarrinho(); };
 // cupom resgatado antes (ex.: o do ET) continua aplicado
+$("#cr-cart").value=criadorSalvo; campoCriador($("#cr-cart"),$("#cr-cart-st"));
 try { const sv=localStorage.getItem("olimpo_cupom"); if (sv){ cupom=sv; $("#cupom").value=sv; $("#cupom-msg").textContent="// cupom "+sv+" aplicado"; } } catch {}
 $("#aplicar-cupom").onclick=async()=>{
   const code=$("#cupom").value.trim(), msg=$("#cupom-msg");
@@ -3992,7 +4023,7 @@ $("#ir-checkout").onclick=async()=>{
   gw=gateways[0]||null; formCheckout();
 };
 function formCheckout(erro){
-  const pre={"c-nick":conta?.nick,"c-email":conta?.email,"c-nome":conta?.name,"c-criador":conta?.criador};
+  const pre={"c-nick":conta?.nick,"c-email":conta?.email,"c-nome":conta?.name,"c-criador":criadorSalvo||conta?.criador};
   const tipoAtual=document.querySelector('input[name="c-tipo"]:checked')?.value || conta?.tipo || "";
   const g=gw||{}, v=id=>esc(document.getElementById(id)?.value||pre[id]||""), total=$("#total").textContent;
   $("#mc-c").innerHTML=`${erro?`<div class="erro">${esc(erro)}</div>`:""}
@@ -4013,7 +4044,7 @@ function formCheckout(erro){
       <div class="campo"><label for="a-cid">Cidade</label><input id="a-cid" required></div><div class="campo"><label for="a-uf">Estado</label><input id="a-uf" required maxlength="2"></div></div>`:""}
     <div class="campo"><label for="c-dc">ID do Discord <span style="color:var(--texto-3);font-weight:400">(recomendado)</span></label><input id="c-dc" inputmode="numeric" placeholder="ex: 123456789012345678" value="${v("c-dc")}">
       <small>Coloque seu ID e receba a <b>tag do VIP no Discord automaticamente</b> junto com a compra. <a href="https://support.discord.com/hc/pt-br/articles/206346498" target="_blank" rel="noopener" style="color:var(--ciano)">Como achar meu ID?</a></small></div>
-    <div class="campo"><label for="c-criador">Apoie um criador</label><input id="c-criador" placeholder="código do criador" value="${v("c-criador")}"><small>Digite o código do seu criador favorito. Uma parte da sua compra vai para ele, e o preço continua o mesmo para você.</small></div>
+    <div class="campo"><label for="c-criador">Apoie um criador</label><input id="c-criador" placeholder="código do criador" autocomplete="off" spellcheck="false" value="${v("c-criador")}"><small class="cr-st" id="c-criador-st"></small><small>Digite o código do seu criador favorito. Uma parte da sua compra vai para ele, e o preço continua o mesmo para você.</small></div>
     ${checkoutFields.filter(f=>!campoDuplicado(f)).map(f=>campoHTML(f,"cf-")).join("")}
     <div class="total" style="margin:6px 0 14px"><span>TOTAL</span><strong>${total}</strong></div>
     <p class="termos">Ao realizar uma compra, você concorda com os <a href="#termos" data-ir="termos" data-x>Termos de Serviço</a> e <a href="#reembolso" data-ir="reembolso" data-x>Reembolso</a>.<small>Não é um produto oficial, afiliado ou associado à Microsoft ou Mojang AB.</small></p>
@@ -4021,6 +4052,7 @@ function formCheckout(erro){
   </form>`;
   $$("#f-check [data-gw]").forEach(b=>b.onclick=()=>{ gw=gateways.find(x=>x.gateway===b.dataset.gw); formCheckout(); });
   $("#f-check").onsubmit=pagar;
+  campoCriador($("#c-criador"),$("#c-criador-st"));
 }
 // campo de checkout da loja que pede de novo o nick ou o Discord: não mostra, usa o que a pessoa já digitou
 function campoDuplicado(f){ const t=semAcento(`${f.name||""} ${f.label||""} ${f.title||""} ${f.description||""} ${f.placeholder||""}`);
@@ -4034,6 +4066,7 @@ async function pagar(e){
   const dcv=(document.getElementById("c-dc")?.value||"").trim();
   if (dcv && !/^\d{17,20}$/.test(dcv)){ toast("> o ID do Discord tem só números (17 a 20 dígitos)"); document.getElementById("c-dc").focus(); return; }
   if (!f.querySelector('input[name="c-tipo"]:checked')){ toast("> escolha o tipo de conta: Original ou Pirata"); return; }
+  if (val("c-criador") && !criadorDe(val("c-criador"))){ document.getElementById("c-criador").focus(); toast("> código de criador não encontrado: corrija ou apague o campo"); return; }
   if (DEMO){ toast("> modo demonstração: configure o storeDomain"); return; }
   const body={gateway:gw.gateway,client_name:val("c-nome"),client_email:val("c-email"),client_identifier:val("c-nick"),
     cart:cart.map(i=>({package_id:i.id,quantity:i.quantity,options:i.options})),
@@ -4041,7 +4074,7 @@ async function pagar(e){
   if (val("c-cpf")) body.client_document=val("c-cpf").replace(/\D/g,"");
   if (val("c-tel")) body.client_phone=val("c-tel");
   if (val("c-dc")) body.client_discord=val("c-dc");
-  if (val("c-criador")) body.affiliate_code=val("c-criador");
+  if (val("c-criador")) body.affiliate_code=criadorDe(val("c-criador"));
   const tipoSel=f.querySelector('input[name="c-tipo"]:checked')?.value;
   if (C.campoTipoConta){ body.fields=Object.assign(body.fields||{}, {[C.campoTipoConta]: tipoSel==="pirata"?"Pirata":"Original"}); }
   if (cupom) body.coupon=cupom;
@@ -4101,7 +4134,7 @@ function telaConta(_p, erro){
   if (logado() && _p!=="editar"){
     $("#mk-t").textContent="MINHA CONTA";
     c.innerHTML=`<div class="conta-ok"><img src="${cabeca(conta.nick,56)}" alt="" onerror="this.src='${STEVE}'"><div><b>${esc(conta.nick)}</b>
-        <span>Conta ${conta.tipo==="pirata"?"pirata":"original"}${conta.email?" · "+esc(conta.email):""}${conta.criador?" · criador "+esc(conta.criador):""}</span></div></div>
+        <span>Conta ${conta.tipo==="pirata"?"pirata":"original"}${conta.email?" · "+esc(conta.email):""}${conta.criador?" · apoiando um criador":""}</span></div></div>
       <p style="color:var(--texto-2);margin:0 0 16px;font-size:13px">Seu nick, e-mail e código de criador já vêm preenchidos na hora de comprar.</p>
       <div class="duas"><button class="btn" id="editar">EDITAR</button><button class="btn" id="sair">SAIR</button></div>`;
     $("#editar").onclick=()=>telaConta("editar");
@@ -4121,7 +4154,7 @@ function telaConta(_p, erro){
           <label class="tipo"><input type="radio" name="k-tipo" value="pirata" ${a.tipo==="pirata"?"checked":""}><span>Pirata<small>não-original</small></span></label>
         </div></div>
       <div class="campo"><label for="k-email">E-mail</label><input id="k-email" type="email" autocomplete="email" placeholder="para receber o comprovante" value="${esc(a.email||"")}"></div>
-      <div class="campo"><label for="k-criador">Apoie um criador</label><input id="k-criador" placeholder="código do criador" value="${esc(a.criador||"")}">
+      <div class="campo"><label for="k-criador">Apoie um criador</label><input id="k-criador" placeholder="código do criador" autocomplete="off" spellcheck="false" value="${esc(a.criador||criadorSalvo||"")}"><small class="cr-st" id="k-criador-st"></small>
         <small>Digite o código do seu criador favorito. Uma parte da sua compra vai para ele, e o preço continua o mesmo para você.</small></div>
       ${termos}
       <button class="btn btn-cheio" id="k-ok" style="width:100%">${logado()?"SALVAR":"CRIAR CONTA"}</button>
@@ -4142,6 +4175,7 @@ function telaConta(_p, erro){
   nk.addEventListener("input",()=>{ clearTimeout(tm); tm=setTimeout(checar,450); });
   document.querySelectorAll('input[name="k-tipo"]').forEach(r=>r.addEventListener("change",checar));
   if (a.nick) checar();
+  campoCriador($("#k-criador"),$("#k-criador-st"));
   $("#f-conta").onsubmit=async e=>{
     e.preventDefault();
     const nick=nk.value.trim(), tipo=document.querySelector('input[name="k-tipo"]:checked')?.value, email=$("#k-email").value.trim(), criador=$("#k-criador").value.trim();
@@ -4151,11 +4185,9 @@ function telaConta(_p, erro){
     const b=$("#k-ok"); b.disabled=true; b.textContent="CRIANDO...";
     // conta original: só bloqueia se a Mojang responder que o nick não existe (sem resposta = deixa passar)
     if (tipo==="original"){ const r=await contaOriginal(nick); if (r==="nao"){ b.disabled=false; b.textContent=logado()?"SALVAR":"CRIAR CONTA"; telaConta(_p==="editar"?"editar":1,"Esse nick não é de uma conta original. Confira ou marque Pirata."); return; } }
-    // código de criador: confere na CentralCart se existir (não trava se a loja não responder)
-    if (criador && !DEMO){
-      try { const r=await api(`/webstore/affiliate/ref/${enc(criador)}`); if (r && r.valid===false){ b.disabled=false; b.textContent=logado()?"SALVAR":"CRIAR CONTA"; telaConta(_p==="editar"?"editar":1,`O código de criador "${criador}" não existe.`); return; } } catch {}
-    }
-    salvarConta({ nick, tipo, email, criador, name:(conta&&conta.name)||"" });
+    // código de criador: só aceita os criadores parceiros da configuração
+    if (criador && !criadorDe(criador)){ b.disabled=false; b.textContent=logado()?"SALVAR":"CRIAR CONTA"; telaConta(_p==="editar"?"editar":1,`O código de criador "${criador}" não existe.`); return; }
+    salvarConta({ nick, tipo, email, criador:criadorDe(criador)?criador:"", name:(conta&&conta.name)||"" });
     fecharM(); toast(`> conta pronta, ${nick}!`);
   };
 }
