@@ -222,6 +222,15 @@ window.OLIMPO = {
     }
   },
 
+  // PROGRAMA DE PARCEIROS (página #parceiros)
+  parceiros: {
+    autor: "xX_KaioYT_Xx", autorSkin: "SrKaio",   // autorSkin = cabeça embutida da equipe (aparece mesmo sem internet de skins)
+    data: "09/10/2026",
+    comissoes: [5, 10, 15, 20],     // % de cada compra feita com o código, da Comissão 1 até a 4
+    cashPorLike: 10, limiteResgate: 4000, minLikes: 30, minVideos: 1,
+    hashtags: ["#FactionsOlimpo", "#ParceiroAkardia"]
+  },
+
   email: "suporte@akardia.net",
   campoTipoConta: "",                 // nome do campo de checkout na CentralCart para "Original/Pirata" (ex: "tipo_conta"). Vazio = não envia
   etTeste: false,                    // true = ET aparece sempre (para testar). Deixe false no site no ar
@@ -643,6 +652,138 @@ body[data-view="home"] .nav{display:none}
 .dg-giro{background-repeat:no-repeat;background-position:0 0;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 6px 8px rgba(0,0,0,.6))}
 .dg-giro:active{cursor:grabbing}
 .dg-vestido .tag{position:absolute;top:8px;left:8px;font-size:9px;letter-spacing:.18em;padding:2px 6px;color:var(--dgT);border:1px solid color-mix(in srgb,var(--dg3) 60%,transparent);background:rgba(0,0,0,.5)}
+/* ===================== PARCEIROS ===================== */
+#v-parceiros{--yt:#ff3b3b}
+.pc-fixo{position:relative;display:flex;align-items:center;gap:18px;width:100%;margin:0 0 14px;padding:18px 20px;text-align:left;font:inherit;color:var(--texto);cursor:pointer;
+  border:1px solid rgba(255,59,59,.45);background:linear-gradient(100deg,rgba(255,59,59,.16),rgba(18,16,11,.9) 45%),var(--painel);overflow:hidden;transition:transform .2s,border-color .2s}
+.pc-fixo:hover{transform:translateY(-2px);border-color:#ff6b6b}
+.pc-fixo::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(closest-side,rgba(242,194,48,.18),transparent)}
+.pc-fixo-rec{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;font-size:11px;font-weight:700;letter-spacing:.2em;color:#fff;background:#d81f1f;flex:0 0 auto}
+.pc-fixo-rec i{width:8px;height:8px;border-radius:50%;background:#fff;animation:pcPisca 1.2s steps(2) infinite}
+@keyframes pcPisca{50%{opacity:0}}
+.pc-fixo-tx{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.pc-fixo-tx small{font-size:10px;letter-spacing:.2em;color:#ff8a8a}
+.pc-fixo-tx b{font-size:16px;color:var(--ouro)}
+.pc-fixo-tx em{font-style:normal;font-size:12.5px;color:var(--texto-2)}
+.pc-fixo-ir{font-size:11px;letter-spacing:.16em;color:var(--ouro);font-weight:700;flex:0 0 auto}
+
+.pc-hero{position:relative;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px;align-items:center;padding:36px 32px;margin:0 0 14px;overflow:hidden;
+  border:1px solid var(--ouro-fraco);background:radial-gradient(80% 120% at 85% 30%,rgba(255,59,59,.18),transparent 60%),radial-gradient(70% 100% at 0% 100%,rgba(242,194,48,.12),transparent 60%),var(--painel)}
+.pc-hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px);pointer-events:none}
+.pc-kick{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.24em;color:#ff8a8a}
+.pc-kick i{width:8px;height:8px;border-radius:50%;background:var(--yt);box-shadow:0 0 10px var(--yt);animation:pcPisca 1.2s steps(2) infinite}
+.pc-hero h1{margin:10px 0 12px;font-family:var(--pixel);font-size:clamp(26px,4.4vw,44px);line-height:1.08;letter-spacing:.05em;color:var(--ouro);text-shadow:0 0 18px rgba(242,194,48,.35)}
+.pc-hero h1 span{color:#fff}
+.pc-hero p{margin:0 0 18px;color:var(--texto-2);font-size:14px;line-height:1.75;max-width:54ch}
+.pc-autor{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 10px;border:1px solid var(--ouro-sutil);background:rgba(0,0,0,.35);font-size:13px;color:var(--texto-2)}
+.pc-autor img{width:26px;height:26px;image-rendering:pixelated;box-shadow:0 0 0 1px rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.5)}
+.pc-autor b{color:#7BE07B;font-weight:700}
+.pc-autor .pc-data{margin-left:6px;padding-left:10px;border-left:1px solid var(--ouro-sutil);font-size:12px;color:var(--texto-3)}
+.pc-tv{position:relative;justify-self:center;width:min(100%,300px);aspect-ratio:16/10;border:2px solid var(--ouro-fraco);background:#05070c;box-shadow:0 0 0 6px rgba(242,194,48,.06),0 20px 40px rgba(0,0,0,.5);overflow:hidden}
+.pc-tv::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 45%,rgba(255,59,59,.25),transparent 70%)}
+.pc-tv .play{position:absolute;left:50%;top:46%;width:64px;height:44px;transform:translate(-50%,-50%);border-radius:12px;background:var(--yt);box-shadow:0 0 30px rgba(255,59,59,.6);animation:pcPulso 2s ease-in-out infinite}
+.pc-tv .play::after{content:"";position:absolute;left:26px;top:13px;border:9px solid transparent;border-left:15px solid #fff;border-right:0}
+@keyframes pcPulso{50%{transform:translate(-50%,-50%) scale(1.07)}}
+.pc-tv .barra{position:absolute;left:10px;right:10px;bottom:12px;height:4px;background:rgba(255,255,255,.15)}
+.pc-tv .barra i{display:block;height:100%;width:0;background:var(--yt);animation:pcVideo 6s linear infinite}
+@keyframes pcVideo{to{width:100%}}
+.pc-tv .likes{position:absolute;right:10px;top:10px;display:flex;align-items:center;gap:6px;padding:4px 8px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.15)}
+.pc-tv .cash{position:absolute;left:10px;top:10px;padding:4px 8px;font-size:12px;font-weight:700;color:#1a1200;background:linear-gradient(180deg,#ffe48a,#f2c230)}
+
+.pc-menu{position:sticky;top:64px;z-index:5;display:grid;grid-template-columns:repeat(8,1fr);gap:4px;padding:6px 6px 9px;margin:0 0 14px;
+  border:1px solid var(--ouro-fraco);background:rgba(10,9,6,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.pc-mb{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:9px 4px 8px;cursor:pointer;text-decoration:none;
+  font-size:10px;letter-spacing:.14em;color:var(--texto-2);border:1px solid transparent;background:rgba(255,255,255,.02);overflow:hidden;
+  transition:color .2s,border-color .2s,background .2s,transform .2s;animation:pcEntra .5s ease-out both;animation-delay:calc(var(--k) * 60ms)}
+@keyframes pcEntra{from{opacity:0;transform:translateY(8px)}}
+.pc-mb svg{width:20px;height:20px;transition:transform .3s cubic-bezier(.3,1.6,.5,1),filter .2s}
+.pc-mb::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 80% at 50% 120%,rgba(242,194,48,.35),transparent 70%);opacity:0;transition:opacity .25s}
+.pc-mb::after{content:"";position:absolute;left:18%;right:18%;bottom:0;height:2px;background:var(--ouro);box-shadow:0 0 10px var(--ouro);transform:scaleX(0);transition:transform .25s}
+.pc-mb:hover{color:var(--ouro);border-color:var(--ouro-sutil);transform:translateY(-2px)}
+.pc-mb:hover svg{transform:translateY(-2px) scale(1.15) rotate(-6deg);filter:drop-shadow(0 0 6px rgba(242,194,48,.7))}
+.pc-mb:hover::before{opacity:.6}
+.pc-mb:active{transform:translateY(0) scale(.97)}
+.pc-mb.on{color:#1a1200;background:linear-gradient(180deg,#ffe48a,#f2c230);border-color:#ffe48a;box-shadow:0 0 18px rgba(242,194,48,.35)}
+.pc-mb.on svg{filter:none}
+.pc-mb.on::after{transform:scaleX(1);background:#1a1200;box-shadow:none}
+.pc-prog{position:absolute;left:0;bottom:0;height:3px;width:0;background:linear-gradient(90deg,var(--yt),var(--ouro));box-shadow:0 0 10px rgba(242,194,48,.6);transition:width .1s linear}
+.pc-sec{scroll-margin-top:150px;margin:0 0 14px;padding:22px 24px;border:1px solid var(--ouro-sutil);background:var(--painel)}
+.pc-sec>h2{margin:0 0 6px;font-family:var(--pixel);font-size:19px;letter-spacing:.12em;color:var(--ouro)}
+.pc-sec>.sub{margin:0 0 20px;color:var(--texto-3);font-size:12px;letter-spacing:.06em}
+.pc-sec p,.pc-sec li{color:var(--texto-2);font-size:14px;line-height:1.75}
+.pc-sec strong{color:var(--texto)}
+.pc-sec .v{color:var(--ouro)}
+
+.pc-passos{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;counter-reset:p}
+.pc-passo{position:relative;padding:18px 16px 16px;border:1px solid var(--ouro-sutil);background:rgba(0,0,0,.25);counter-increment:p}
+.pc-passo::before{content:counter(p);position:absolute;right:12px;top:6px;font-family:var(--pixel);font-size:40px;color:rgba(242,194,48,.12)}
+.pc-passo b{display:block;color:var(--ouro);margin:0 0 6px;font-size:14px}
+.pc-passo p{margin:0;font-size:13px}
+.pc-codigo{display:inline-block;margin-top:8px;padding:4px 10px;font-weight:700;letter-spacing:.14em;color:#1a1200;background:linear-gradient(180deg,#ffe48a,#f2c230);clip-path:polygon(0 0,100% 0,100% 30%,96% 50%,100% 70%,100% 100%,0 100%,0 70%,4% 50%,0 30%)}
+
+.pc-colunas{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:end;min-height:300px;padding:10px 0 0}
+.pc-col{position:relative;display:flex;flex-direction:column;align-items:center}
+.pc-col .topo{font-family:var(--pixel);font-size:clamp(26px,3.6vw,40px);color:var(--ouro);text-shadow:0 0 14px rgba(242,194,48,.4);margin:0 0 8px}
+.pc-col .fuste{width:100%;height:var(--h);border:1px solid var(--ouro-fraco);border-top:0;
+  background:repeating-linear-gradient(90deg,rgba(242,194,48,.10) 0 8px,rgba(242,194,48,.03) 8px 16px),linear-gradient(180deg,rgba(242,194,48,.12),rgba(0,0,0,.2));
+  transform-origin:bottom;animation:pcSobe .9s cubic-bezier(.2,.9,.3,1) both;animation-delay:var(--d)}
+.pc-col .capitel{width:112%;height:12px;background:linear-gradient(180deg,#ffe48a,#b8891a);box-shadow:0 0 14px rgba(242,194,48,.35)}
+.pc-col .base{width:116%;height:10px;background:linear-gradient(180deg,#b8891a,#6b4f10)}
+.pc-col .nome{margin:10px 0 0;font-size:12px;letter-spacing:.18em;color:var(--texto);font-weight:700}
+@keyframes pcSobe{from{transform:scaleY(0)}}
+
+.pc-calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:center}
+.pc-calc label{display:block;font-size:12px;letter-spacing:.12em;color:var(--texto-3);margin:0 0 10px}
+.pc-calc input[type=range]{width:100%;accent-color:var(--yt)}
+.pc-calc .likes{font-family:var(--pixel);font-size:28px;color:#fff;margin:6px 0 0}
+.pc-calc .likes small{font-size:13px;color:var(--texto-3);font-family:inherit;letter-spacing:.1em}
+.pc-res{padding:18px;border:1px solid var(--ouro-fraco);background:rgba(0,0,0,.3)}
+.pc-res .val{font-family:var(--pixel);font-size:34px;color:var(--ouro);text-shadow:0 0 14px rgba(242,194,48,.4)}
+.pc-res .barra{position:relative;height:10px;margin:12px 0 6px;background:rgba(255,255,255,.07)}
+.pc-res .barra i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#b8891a,#f2c230);transition:width .2s}
+.pc-res .barra b{position:absolute;right:0;top:-4px;bottom:-4px;width:2px;background:var(--yt)}
+.pc-res small{display:block;font-size:12px;color:var(--texto-3)}
+.pc-res .msg{margin:8px 0 0;font-size:12.5px;color:var(--texto-2)}
+.pc-res .msg.ruim{color:#ff8a8a}.pc-res .msg.teto{color:#ffd27a}
+
+.pc-req{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.pc-req div{padding:16px;border:1px solid var(--ouro-sutil);background:rgba(0,0,0,.25)}
+.pc-req b{display:block;font-family:var(--pixel);font-size:26px;color:var(--ouro)}
+.pc-req span{font-size:13px;color:var(--texto-2);line-height:1.6}
+
+.pc-semana{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:4px 0 16px}
+.pc-dia{padding:10px 4px;text-align:center;border:1px solid var(--ouro-sutil);background:rgba(0,0,0,.25);font-size:11px;color:var(--texto-3)}
+.pc-dia b{display:block;font-size:16px;color:var(--texto-2);margin:2px 0 0}
+.pc-dia.pg{border-color:var(--ouro);background:linear-gradient(180deg,rgba(242,194,48,.22),rgba(242,194,48,.05));color:var(--ouro);box-shadow:0 0 16px rgba(242,194,48,.25)}
+.pc-dia.pg b{color:#fff}
+.pc-dia.pg::after{content:"PAGAMENTO";display:block;margin-top:4px;font-size:8px;letter-spacing:.14em}
+.pc-aviso{padding:14px 16px;border:1px solid rgba(255,107,90,.45);background:rgba(255,107,90,.06)}
+.pc-aviso b{color:#ff8a7a;letter-spacing:.1em;font-size:12px}
+.pc-aviso p{margin:6px 0 0}
+
+.pc-tags{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}
+.pc-tag{padding:10px 16px;font:inherit;font-weight:700;font-size:15px;color:var(--ouro);cursor:pointer;border:1px dashed var(--ouro-fraco);background:rgba(242,194,48,.06);transition:.2s}
+.pc-tag:hover{background:rgba(242,194,48,.14);border-style:solid}
+.pc-tag small{display:block;font-size:9px;letter-spacing:.2em;color:var(--texto-3);font-weight:400}
+.pc-lista{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.pc-lista li{position:relative;padding:10px 12px 10px 38px;border:1px solid var(--ouro-sutil);background:rgba(0,0,0,.2);font-size:13.5px}
+.pc-lista li::before{content:"";position:absolute;left:12px;top:13px;width:14px;height:14px;background:var(--ouro);clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0,43% 62%)}
+.pc-plats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:0 0 18px}
+.pc-plat{padding:14px 12px;text-align:center;border:1px solid var(--ouro-sutil);background:rgba(0,0,0,.25)}
+.pc-plat svg{width:26px;height:26px;margin:0 auto 8px;display:block;color:var(--c)}
+.pc-plat b{display:block;font-size:13px;color:var(--texto);margin:0 0 4px}
+.pc-plat span{font-size:12px;color:var(--texto-2);line-height:1.5}
+.pc-ritmo{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 18px}
+.pc-ritmo div{padding:14px;border:1px solid var(--ouro-sutil);background:rgba(0,0,0,.25);text-align:center}
+.pc-ritmo b{display:block;font-family:var(--pixel);font-size:24px;color:var(--ouro)}
+.pc-ritmo span{font-size:12.5px;color:var(--texto-2)}
+.pc-cta{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:24px;border:1px solid var(--ouro);background:linear-gradient(100deg,rgba(242,194,48,.14),rgba(255,59,59,.10)),var(--painel)}
+.pc-cta h2{margin:0 0 4px;font-family:var(--pixel);color:var(--ouro);font-size:20px;letter-spacing:.1em}
+.pc-cta p{margin:0;color:var(--texto-2);font-size:14px}
+
+@media (max-width:860px){.pc-hero{grid-template-columns:1fr;padding:24px 18px}.pc-tv{order:-1}.pc-passos,.pc-req,.pc-ritmo{grid-template-columns:1fr}.pc-calc{grid-template-columns:1fr}.pc-plats{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:860px){.pc-menu{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:560px){.pc-menu{top:auto;position:relative;grid-template-columns:repeat(4,1fr)}.pc-mb{font-size:9px;letter-spacing:.08em}.pc-sec{padding:18px 14px}.pc-colunas{gap:8px;min-height:240px}.pc-col .nome{font-size:10px;letter-spacing:.1em}.pc-semana{gap:3px}.pc-dia{padding:8px 2px;font-size:10px}.pc-dia.pg::after{content:"PAGA"}.pc-fixo{flex-wrap:wrap}}
 .dg-breve{padding:50px 26px;text-align:center;border:1px dashed color-mix(in srgb,var(--k1) 50%,transparent);background:rgba(0,0,0,.3)}
 .dg-breve .arte{position:relative;width:170px;height:170px;margin:0 auto 18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--k1) 50%,transparent)}
 .dg-breve h3{font-family:var(--pixel);letter-spacing:.1em;color:var(--k1);filter:brightness(1.4);margin:0 0 8px}
@@ -1937,6 +2078,11 @@ body[data-view="home"] .hero-pe{min-height:calc(100vh - 8px)}
     <div id="blog-lista">
       <div class="terminal" data-tw="14">&gt; abrindo /olimpo/blog ... ok</div>
       <div class="cab"><h1 data-tw="45">BLOG</h1><p data-tw="10">// Notícias e atualizações do servidor.</p></div>
+      <button class="pc-fixo" data-ir="parceiros">
+        <span class="pc-fixo-rec"><i></i>REC</span>
+        <span class="pc-fixo-tx"><small>PROGRAMA DE PARCEIROS · FIXADO</small><b>Crie conteúdo e seja recompensado por isso</b><em>Código de apoiador, comissão por venda e Cash por like nos seus vídeos.</em></span>
+        <span class="pc-fixo-ir">LER &gt;</span>
+      </button>
       <div class="posts" id="posts"></div>
     </div>
     <article class="leitor" id="leitor" hidden>
@@ -1976,6 +2122,12 @@ body[data-view="home"] .hero-pe{min-height:calc(100vh - 8px)}
     <div class="cab"><h1 data-tw="45">DUNGEONS</h1><p data-tw="10">// Três masmorras, uma chave para cada. Escolha um portal.</p></div>
     <div class="dg-portais" id="dg-portais"></div>
     <div class="dg-pag" id="dg-pag"></div>
+  </section>
+
+  <!-- ============ PARCEIROS ============ -->
+  <section class="view" id="v-parceiros">
+    <div class="terminal" data-tw="14">&gt; abrindo /olimpo/parceiros ... ok</div>
+    <div id="pc"></div>
   </section>
 
   <!-- ============ DIRETRIZES DA COMUNIDADE ============ -->
@@ -2130,7 +2282,7 @@ body[data-view="home"] .hero-pe{min-height:calc(100vh - 8px)}
 
 <footer class="rodape">
   <div><span id="r-dom"></span> — © <span id="ano"></span> — NÃO AFILIADO À MOJANG OU MICROSOFT</div>
-  <div class="l"><a href="#termos" data-ir="termos">TERMOS DE SERVIÇO</a>·<a href="#reembolso" data-ir="reembolso">POLÍTICA DE REEMBOLSO</a>·<a href="#diretrizes" data-ir="diretrizes">DIRETRIZES</a></div>
+  <div class="l"><a href="#termos" data-ir="termos">TERMOS DE SERVIÇO</a>·<a href="#reembolso" data-ir="reembolso">POLÍTICA DE REEMBOLSO</a>·<a href="#diretrizes" data-ir="diretrizes">DIRETRIZES</a>·<a href="#parceiros" data-ir="parceiros">PARCEIROS</a></div>
 </footer>
 
 <!-- carrinho / modais -->
@@ -3034,7 +3186,7 @@ function limparHTML(html){
 }
 
 /* ---------- navegação entre "pastas" ---------- */
-const VIEWS = ["home","loja","blog","guias","dungeons","equipe","reembolso","termos","diretrizes"];
+const VIEWS = ["home","loja","blog","guias","dungeons","parceiros","equipe","reembolso","termos","diretrizes"];
 function ir(nome, push=true){
   if (!VIEWS.includes(nome)) nome = "home";
   $$(".view").forEach(v => v.classList.toggle("ativa", v.id === "v-"+nome));
@@ -3045,6 +3197,7 @@ function ir(nome, push=true){
   if (nome==="loja") iniciarLoja();
   if (nome==="blog") iniciarBlog();
   if (nome==="guias") renderGuias();
+  if (nome==="parceiros") renderParceiros();
   if (nome==="dungeons") renderDungeons();
   if (nome==="equipe") mostrarMembro(membro, true);
   $$(".js-faq").forEach(a=>{ a.href=C.faq||C.discord; });
@@ -3450,6 +3603,129 @@ $("#v-dungeons").addEventListener("click", e => {
   const pt=e.target.closest("[data-dg]"); if (pt){ dgAtual=pt.dataset.dg; renderDungeons(); return; }
   const cp=e.target.closest("[data-dgcompra]"); if (cp){ comprarChave(cp.dataset.dgcompra); return; }
   const a=e.target.closest("[data-dgir]"); if (a){ e.preventDefault(); const el=document.getElementById(a.dataset.dgir); if (el) el.scrollIntoView({behavior:"smooth",block:"start"}); }
+});
+
+/* ================= PARCEIROS ================= */
+let pcOk=false;
+function renderParceiros(){
+  if (pcOk) return; pcOk=true;
+  const P=C.parceiros||{}, n=v=>Number(v).toLocaleString("pt-BR"), disc=C.discord||"#";
+  const loja=location.hostname||"loja.akardia.net";
+  const hojeD=new Date(), dias=["DOM","SEG","TER","QUA","QUI","SEX","SÁB"];
+  const semana=Array.from({length:7},(_,i)=>{ const d=new Date(hojeD); d.setDate(hojeD.getDate()-((hojeD.getDay()+6)%7)+i); return d; });
+  const svg={
+    yt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .6 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .4-4.8 31 31 0 0 0-.4-4.8zM9.7 15.1V8.9L15.5 12z"/></svg>',
+    tt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 2h-3.3v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .9.1V9.2a6.3 6.3 0 1 0 5.3 6.2V8.6a7.6 7.6 0 0 0 4.4 1.4V6.7a4.4 4.4 0 0 1-4.4-4.7z"/></svg>',
+    kick:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 2h6v6h2V6h2V4h2V2h6v7h-2v2h-2v2h2v2h2v7h-6v-2h-2v-2h-2v-2H9v6H3z"/></svg>',
+    tw:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 2 2.5 6v14h5v2.5h3L13 20h4l5-5V2zm16 12-3 3h-5l-2.5 2.5V17H5.5V4H20zM15 7.5h2v5h-2zm-5 0h2v5h-2z"/></svg>',
+    ig:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>'
+  };
+  const com=P.comissoes||[5,10,15,20], maxC=Math.max(...com);
+  $("#pc").innerHTML=`
+  <div class="pc-hero">
+    <div>
+      <div class="pc-kick"><i></i>PROGRAMA DE PARCEIROS · ATUALIZAÇÃO</div>
+      <h1>Crie conteúdo sobre o <span>Olimpo</span> e seja recompensado</h1>
+      <p>O programa de parceiros da Akardia premia quem cria conteúdo de Minecraft sobre o Factions Olimpo. Você ganha um <strong>código de apoiador exclusivo</strong>, recebe <strong>comissão</strong> pelas compras feitas com ele e ainda ganha <strong>Cash por like</strong> nos seus vídeos.</p>
+      <span class="pc-autor"><span class="pc-por">Por:</span><img src="${(window.OLIMPO_CABECAS||{})[P.autorSkin]||cabeca(P.autor||"Steve",48)}" alt="" onerror="this.src='${cabeca("Steve",48)}'"><b>${esc(P.autor||"Equipe")}</b><span class="pc-data">${esc(P.data||"")}</span></span>
+    </div>
+    <div class="pc-tv" aria-hidden="true"><span class="cash">+${n(P.cashPorLike||10)} CASH</span><span class="likes">👍 <em id="pc-tvl">0</em></span><span class="play"></span><span class="barra"><i></i></span></div>
+  </div>
+  <nav class="pc-menu" id="pc-menu">${[
+      ["pc-s-cod","CÓDIGO",'<path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z"/><path d="M14 7v10" stroke-dasharray="2 2"/>'],
+      ["pc-s-com","COMISSÕES",'<path d="M4 20V12M10 20V8M16 20V4M2 20h20"/>'],
+      ["pc-s-cash","CASH",'<circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5c0-1 1-1.5 2.5-1.5s2.5.6 2.5 1.6c0 2.4-5 1-5 3.3 0 1 1 1.6 2.5 1.6s2.5-.5 2.5-1.5"/>'],
+      ["pc-s-req","REQUISITOS",'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/>'],
+      ["pc-s-pag","PAGAMENTOS",'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'],
+      ["pc-s-div","DIVULGAÇÃO",'<path d="M3 11v2a1 1 0 0 0 1 1h3l6 5V5L7 10H4a1 1 0 0 0-1 1zM17 8a5 5 0 0 1 0 8"/>'],
+      ["pc-s-quem","QUEM PODE",'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2.5.6 4 2.7 4 6"/>'],
+      ["pc-s-ent","ENTRAR",'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>']
+    ].map(([i,t,ic],k)=>`<a class="pc-mb" data-pcir="${i}" style="--k:${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ic}</svg><span>${t}</span></a>`).join("")}<i class="pc-prog" id="pc-prog"></i></nav>
+
+  <div class="pc-sec" id="pc-s-cod"><h2>COMO FUNCIONA O CÓDIGO</h2><p class="sub">// do seu vídeo até a sua comissão</p>
+    <div class="pc-passos">
+      <div class="pc-passo"><b>Você recebe um código</b><p>Todo parceiro ganha um código de apoiador só dele, para divulgar nos vídeos e lives.</p><span class="pc-codigo">SEUNICK</span></div>
+      <div class="pc-passo"><b>O jogador usa na compra</b><p>Na hora de pagar, ele coloca o seu código no campo <strong>“Apoie um criador”</strong> da loja. O preço não muda para ele.</p></div>
+      <div class="pc-passo"><b>Você ganha comissão</b><p>Uma parte de cada compra feita com o seu código vai para você, de acordo com o seu nível de comissão.</p></div>
+    </div></div>
+
+  <div class="pc-sec" id="pc-s-com"><h2>NÍVEIS DE COMISSÃO</h2><p class="sub">// quanto mais você cresce, maior a sua parte</p>
+    <div class="pc-colunas">${com.map((c,i)=>`<div class="pc-col"><span class="topo">${c}%</span><span class="capitel"></span><span class="fuste" style="--h:${Math.round(60+150*c/maxC)}px;--d:${(i*.12).toFixed(2)}s"></span><span class="base"></span><span class="nome">COMISSÃO ${i+1}</span></div>`).join("")}</div>
+    <p style="margin:18px 0 0">Todo parceiro começa na <strong>Comissão 1</strong>. Os critérios para subir de nível serão anunciados em breve.</p></div>
+
+  <div class="pc-sec" id="pc-s-cash"><h2>CASH POR LIKE</h2><p class="sub">// além da comissão, seus vídeos rendem Cash no servidor</p>
+    <div class="pc-calc">
+      <div><label for="pc-l">ARRASTE PARA SIMULAR OS LIKES DE UM VÍDEO</label><input id="pc-l" type="range" min="0" max="800" step="10" value="100">
+        <div class="likes"><span id="pc-lv">100</span> <small>LIKES</small></div>
+        <p style="margin:12px 0 0">A cada like no seu vídeo você ganha <strong class="v">${n(P.cashPorLike||10)} de Cash</strong>. Exemplo: 100 likes = <strong class="v">${n(100*(P.cashPorLike||10))} de Cash</strong>.</p></div>
+      <div class="pc-res"><small>VOCÊ RECEBE</small><div class="val"><span id="pc-cv">0</span> <small style="display:inline;font-size:14px">CASH</small></div>
+        <div class="barra"><i id="pc-cb"></i><b title="limite"></b></div><small>limite por resgate: ${n(P.limiteResgate||4000)} de Cash</small><p class="msg" id="pc-msg"></p></div>
+    </div>
+    <p style="margin:16px 0 0">O limite por resgate é de <strong>${n(P.limiteResgate||4000)} de Cash</strong>. Isso mantém o equilíbrio do servidor, já que alguns parceiros têm muitos likes e outros têm menos.</p></div>
+
+  <div class="pc-sec" id="pc-s-req"><h2>REQUISITOS DOS VÍDEOS</h2><p class="sub">// para o vídeo contar</p>
+    <div class="pc-req">
+      <div><b>${P.minLikes||30}+</b><span>likes no mínimo em cada vídeo para ele contar.</span></div>
+      <div><b>${P.minVideos||1}+</b><span>vídeo${(P.minVideos||1)>1?"s":""} postado${(P.minVideos||1)>1?"s":""} sobre o servidor para poder receber.</span></div>
+      <div><b>100%</b><span>likes orgânicos. Os vídeos passam por análise antes de contar.</span></div>
+    </div>
+    <p style="margin:16px 0 0">Se identificarmos uso de bots ou qualquer tipo de manipulação, o vídeo não conta e o criador fica sujeito a <strong>perder a parceria</strong> e o acesso ao código de apoiador.</p></div>
+
+  <div class="pc-sec" id="pc-s-pag"><h2>COMO OS PAGAMENTOS FUNCIONAM</h2><p class="sub">// toda semana, sempre na segunda-feira</p>
+    <div class="pc-semana">${semana.map(d=>`<div class="pc-dia ${d.getDay()===1?"pg":""}">${dias[d.getDay()]}<b>${String(d.getDate()).padStart(2,"0")}</b></div>`).join("")}</div>
+    <p>Os pagamentos são <strong>semanais</strong>. O valor é sempre transferido <strong>toda segunda-feira</strong>. Depois que a transferência é feita, o prazo do banco para o dinheiro cair na sua conta pode variar dentro dessa janela.</p>
+    <div class="pc-aviso"><b>AVISO IMPORTANTE</b><p>O pagamento da comissão depende das vendas feitas com o seu código. Não entre no programa contando com uma renda fixa: quem tem um público menor gera valores menores.</p></div></div>
+
+  <div class="pc-sec" id="pc-s-div"><h2>DIVULGAÇÃO</h2><p class="sub">// clique para copiar</p>
+    <div class="pc-tags">${(P.hashtags||[]).map(h=>`<button class="pc-tag" data-copia="${esc(h)}"><small>USE NO VÍDEO</small>${esc(h)}</button>`).join("")}</div>
+    <p style="margin:0 0 12px">Sempre que divulgar o servidor ou o seu código, deixe claro que você é parceiro:</p>
+    <ul class="pc-lista">
+      <li><strong>Posts:</strong> nas duas primeiras linhas do texto.</li>
+      <li><strong>Stories e carrosséis:</strong> texto em cima de cada quadro, em letra grande e cor que dê para ler.</li>
+      <li><strong>Vídeos:</strong> no começo do vídeo e na descrição.</li>
+      <li><strong>Lives:</strong> repita com frequência durante a transmissão.</li>
+      <li><strong>Links obrigatórios na descrição:</strong> <span class="v">${esc(loja)}</span> e o Discord do servidor.</li>
+    </ul></div>
+
+  <div class="pc-sec" id="pc-s-quem"><h2>QUEM PODE PARTICIPAR</h2><p class="sub">// conteúdo de jogos, não precisa ser só Minecraft</p>
+    <div class="pc-plats">
+      <div class="pc-plat" style="--c:#ff3b3b">${svg.yt}<b>YouTube</b><span>100 inscritos e 300 views no último vídeo</span></div>
+      <div class="pc-plat" style="--c:#7ff5ff">${svg.tt}<b>TikTok</b><span>300 seguidores ou 1 mil views de média</span></div>
+      <div class="pc-plat" style="--c:#53fc18">${svg.kick}<b>Kick</b><span>20 seguidores</span></div>
+      <div class="pc-plat" style="--c:#a970ff">${svg.tw}<b>Twitch</b><span>40 seguidores</span></div>
+      <div class="pc-plat" style="--c:#ff5fb0">${svg.ig}<b>Instagram</b><span>400 seguidores com conteúdo de jogos</span></div>
+    </div>
+    <p style="margin:0 0 10px">Basta cumprir <strong>uma</strong> das plataformas acima. Atividade mínima por semana, só nos formatos que você declarar:</p>
+    <div class="pc-ritmo"><div><b>1</b><span>vídeo longo (mais de 3 min)</span></div><div><b>3</b><span>shorts, TikToks ou reels</span></div><div><b>1</b><span>live</span></div></div>
+    <ul class="pc-lista">
+      <li>Ter <strong>18 anos ou mais</strong> e CPF válido, para receber os pagamentos.</li>
+      <li>Não ter banimento permanente no servidor por motivo grave.</li>
+      <li>Nada de conteúdo adulto, político ou que quebre as regras das plataformas.</li>
+      <li>Se a atividade mínima não for cumprida, o código de apoiador é desativado. Para voltar, retome as postagens e fale com a equipe.</li>
+    </ul></div>
+
+  <div class="pc-cta" id="pc-s-ent"><div><h2>QUERO SER PARCEIRO</h2><p>Abra um ticket no nosso Discord com o link do seu canal. A resposta também chega por lá.</p></div>
+    <a class="btn btn-cheio" href="${esc(disc)}" target="_blank" rel="noopener">ABRIR TICKET NO DISCORD</a></div>`;
+  const cpl=P.cashPorLike||10, lim=P.limiteResgate||4000, minL=P.minLikes||30, r=$("#pc-l");
+  const calc=()=>{ const l=+r.value, c=l<minL?0:Math.min(l*cpl,lim); $("#pc-lv").textContent=n(l); $("#pc-cv").textContent=n(c);
+    $("#pc-cb").style.width=Math.min(100,l*cpl/lim*100)+"%"; const m=$("#pc-msg");
+    if (l<minL){ m.className="msg ruim"; m.textContent=`Abaixo de ${minL} likes o vídeo não conta.`; }
+    else if (l*cpl>lim){ m.className="msg teto"; m.textContent=`Chegou no limite: ${n(l*cpl)} viraria ${n(lim)} neste resgate.`; }
+    else { m.className="msg"; m.textContent=`${n(l)} likes × ${n(cpl)} de Cash.`; } };
+  r.oninput=calc; calc();
+  // menu: destaca a parte que está na tela e mostra o progresso da leitura
+  const ids=[...document.querySelectorAll("#pc-menu [data-pcir]")].map(a=>a.dataset.pcir);
+  const spy=()=>{ if (document.body.dataset.view!=="parceiros") return; let at=ids[0];
+    for (const id of ids){ const el=document.getElementById(id); if (el && el.getBoundingClientRect().top < 220) at=id; }
+    document.querySelectorAll("#pc-menu .pc-mb").forEach(a=>a.classList.toggle("on", a.dataset.pcir===at));
+    const pc=$("#pc"), r=pc.getBoundingClientRect(), tot=r.height-innerHeight, p=Math.min(1,Math.max(0,-r.top/(tot>0?tot:1)));
+    $("#pc-prog").style.width=(p*100).toFixed(1)+"%"; };
+  addEventListener("scroll",spy,{passive:true}); spy();
+  let tv=0; setInterval(()=>{ const e=$("#pc-tvl"); if (!e || document.body.dataset.view!=="parceiros") return; tv=(tv+7)%999; e.textContent=n(tv); },120);
+}
+$("#v-parceiros").addEventListener("click", e => {
+  const a=e.target.closest("[data-pcir]"); if (a){ const el=document.getElementById(a.dataset.pcir); if (el) el.scrollIntoView({behavior:"smooth",block:"start"}); return; }
+  const t=e.target.closest("[data-copia]"); if (t) copiar(t.dataset.copia, "> copiado: "+t.dataset.copia);
 });
 
 /* ================= BLOG (posts da CentralCart) ================= */
