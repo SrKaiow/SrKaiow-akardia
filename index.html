@@ -1941,6 +1941,32 @@ body[data-view="home"] .hero-pe{min-height:calc(100vh - 8px)}
 .termos{font-size:12px;color:var(--texto-2);line-height:1.6;margin:4px 0 14px}
 .termos a{color:var(--ciano)}
 .termos small{display:block;color:var(--texto-3);margin-top:4px}
+
+/* ===== desempenho: modo leve (celular / aparelho fraco) ===== */
+html.leve{--painel:rgba(8,17,36,.9);--painel-2:rgba(16,30,58,.9)}
+html.leve *,html.leve *::before,html.leve *::after{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html.leve .nav,html.leve .pc-menu,html.leve .dg-menu{background:rgba(5,10,22,.97)!important}
+/* animações que redesenham áreas grandes ficam paradas no modo leve */
+html.leve .bg-img{animation:none!important}
+html.leve .bt-wrap[class*="fx-"] .btn,html.leve .ra-aba{animation:none!important}
+html.leve .fx-vip .btn::after,html.leve .fx-ouro .btn::before,html.leve .fx-lava .btn::before,html.leve .ra-aba::before,html.leve .ra-aba::after{animation-duration:9s!important}
+/* vitrine 3D da home: no modo leve as artes ficam paradas (o anel continua girando) e o anel para fora da tela */
+html.leve .vt3-item .img *,html.leve .vt3-item .img *::before,html.leve .vt3-item .img *::after{animation:none!important;transition:none!important}
+html.leve .vt3-item .img svg[class$="-nuv"],html.leve .vt3-item .img .cv-p,html.leve .vt3-item .img .cs-est,html.leve .vt3-item .img .cs-fa{display:none!important}
+html.leve .vt3-item{box-shadow:none!important}
+.vt3-anel.fora{animation-play-state:paused!important}
+/* artes dos produtos no modo leve: sem partículas soltas e sem raios girando (a arte continua igual) */
+html.leve .va-p,html.leve .cv-p,html.leve .cs-est,html.leve .cs-fa{display:none!important}
+html.leve .va-raios,html.leve .cv-raios{animation:none!important}
+/* pingos de lava no modo leve: crescem com transform (sem redesenhar a página) */
+html.leve .gota{height:var(--h)!important;transform-origin:top;transform:scaleY(0);box-shadow:none!important;animation-name:lavaPingaL!important;will-change:transform}
+@keyframes lavaPingaL{0%{transform:scaleY(0)}45%,100%{transform:scaleY(1)}}
+html.leve body{background-attachment:scroll!important}   /* fundo fixo trava a rolagem no iPhone */
+/* partes fora da tela não são desenhadas nem animadas até chegar perto */
+.dg-sec,.pc-sec,.gd-box,.doc,.post,.pc-cta,.cmp-wrap{content-visibility:auto;contain-intrinsic-size:auto 1px auto 600px}
+.prod{content-visibility:auto;contain-intrinsic-size:auto 1px auto 420px}
+/* nada anima enquanto a aba estiver em segundo plano */
+html.pausa *,html.pausa *::before,html.pausa *::after{animation-play-state:paused!important}
 </style>
 </head>
 <body data-view="home">
@@ -2381,6 +2407,14 @@ const C = window.OLIMPO, API = "https://api.centralcart.io/v1", DEMO = !C.storeD
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const REDUZ = matchMedia("(prefers-reduced-motion: reduce)").matches;
+// modo leve: celular/tablet, aparelho fraco ou economia de dados → menos resolução e menos quadros nas animações de fundo
+const LEVE = REDUZ || matchMedia("(pointer:coarse)").matches || innerWidth < 820 || (navigator.hardwareConcurrency||8) <= 4 || (navigator.deviceMemory||8) <= 4 || !!(navigator.connection && navigator.connection.saveData);
+document.documentElement.classList.toggle("leve", LEVE);
+const OCULTO = () => document.hidden;   // aba em segundo plano: tudo para
+document.addEventListener("visibilitychange",()=>document.documentElement.classList.toggle("pausa",document.hidden));
+// anima só o que está perto da tela
+const VISTA = ("IntersectionObserver" in window) ? new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle("fora",!e.isIntersecting)),{rootMargin:"120px"}) : null;
+addEventListener("DOMContentLoaded",()=>{ if (VISTA) document.querySelectorAll(".vt3-anel").forEach(el=>VISTA.observe(el)); });
 const brl = v => (Number(v)||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const enc = encodeURIComponent;
@@ -2800,7 +2834,7 @@ const CEU = { mx:0, my:0 };
   const la=gl.getAttribLocation(pr,"a"); gl.enableVertexAttribArray(la); gl.vertexAttribPointer(la,2,gl.FLOAT,false,0,0);
   const uR=gl.getUniformLocation(pr,"R"), uT=gl.getUniformLocation(pr,"T"), uM=gl.getUniformLocation(pr,"M");
   // renderiza em resolução reduzida (as nuvens são macias) e o navegador amplia
-  const escala = () => Math.min(1, (innerWidth<700 ? .55 : .6) * (devicePixelRatio||1));
+  const escala = () => LEVE ? .34 : Math.min(1, .6 * (devicePixelRatio||1));
   const tam=()=>{ const k=escala(); cv.width=Math.round(innerWidth*k); cv.height=Math.round(innerHeight*k); gl.viewport(0,0,cv.width,cv.height); };
   tam(); addEventListener("resize", ()=>{ tam(); if (REDUZ) desenhar(0); });
   let t0=performance.now(), ultimo=0, pmx=0, pmy=0;
@@ -2809,7 +2843,7 @@ const CEU = { mx:0, my:0 };
     gl.uniform2f(uR,cv.width,cv.height); gl.uniform1f(uT,REDUZ?40:(agora-t0)/1000); gl.uniform2f(uM,pmx,-pmy);
     gl.drawArrays(gl.TRIANGLES,0,6);
   }
-  function loop(agora){ if (agora-ultimo>=33 && document.body.dataset.view!=="home"){ ultimo=agora; desenhar(agora); } requestAnimationFrame(loop); }
+  function loop(agora){ if (agora-ultimo>=(LEVE?83:33) && document.body.dataset.view!=="home" && !OCULTO()){ ultimo=agora; desenhar(agora); } requestAnimationFrame(loop); }
   REDUZ ? desenhar(0) : requestAnimationFrame(loop);
 })();
 
@@ -2873,7 +2907,7 @@ const CEU = { mx:0, my:0 };
     return {x:Math.random()*W, y:inicio?Math.random()*H:H+10, t:1.2+Math.random()*2.4, v:.2+Math.random()*.5, osc:Math.random()*Math.PI*2, vida:0, max:300+Math.random()*400, cor:Math.random()>.4?"255,196,80":"255,226,150"};
   }
   function montar(){
-    dpr=Math.min(devicePixelRatio||1,2); W=innerWidth; H=innerHeight;
+    dpr=LEVE?1:Math.min(devicePixelRatio||1,2); W=innerWidth; H=innerHeight;
     cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+"px"; cv.style.height=H+"px"; cx.setTransform(dpr,0,0,dpr,0,0);
     if (!veuSprites.length) veuSprites=[3,17,31].map(spriteVeu);
     const mob=W<700, b=mob?.7:1;
@@ -2883,7 +2917,7 @@ const CEU = { mx:0, my:0 };
       const w=520*d.esc*(mob?.8:1), qtd=Math.ceil(W/(w*.7))+2;
       return {...d,w,h:200*d.esc,n:Array.from({length:qtd},(_,i)=>({x:i*w*.7-w*.3,s:veuSprites[(i+k)%3],dy:(Math.random()-.5)*24*d.esc}))};
     });
-    brasas=Array.from({length:mob?18:34},()=>novaBrasa(true));
+    brasas=Array.from({length:LEVE?12:34},()=>novaBrasa(true));
   }
   function ilha(o,t){
     const w=o.s.width*o.bloco, h=o.s.height*o.bloco;
@@ -2935,7 +2969,7 @@ const CEU = { mx:0, my:0 };
   }
   let t=0, ultimo=0;
   function quadro(agora){
-    if ((agora-ultimo<33 || document.body.dataset.view==="home") && !REDUZ){ requestAnimationFrame(quadro); return; }
+    if ((agora-ultimo<(LEVE?50:33) || document.body.dataset.view==="home" || OCULTO()) && !REDUZ){ requestAnimationFrame(quadro); return; }
     ultimo=agora; t++;
     pmx+=(CEU.mx-pmx)*.05; pmy+=(CEU.my-pmy)*.05;
     cx.clearRect(0,0,W,H);
@@ -2996,9 +3030,10 @@ const ARTE = { rect:null };
 (() => {
   const cv=$("#bg-raios"), cx=cv.getContext("2d"), img=$("#bg-img");
   let W=0,H=0, raios=[], prox=900, ultimo=0;
-  const tam=()=>{ const d=Math.min(devicePixelRatio||1,2); W=innerWidth; H=innerHeight; cv.width=W*d; cv.height=H*d; cx.setTransform(d,0,0,d,0,0); };
+  const tam=()=>{ const d=LEVE?1:Math.min(devicePixelRatio||1,2); W=innerWidth; H=innerHeight; cv.width=W*d; cv.height=H*d; cx.setTransform(d,0,0,d,0,0); };
   tam(); addEventListener("resize",tam);
   if (REDUZ) return;
+  let sujo=false;
   // gera o caminho de um raio por deslocamento do ponto médio, com galhos
   function caminho(x1,y1,x2,y2,desv,prof,galhos){
     if (prof===0) return [[x1,y1],[x2,y2]];
@@ -3032,12 +3067,13 @@ const ARTE = { rect:null };
   function linha(pts,larg,cor){ cx.strokeStyle=cor; cx.lineWidth=larg; cx.beginPath(); pts.forEach(([x,y],i)=>i?cx.lineTo(x,y):cx.moveTo(x,y)); cx.stroke(); }
   function quadro(agora){
     requestAnimationFrame(quadro);
-    if (agora-ultimo<33) return;
-    const dt=agora-ultimo; ultimo=agora;
-    cx.clearRect(0,0,W,H);
+    if (agora-ultimo<33 || OCULTO()) return;
+    const dt=Math.min(agora-ultimo,200); ultimo=agora;
+    if (sujo){ cx.clearRect(0,0,W,H); sujo=false; }
     if ((prox-=dt)<=0){ const casa=document.body.dataset.view==="home"; disparar(); if (Math.random()<(casa?.35:.15)) setTimeout(disparar,140+Math.random()*180); prox = casa ? 1400+Math.random()*3200 : 3000+Math.random()*5000; }
     cx.save(); cx.globalCompositeOperation="lighter"; cx.lineCap="round"; cx.lineJoin="round";
     raios=raios.filter(r=>r.vida<r.max);
+    if (raios.length) sujo=true;
     for (const r of raios){
       r.vida++;
       const pisca = r.vida<4 ? 1 : (Math.random()<.35 ? .9 : .35) * (1 - r.vida/r.max);
@@ -4555,7 +4591,7 @@ const SOM = (() => {
   function tam(){ const r=cv.getBoundingClientRect(), d=Math.min(devicePixelRatio||1,2); W=Math.max(40,r.width); H=Math.max(24,r.height); cv.width=W*d; cv.height=H*d; g.setTransform(d,0,0,d,0,0); }
   function quadro(){
     requestAnimationFrame(quadro);
-    if ((t++)%2) return;
+    if ((t++)%(LEVE?4:2) || OCULTO()) return;
     const tocando=document.getElementById("radio").classList.contains("on");
     const r=cv.getBoundingClientRect(); if (Math.abs(r.width-W)>1||Math.abs(r.height-H)>1) tam();
     g.fillStyle="rgba(2,8,6,.35)"; g.fillRect(0,0,W,H);
