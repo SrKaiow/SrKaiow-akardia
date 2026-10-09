@@ -31,7 +31,7 @@ window.OLIMPO = {
   ip: "akardia.net",
   versao: "1.21.11",                  // versão do Minecraft (aparece na landing)
   storeDomain: "akardianet.centralcart.ai",                    // ex: "olimpo.centralcart.ai"  (vazio = modo demonstração)
-  discord: "https://akardia.net/discord",
+  discord: "https://discord.gg/VePCDTWVje",
   faq: "https://discord.gg/VePCDTWVje",
   // Rádio do site: cole aqui os links do YouTube (vídeo, shorts ou youtu.be). Toca em sequência, baixinho.
   musicas: [
@@ -83,7 +83,7 @@ window.OLIMPO = {
       { grupo: "Caixas", cab: ["1x","5x","10x"], itens: [["Caixa Comum",250,1250,2500],["Caixa Rara",500,2500,5000],["Caixa Lendária",750,3750,7500]] },
       { grupo: "Itens especiais", itens: [["Super Creeper",1250],["Raio Mestre",750],["TNT Balística",750],["Reset de KDR",500],["Poder Máximo",1250],["Poder Instantâneo",500],
         ["Prisão de Sede",750],["Booster",1250],["Booster Nível 2",1500],["Reset de Talentos",1500],["Runa de Extração",750],["Reparador",1250]] },
-      { grupo: "Chaves de masmorra", itens: [["Chave Santuário",2500],["Chave Calabouço",2500],["Chave Infernal",2500]] }
+      { grupo: "Chaves de masmorra", itens: [["Chave do Santuário das Profundezas",2500],["Chave do Calabouço Assombrado",2500],["Chave da Masmorra Infernal",2500]] }
     ] },
 
   // Cores no mesmo padrão dos VIPs: Santuário = Cavaleiro, Calabouço = Lorde, Infernal = Soberano
@@ -141,7 +141,7 @@ window.OLIMPO = {
       kick: "// ECOS DO ABISMO",
       intro: "Desça às profundezas onde o silêncio é a única defesa. Sobreviva às ondas de <strong>Wardens</strong>, derrote o <strong>Mega Warden</strong> e junte <strong>Fragmentos de Eco</strong> para forjar o Conjunto do Warden.",
       tema: { c1:"#13c8d8", c2:"#0b3a66", c3:"#7ff6ff", bg1:"#020a0e", bg2:"#05161d", bg3:"#082a33", t:"#dff9ff", p:"#a9c4cb", m:"#6f8f97" },
-      chaveNome: "Chave do Santuário", inimigos: "ondas de <strong>Wardens</strong>", chefe: "Mega Warden",
+      chaveNome: "Chave do Santuário das Profundezas", inimigos: "ondas de <strong>Wardens</strong>", chefe: "Mega Warden",
       efeito: "Resistência II",
       material: { img:"fragmento-de-eco", nome:"Fragmento de Eco", plural:"Fragmentos de Eco" },
       mobs: [
@@ -167,7 +167,7 @@ window.OLIMPO = {
       kick: "// ONDE OS MORTOS NÃO DESCANSAM",
       intro: "Corredores tomados por mortos-vivos, abóboras famintas e aranhas. No fim espera o <strong>Retalha-Almas</strong>, com seus clones e fantoches. Junte <strong>Fragmentos Assombrados</strong> para forjar o Conjunto Assombrado.",
       tema: { c1:"#6eff70", c2:"#1c5a1d", c3:"#ff9a2e", bg1:"#030703", bg2:"#081308", bg3:"#0f220f", t:"#e9ffdf", p:"#b2c6a9", m:"#76906c" },
-      chaveNome: "Chave do Calabouço", inimigos: "uma rotação de <strong>mortos-vivos, monstros de abóbora e aranhas</strong>", chefe: "Retalha-Almas",
+      chaveNome: "Chave do Calabouço Assombrado", inimigos: "uma rotação de <strong>mortos-vivos, monstros de abóbora e aranhas</strong>", chefe: "Retalha-Almas",
       efeito: "Velocidade II",
       material: { img:"fragmento-assombrado", nome:"Fragmento Assombrado", plural:"Fragmentos Assombrados" },
       mobs: [
@@ -197,7 +197,7 @@ window.OLIMPO = {
       kick: "// AS PROFUNDEZAS EM CHAMAS",
       intro: "Um portal para as profundezas do Nether. Enfrente ondas de demônios, derrote o <strong>Demônio Carmesim</strong> e junte <strong>Fragmentos Infernais</strong> para forjar o Conjunto Infernal.",
       tema: { c1:"#d60000", c2:"#7a0000", c3:"#ff8a1f", bg1:"#0b0303", bg2:"#1a0504", bg3:"#2a0805", t:"#ffe2cc", p:"#cdb3a2", m:"#9c8172" },
-      chaveNome: "Chave Infernal", inimigos: "ondas de <strong>criaturas infernais</strong>", chefe: "Demônio Carmesim",
+      chaveNome: "Chave da Masmorra Infernal", inimigos: "ondas de <strong>criaturas infernais</strong>", chefe: "Demônio Carmesim",
       efeito: "Força II",
       material: { img:"fragmento-infernal", nome:"Fragmento Infernal", plural:"Fragmentos Infernais" },
       mobs: [
@@ -3534,7 +3534,7 @@ function renderDungeons(){
 
   <div class="dg-sec dg-chave" id="dg-s-chave">
     <div class="arte">${chaveArte("Chave "+ch.nome)}</div>
-    <div><h4>// CHAVE NECESSÁRIA</h4><div class="nm">Chave de Masmorra ${esc(ch.nome)}</div>
+    <div><h4>// CHAVE NECESSÁRIA</h4><div class="nm">${esc(d.chaveNome)}</div>
       <p>Use a chave com <strong>clique direito</strong> no mundo principal. A dificuldade é sorteada entre Fácil, Normal e Difícil, e a chave só é gasta se o portal puder ser criado.</p></div>
     <div class="lado">${preco?`<span class="preco">${preco}</span>`:""}<button class="dg-btn" data-dgcompra="${dgAtual}">COMPRAR CHAVE</button></div>
   </div>
@@ -3763,9 +3763,9 @@ const demoProds=[
   {id:2,category_id:1,name:"VIP Lorde",description:"",pricing:{price:35.57},stock:{available:true},fields:[]},
   {id:3,category_id:1,name:"VIP Soberano",description:"",pricing:{price:57},stock:{available:true},fields:[]},
   {id:4,category_id:1,name:"VIP Imperador",description:"",pricing:{price:99.86},stock:{available:true},fields:[]},
-  {id:5,category_id:2,name:"Chave de Masmorra Santuário",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
-  {id:6,category_id:2,name:"Chave de Masmorra Infernal",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
-  {id:7,category_id:2,name:"Chave de Masmorra Calabouço",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
+  {id:5,category_id:2,name:"Chave do Santuário das Profundezas",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
+  {id:6,category_id:2,name:"Chave da Masmorra Infernal",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
+  {id:7,category_id:2,name:"Chave do Calabouço Assombrado",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
   {id:8,category_id:3,name:"1.250 Cash",description:"",pricing:{price:4.9},stock:{available:true},fields:[]},
   {id:9,category_id:3,name:"2.500 Cash",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
   {id:10,category_id:3,name:"6.500 Cash",description:"",pricing:{price:24.9},stock:{available:true},fields:[]},
