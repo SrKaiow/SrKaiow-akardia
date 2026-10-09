@@ -1880,6 +1880,9 @@ body[data-view="home"] .hero-pe{min-height:calc(100vh - 8px)}
   transition:left 1.1s cubic-bezier(.55,0,.75,.2),top 1.1s cubic-bezier(.55,0,.75,.2),transform 1.1s ease-in,opacity 1.1s ease-in}
 .et-item.cai{transition:left .9s cubic-bezier(.25,1.45,.45,1),top .9s cubic-bezier(.25,1.45,.45,1),transform .9s cubic-bezier(.25,1.45,.45,1),opacity .3s}
 .et-item-txt{font-family:var(--display);color:var(--ouro);font-size:20px;display:grid;place-items:center}
+.et.fixo .et-nave,.et.fixo .et-fala{position:fixed}
+.et.fixo .et-fala{cursor:pointer}
+@media (max-width:700px){ .et.fixo .et-nave{width:96px} }
 .et-fala{position:absolute;left:0;top:0;width:min(320px,82vw);pointer-events:auto;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;
   background:rgba(7,14,30,.94);border:1px solid rgba(123,227,106,.55);padding:14px 16px 12px;color:var(--texto);
   box-shadow:0 0 30px rgba(123,227,106,.25);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
@@ -4314,7 +4317,7 @@ const SOM = (() => {
     SOM.estatica(false);
     timers.forEach(clearTimeout); timers=[]; feixes.innerHTML=""; itens.forEach(i=>i.el.remove()); itens=[];
     if (restaurar) cards().forEach(c=>c.classList.remove("abduzido"));
-    fala.classList.remove("on"); et.classList.remove("esperando"); nave.classList.remove("treme"); et.hidden=true; estado="parado";
+    fala.classList.remove("on"); et.classList.remove("esperando","fixo"); nave.classList.remove("treme"); et.hidden=true; estado="parado";
   }
   function falar(txt, x, y){
     const t=$("#et-txt"); t.dataset.full=txt;
@@ -4323,6 +4326,23 @@ const SOM = (() => {
     pos(fala, direita ? x+90 : Math.max(sx+12, x-90-w), y-50);
     fala.classList.add("on"); digitar(fala);
   }
+  // enquanto espera o clique, a nave fica PRESA NA TELA (acompanha a rolagem), com o balão logo abaixo
+  const TOQUE = matchMedia("(pointer:coarse)").matches;
+  function posFixa(){
+    if (!et.classList.contains("fixo")) return;
+    const W=innerWidth, cel=W<700, nav=(document.querySelector(".nav")?.getBoundingClientRect().bottom)||70;
+    const nx = cel ? W-58 : W-120, ny = Math.max(nav,0) + (cel ? 52 : 80);
+    pos(nave, nx, ny);
+    const fw=fala.offsetWidth||300;
+    pos(fala, Math.max(10, Math.min(W-fw-10, nx-fw+40)), ny + (cel ? 44 : 64));
+  }
+  function fixar(){ const d=fala.querySelector(".et-dica"); if (d) d.textContent = TOQUE ? "▲ toque na nave ou aqui" : "▲ clique na nave ou aqui"; et.classList.add("fixo"); nave.style.transition="none"; posFixa(); void nave.offsetWidth; nave.style.transition=""; }
+  function soltar(){
+    if (!et.classList.contains("fixo")) return;
+    const r=nave.getBoundingClientRect(); ux=r.left+r.width/2+scrollX; uy=r.top+r.height/2+scrollY;
+    nave.style.transition="none"; et.classList.remove("fixo"); pos(nave, ux, uy); void nave.offsetWidth; nave.style.transition="";
+  }
+  addEventListener("resize", posFixa); addEventListener("scroll", ()=>{ if (et.classList.contains("fixo")) posFixa(); }, {passive:true});
   // reaplica o estado abduzido se a loja for re-renderizada (troca de categoria)
   window.etReaplicar=()=>{ if (estado==="abduzido") cards().forEach(c=>c.classList.add("abduzido")); };
 
@@ -4357,12 +4377,14 @@ const SOM = (() => {
     }
     await espera(1100); if (estado!=="abduzindo") return;
     estado="abduzido"; et.classList.add("esperando"); SOM.estatica(true); SOM.transmissao();
-    falar(`Bip bop! Abduzi TODA a loja do Olimpo 👽 Clique na minha nave pra libertar os produtos... e eu solto eles com um cupom de desconto pra você.`, ux, uy);
+    falar(`Bip bop! Abduzi TODA a loja do Olimpo 👽 ${TOQUE?"Toque":"Clique"} na minha nave pra libertar os produtos... e eu solto eles com um cupom de desconto pra você.`, ux, uy);
+    fixar();
   }
 
   async function libertar(){
     if (estado!=="abduzido") return;
     estado="libertando"; fala.classList.remove("on"); et.classList.remove("esperando");
+    soltar();
     const sx=scrollX, sy=scrollY;
     // nave treme e solta um clarão
     SOM.estatica(false); nave.classList.add("treme"); SOM.tremor(); await espera(700);
@@ -4403,17 +4425,19 @@ const SOM = (() => {
     await espera(1300); nave.style.transition=""; nave.style.width=""; limpar(false);
   }
   nave.onclick=()=>{ if (estado==="abduzido") libertar(); };
+  // tocar no balão também liberta (no celular a nave pode ficar pequena)
+  fala.addEventListener("click", e=>{ if (e.target.closest("#et-x,#et-som")) return; if (estado==="abduzido") libertar(); });
   const somBtn=$("#et-som"), somUI=()=>{ somBtn.textContent=SOM.ligado?"🔊":"🔇"; somBtn.title=SOM.ligado?"Desligar som":"Ligar som"; };
   somBtn.onclick=e=>{ e.stopPropagation(); SOM.alternar(); somUI(); if (SOM.ligado && estado==="abduzido"){ SOM.estatica(true); SOM.transmissao(); } };
   somUI();
   $("#et-x").onclick=async ()=>{
     // fechar sem resgatar: devolve tudo e vai embora (volta na próxima visita à loja)
     if (estado==="libertando") return;
-    estado="saindo"; fala.classList.remove("on");
+    estado="saindo"; fala.classList.remove("on"); soltar();
     itens.forEach(it=>it.el.remove()); itens=[]; cards().forEach(c=>c.classList.remove("abduzido")); feixes.innerHTML="";
     SOM.estatica(false); SOM.saida(); pos(nave, scrollX+innerWidth+160, scrollY-120); await espera(1500); limpar();
   };
-  document.addEventListener("click", e=>{ const b=e.target.closest(".prod.abduzido .btn"); if (b){ e.stopImmediatePropagation(); e.preventDefault(); toast("> o ET abduziu esse produto — clique na nave pra libertar"); } }, true);
+  document.addEventListener("click", e=>{ const b=e.target.closest(".prod.abduzido .btn"); if (b){ e.stopImmediatePropagation(); e.preventDefault(); toast(`> o ET abduziu esse produto — ${matchMedia("(pointer:coarse)").matches?"toque":"clique"} na nave pra libertar`); } }, true);
 
   let agendado=null;
   function agenda(){
