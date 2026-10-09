@@ -1970,6 +1970,13 @@ html.leve body{background-attachment:scroll!important}   /* fundo fixo trava a r
 .prod{content-visibility:auto;contain-intrinsic-size:auto 1px auto 420px}
 /* nada anima enquanto a aba estiver em segundo plano */
 html.pausa *,html.pausa *::before,html.pausa *::after{animation-play-state:paused!important}
+/* mina dentro das janelinhas (igual aos comandos) */
+.gd-mina-t{margin-top:40px}
+.gd-acc,.gd-acc tr{scroll-margin-top:90px}
+.gd-acc .gd-box{border:0;background:none;box-shadow:none;margin:0;padding:0 16px 18px 34px;backdrop-filter:none;-webkit-backdrop-filter:none}
+.gd-acc .gd-hero{justify-content:flex-start;margin:4px 0 14px}
+.gd-acc .gd-hero img{height:170px}
+@media (max-width:700px){.gd-acc .gd-box{padding:0 12px 14px}}
 </style>
 </head>
 <body data-view="home">
@@ -3417,11 +3424,11 @@ function renderMina(){
   const mobs=[["goblin-bruto","Goblin Bruto"],["goblin-mago","Goblin Mago"],["goblin-guerreiro","Goblin Guerreiro"],["goblin-arqueiro","Goblin Arqueiro"],["goblin-chicoteador","Goblin Chicoteador"],
     ["aranha-guerreira","Aranha Guerreira"],["aranha-armadilheira","Aranha Armadilheira"],["aranha-venenosa","Aranha Venenosa"],["aranha-elite","Aranha Elite"]];
   $("#gd-mina").innerHTML=`
-  <h2 class="gd-tit" id="gd-mina-t">MOBS DA MINA</h2>
-  <div class="gd-hero">${img("gorkhan","Gor’Khan")}</div>
+  <h2 class="gd-sub gd-mina-t" id="gd-mina-t">MOBS DA MINA</h2>
+  <div class="guias">
 
-  <div class="gd-box" id="gd-nucleo">
-    <h3 class="gd-sub">NÚCLEO DE SPAWNER</h3>
+  <details class="guia gd-acc" id="gd-nucleo"><summary>Núcleo de Spawner</summary>
+    <div class="g gd-box">
     <p>A mina é onde se consegue os <strong>Núcleos de Spawner</strong>, usados para craftar spawners. Hoje o núcleo só é obtido na mina:</p>
     <ul>
       <li><strong>Mobs comuns:</strong> chance entre <span class="v">0,03%</span> e <span class="v">0,75%</span> por morte, aumentando conforme a camada e o nível do mob.</li>
@@ -3429,10 +3436,10 @@ function renderMina(){
       <li><strong>Gor’Khan:</strong> <span class="v">6%</span> por recompensa sorteada. Ele entrega de <strong>2 a 5 recompensas</strong> conforme a camada.</li>
       <li>O Gor’Khan tem <span class="v">0,05%</span> de chance de aparecer ao quebrar um bloco, desde que não exista outro ativo naquela camada.</li>
     </ul>
-  </div>
+  </div></details>
 
-  <div class="gd-box" id="gd-mobs">
-    <h3 class="gd-sub">MOBS E DROPS</h3>
+  <details class="guia gd-acc" id="gd-mobs"><summary>Mobs e drops</summary>
+    <div class="g gd-box">
     <div class="gd-wrap"><table class="gd-tab gd-mob">
       <thead><tr><th>MOB</th><th>DROP</th><th>CHANCE DE NÚCLEO</th></tr></thead>
       <tbody>
@@ -3442,10 +3449,11 @@ function renderMina(){
         ${mobs.map(([k,n])=>`<tr><td><span class="nm">${n}</span>${img(k,n)}</td><td data-l="DROP">${drop}</td><td data-l="CHANCE DE NÚCLEO">${nuc}</td></tr>`).join("")}
       </tbody></table></div>
     <p class="gd-nota">Goblin Bruto, Goblin Mago, Goblin Guerreiro, Goblin Arqueiro, Goblin Chicoteador, Aranha Guerreira, Armadilheira, Venenosa e Elite usam exatamente a mesma tabela de drops.</p>
-  </div>
+  </div></details>
 
-  <div class="gd-box">
-    <h3 class="gd-sub">GOR’KHAN: CHANCE DE NÚCLEO</h3>
+  <details class="guia gd-acc"><summary>Gor’Khan: chance de núcleo</summary>
+    <div class="g gd-box">
+    <div class="gd-hero">${img("gorkhan","Gor’Khan")}</div>
     <p>Chance base de conseguir <strong>pelo menos um núcleo</strong> ao matar o Gor’Khan:</p>
     <div class="gd-wrap"><table class="gd-tab">
       <thead><tr><th>CAMADA</th><th>SORTEIOS</th><th>CHANCE</th></tr></thead>
@@ -3456,10 +3464,10 @@ function renderMina(){
         <tr><td>Diamante</td><td class="num">5</td><td class="num">26,61%</td></tr>
       </tbody></table></div>
     <p class="gd-nota">O talento pode adicionar sorteios extras ao chefe.</p>
-  </div>
+  </div></details>
 
-  <div class="gd-box" id="gd-garantido">
-    <h3 class="gd-sub">DROP GARANTIDO</h3>
+  <details class="guia gd-acc" id="gd-garantido"><summary>Drop garantido</summary>
+    <div class="g gd-box">
     <p>Todo mob comum da mina sempre dropa minério da camada onde morreu:</p>
     <div class="gd-wrap"><table class="gd-tab">
       <thead><tr><th>CAMADA</th><th>DROP</th></tr></thead>
@@ -3470,10 +3478,10 @@ function renderMina(){
         <tr><td>Ouro</td><td class="num">6–12 ouros brutos</td></tr>
         <tr><td>Diamante</td><td class="num">10–20 diamantes</td></tr>
       </tbody></table></div>
-  </div>
+  </div></details>
 
-  <div class="gd-box" id="gd-especiais">
-    <h3 class="gd-sub">RECOMPENSAS ESPECIAIS</h3>
+  <details class="guia gd-acc" id="gd-especiais"><summary>Recompensas especiais</summary>
+    <div class="g gd-box">
     <p>Além do drop garantido, cada morte pode entregar <strong>somente uma</strong> destas recompensas:</p>
     <div class="gd-wrap"><table class="gd-tab">
       <thead><tr><th>RECOMPENSA</th><th>CHANCE MÍNIMA → MÁXIMA</th></tr></thead>
@@ -3485,10 +3493,10 @@ function renderMina(){
         <tr><td>Jaula de Spawner</td><td class="num">0,05% → 1,00%</td></tr>
         <tr><td><strong>Núcleo de Spawner</strong></td><td class="num"><strong>0,03% → 0,75%</strong></td></tr>
       </tbody></table></div>
-  </div>
+  </div></details>
 
-  <div class="gd-box" id="gd-dungeon">
-    <h3 class="gd-sub">NÚCLEO NA DUNGEON</h3>
+  <details class="guia gd-acc" id="gd-dungeon"><summary>Núcleo na dungeon</summary>
+    <div class="g gd-box">
     <ul>
       <li>Ao concluir a dungeon, a <strong>“chuva de recompensas”</strong> do chefe pode gerar Núcleo de Spawner.</li>
       <li>Os <strong>baús pessoais</strong> da dungeon também podem gerar o núcleo.</li>
@@ -3503,10 +3511,11 @@ function renderMina(){
         <tr><td>Normal</td><td class="num">4,9%</td></tr>
         <tr><td>Difícil</td><td class="num">6,3%</td></tr>
       </tbody></table></div>
+  </div></details>
   </div>`;
 }
 $("#v-guias").addEventListener("click", e => { const a=e.target.closest("[data-gd]"); if (!a) return; e.preventDefault();
-  const el=document.getElementById(a.dataset.gd); if (el) el.scrollIntoView({behavior:"smooth",block:"start"}); });
+  const el=document.getElementById(a.dataset.gd); if (!el) return; const d=el.closest("details"); if (d) d.open=true; el.scrollIntoView({behavior:"smooth",block:"start"}); });
 $("#guias").addEventListener("click", e => { const b=e.target.closest("[data-cmd]"); if (b) copiar(b.dataset.cmd, "> copiado: "+b.dataset.cmd); });
 
 /* ================= DUNGEONS ================= */
