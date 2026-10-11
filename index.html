@@ -1629,6 +1629,12 @@ img.cab-fixa{object-fit:cover;object-position:50% 2%;image-rendering:pixelated;b
 .g-pe{padding:14px 16px;border-top:1px solid var(--ouro-sutil);display:flex;flex-direction:column;gap:12px}
 .total{display:flex;justify-content:space-between;align-items:baseline;color:var(--texto-2)}
 .total strong{font-size:20px;color:var(--ouro)}
+.resumo{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--texto-2)}
+.resumo .linha{display:flex;justify-content:space-between;gap:10px}
+.resumo .desc{color:#7be36a;font-weight:700}
+.resumo .desc em{font-style:normal;font-size:11px;padding:1px 6px;margin-left:4px;border:1px solid rgba(123,227,106,.5);color:#7be36a}
+.resumo .aviso{color:var(--ouro)}
+s.de{display:block;font-size:.72em;color:var(--texto-3);font-weight:400;text-decoration:line-through}
 .modal{position:fixed;inset:0;z-index:70;display:none;place-items:center;padding:16px}
 .modal.on{display:grid}
 .caixa{width:min(540px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--painel);border:1px solid var(--ouro-fraco);box-shadow:0 0 40px rgba(0,0,0,.6)}
@@ -2374,6 +2380,7 @@ html.pausa *,html.pausa *::before,html.pausa *::after{animation-play-state:pause
     <div class="campo" style="margin:0"><label for="cr-cart">Apoie um criador</label>
       <input id="cr-cart" placeholder="código do criador" autocomplete="off" spellcheck="false">
       <small class="cr-st" id="cr-cart-st"></small></div>
+    <div class="resumo" id="resumo" hidden></div>
     <div class="total"><span>TOTAL</span><strong id="total">R$ 0,00</strong></div>
     <button class="btn btn-cheio" id="ir-checkout">FINALIZAR COMPRA</button>
   </div>
@@ -3885,7 +3892,7 @@ const demoProds=[
   {id:10,category_id:3,name:"6.500 Cash",description:"",pricing:{price:24.9},stock:{available:true},fields:[]},
   {id:11,category_id:3,name:"13.500 Cash",description:"",pricing:{price:49.9},stock:{available:true},fields:[]}
 ];
-let cats=[], prods=[], catAtual="all", resolvidos={}, cupom="", lojaOk=false, lojaP=null;
+let cats=[], prods=[], catAtual="all", resolvidos={}, cupom="", cupomInfo=null, lojaOk=false, lojaP=null;
 let cart=[]; try { cart=JSON.parse(localStorage.getItem("olimpo_cart")||"[]"); } catch {}
 const salvar=()=>{ try { localStorage.setItem("olimpo_cart",JSON.stringify(cart)); } catch {} };
 
@@ -4019,14 +4026,57 @@ async function atualizarCarrinho(){
     resolvidos=Object.fromEntries(res.map(p=>[p.id,p])); cart=cart.filter(i=>resolvidos[i.id]); salvar();
   } catch(e){ toast(e.message); }
   let total=0;
+  const dsc=calcDesconto();
   $("#itens").innerHTML=cart.map((i,k)=>{
     const p=resolvidos[i.id]||{name:"Produto",pricing:{price:0}}, sub=(p.pricing?.price||0)*i.quantity; total+=sub;
+    const novo=dsc.porItem[i.id]!=null ? sub-dsc.porItem[i.id] : null;
     const o=Object.entries(i.options||{}).map(([a,b])=>`${esc(a)}: ${esc(b)}`).join(" · ");
-    return `<div class="item"><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${tagHTML(p.name)}${nomeHTML(p.name)}</span><strong style="color:var(--ouro)">${brl(sub)}</strong>${o?`<span class="opts">${o}</span>`:""}
+    return `<div class="item"><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${tagHTML(p.name)}${nomeHTML(p.name)}</span><strong style="color:var(--ouro);text-align:right">${novo!=null&&novo<sub?`<s class="de">${brl(sub)}</s>${brl(novo)}`:brl(sub)}</strong>${o?`<span class="opts">${o}</span>`:""}
       <div class="qtd"><button data-q="${k}" data-d="-1" aria-label="Diminuir">−</button><span>${i.quantity}</span><button data-q="${k}" data-d="1" aria-label="Aumentar">+</button></div>
       <button class="rem" data-rem="${k}">remover</button></div>`;
   }).join("");
-  $("#badge").textContent=cart.reduce((s,i)=>s+i.quantity,0); $("#total").textContent=brl(total);
+  $("#badge").textContent=cart.reduce((s,i)=>s+i.quantity,0);
+  mostrarResumo(total,dsc);
+}
+/* ---------- cupom: mostra o desconto antes do pagamento ---------- */
+// calcula o desconto do cupom sobre os itens do carrinho (prévia: o valor final é confirmado pela loja no pagamento)
+function calcDesconto(){
+  const r={valor:0,porItem:{},falta:0,cod:cupom};
+  const d=cupomInfo; if (!cupom||!d) return r;
+  const val=Number(d.value)||0, lista=Array.isArray(d.applies_to)?d.applies_to:[];
+  const itens=cart.map(i=>({id:i.id,sub:(resolvidos[i.id]?.pricing?.price||0)*i.quantity}));
+  const subtotal=itens.reduce((a,b)=>a+b.sub,0);
+  const elegiveis=itens.filter(i=>!lista.length||lista.includes(i.id));
+  const base=elegiveis.reduce((a,b)=>a+b.sub,0);
+  if (!base) return r;
+  if (d.min_price && subtotal<d.min_price){ r.falta=d.min_price-subtotal; return r; }
+  if (d.type==="FIXED"){
+    const tot=Math.min(val,base);
+    elegiveis.forEach(i=>r.porItem[i.id]=(r.porItem[i.id]||0)+tot*i.sub/base);
+  } else {
+    elegiveis.forEach(i=>r.porItem[i.id]=(r.porItem[i.id]||0)+i.sub*Math.min(val,100)/100);
+  }
+  r.valor=Object.values(r.porItem).reduce((a,b)=>a+b,0);
+  return r;
+}
+const rotuloCupom=d=>d?.type==="FIXED"?`−${brl(Number(d.value)||0)}`:`−${Number(d?.value)||0}%`;
+function mostrarResumo(total,dsc){
+  const el=$("#resumo"), final=Math.max(0,total-dsc.valor);
+  if (dsc.valor>0){
+    el.innerHTML=`<div class="linha"><span>Subtotal</span><span>${brl(total)}</span></div>
+      <div class="linha desc"><span>Cupom ${esc(cupom)} <em>${rotuloCupom(cupomInfo)}</em></span><span>−${brl(dsc.valor)}</span></div>`;
+    el.hidden=false;
+    $("#total").innerHTML=`<s class="de">${brl(total)}</s>${brl(final)}`;
+  } else if (cupom && cupomInfo && dsc.falta>0){
+    el.innerHTML=`<div class="linha aviso">Faltam ${brl(dsc.falta)} para o cupom ${esc(cupom)} valer.</div>`; el.hidden=false;
+    $("#total").textContent=brl(total);
+  } else { el.hidden=true; el.innerHTML=""; $("#total").textContent=brl(total); }
+  $("#total").dataset.final=brl(final); $("#total").dataset.desc=dsc.valor>0?brl(dsc.valor):"";
+}
+async function carregarCupom(code){
+  if (!code){ cupomInfo=null; return null; }
+  if (DEMO){ const n=parseInt((code.match(/\d+/)||[])[0])||10; cupomInfo={coupon:code,type:"PERCENTAGE",value:n,applies_to:[],min_price:0}; return cupomInfo; }
+  cupomInfo=await api(`/webstore/discount/${enc(code)}`); return cupomInfo;
 }
 $("#itens").onclick=e=>{
   const q=e.target.closest("[data-q]"), r=e.target.closest("[data-rem]");
@@ -4036,13 +4086,14 @@ $("#itens").onclick=e=>{
 $("#abrir-cart").onclick=()=>{ $("#gaveta").classList.add("on"); $("#fundo").classList.add("on"); atualizarCarrinho(); };
 // cupom resgatado antes (ex.: o do ET) continua aplicado
 $("#cr-cart").value=criadorSalvo; campoCriador($("#cr-cart"),$("#cr-cart-st"));
-try { const sv=localStorage.getItem("olimpo_cupom"); if (sv){ cupom=sv; $("#cupom").value=sv; $("#cupom-msg").textContent="// cupom "+sv+" aplicado"; } } catch {}
+try { const sv=localStorage.getItem("olimpo_cupom"); if (sv){ cupom=sv; $("#cupom").value=sv; $("#cupom-msg").textContent="// cupom "+sv+" aplicado";
+  carregarCupom(sv).then(d=>{ $("#cupom-msg").textContent=`// cupom ${sv} aplicado: ${rotuloCupom(d)}`; atualizarCarrinho(); }).catch(()=>{}); } } catch {}
 $("#aplicar-cupom").onclick=async()=>{
   const code=$("#cupom").value.trim(), msg=$("#cupom-msg");
-  if (!code){ cupom=""; msg.textContent=""; return; }
-  if (DEMO){ cupom=code; msg.textContent="// cupom guardado (modo demonstração)"; return; }
-  try { await api(`/webstore/discount/${enc(code)}`); cupom=code; msg.textContent="// cupom válido — o desconto final é calculado no pagamento"; }
-  catch(e){ cupom=""; msg.textContent=e.message; }
+  if (!code){ cupom=""; cupomInfo=null; msg.textContent=""; atualizarCarrinho(); return; }
+  try { const d=await carregarCupom(code); cupom=code; msg.textContent=`// cupom ${code} aplicado: ${rotuloCupom(d)}`; }
+  catch(e){ cupom=""; cupomInfo=null; msg.textContent=e.message; }
+  atualizarCarrinho();
 };
 
 /* ---------- checkout ---------- */
@@ -4061,7 +4112,7 @@ $("#ir-checkout").onclick=async()=>{
 function formCheckout(erro){
   const pre={"c-nick":conta?.nick,"c-email":conta?.email,"c-nome":conta?.name,"c-criador":criadorSalvo||conta?.criador};
   const tipoAtual=document.querySelector('input[name="c-tipo"]:checked')?.value || conta?.tipo || "";
-  const g=gw||{}, v=id=>esc(document.getElementById(id)?.value||pre[id]||""), total=$("#total").textContent;
+  const g=gw||{}, v=id=>esc(document.getElementById(id)?.value||pre[id]||""), tEl=$("#total"), total=tEl.dataset.final||tEl.textContent, descTxt=tEl.dataset.desc||"";
   $("#mc-c").innerHTML=`${erro?`<div class="erro">${esc(erro)}</div>`:""}
   ${!gateways.length?'<div class="erro">Nenhum método de pagamento ativo. Ative um no painel da CentralCart.</div>':""}
   <form id="f-check" novalidate>
@@ -4082,6 +4133,7 @@ function formCheckout(erro){
       <small>Coloque seu ID e receba a <b>tag do VIP no Discord automaticamente</b> junto com a compra. <a href="https://support.discord.com/hc/pt-br/articles/206346498" target="_blank" rel="noopener" style="color:var(--ciano)">Como achar meu ID?</a></small></div>
     <div class="campo"><label for="c-criador">Apoie um criador</label><input id="c-criador" placeholder="código do criador" autocomplete="off" spellcheck="false" value="${v("c-criador")}"><small class="cr-st" id="c-criador-st"></small><small>Digite o código do seu criador favorito. Uma parte da sua compra vai para ele, e o preço continua o mesmo para você.</small></div>
     ${checkoutFields.filter(f=>!campoDuplicado(f)).map(f=>campoHTML(f,"cf-")).join("")}
+    ${descTxt?`<div class="resumo" style="margin-top:6px"><div class="linha desc"><span>Cupom ${esc(cupom)} <em>${rotuloCupom(cupomInfo)}</em></span><span>−${descTxt}</span></div></div>`:""}
     <div class="total" style="margin:6px 0 14px"><span>TOTAL</span><strong>${total}</strong></div>
     <p class="termos">Ao realizar uma compra, você concorda com os <a href="#termos" data-ir="termos" data-x>Termos de Serviço</a> e <a href="#reembolso" data-ir="reembolso" data-x>Reembolso</a>.<small>Não é um produto oficial, afiliado ou associado à Microsoft ou Mojang AB.</small></p>
     <button class="btn btn-cheio" id="pagar" style="width:100%" ${gateways.length?"":"disabled"}>COMPRE AGORA · ${total}</button>
