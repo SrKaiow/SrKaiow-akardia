@@ -3985,7 +3985,8 @@ function renderLoja(){
   const peso = p => { const v=chaveVip(p.name); if (v) return ordemVip.indexOf(v);
     const n=semAcento(p.name), k=/chave/.test(n) ? ordemCh.find(x=>n.includes(semAcento(x))) : null; if (k) return 10+ordemCh.indexOf(k);
     if (ehCash(p.name)) return 20; if (ehCombo(p.name)) return 25; return 30; };
-  const lista = (catAtual==="all" ? prods : prods.filter(p=>String(p.category_id)===String(catAtual)))
+  // o combo aparece só no destaque em cima, não na grade
+  const lista = (catAtual==="all" ? prods : prods.filter(p=>String(p.category_id)===String(catAtual))).filter(p=>!ehCombo(p.name))
     .map((p,i)=>({p,i})).sort((a,b)=>peso(a.p)-peso(b.p) || a.i-b.i).map(x=>x.p);
   // destaque do combo em cima da loja
   { const cb=prods.find(p=>ehCombo(p.name)&&p.stock?.available!==false), el=$("#destaque");
