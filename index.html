@@ -4043,14 +4043,18 @@ async function atualizarCarrinho(){
 function calcDesconto(){
   const r={valor:0,porItem:{},falta:0,cod:cupom};
   const d=cupomInfo; if (!cupom||!d) return r;
-  const val=Number(d.value)||0, lista=Array.isArray(d.applies_to)?d.applies_to:[];
-  const itens=cart.map(i=>({id:i.id,sub:(resolvidos[i.id]?.pricing?.price||0)*i.quantity}));
+  const num=v=>Number(String(v??"").replace(",","."))||0;
+  const val=num(d.value??d.amount??d.discount), tipo=String(d.type||d.discount_type||"PERCENTAGE").toUpperCase();
+  // applies_to pode vir como números, textos ou objetos {id}; vazio = vale para tudo
+  const lista=(Array.isArray(d.applies_to)?d.applies_to:[]).map(x=>String(x&&typeof x==="object"?(x.id??x.package_id??x.product_id):x));
+  const itens=cart.map(i=>{const p=resolvidos[i.id]||{};return {id:i.id,cat:p.category_id,sub:num(p.pricing?.price)*i.quantity};});
   const subtotal=itens.reduce((a,b)=>a+b.sub,0);
-  const elegiveis=itens.filter(i=>!lista.length||lista.includes(i.id));
+  const elegiveis=itens.filter(i=>!lista.length||lista.includes(String(i.id))||(i.cat!=null&&lista.includes(String(i.cat))));
   const base=elegiveis.reduce((a,b)=>a+b.sub,0);
-  if (!base) return r;
-  if (d.min_price && subtotal<d.min_price){ r.falta=d.min_price-subtotal; return r; }
-  if (d.type==="FIXED"){
+  if (!base){ r.fora=lista.length>0; return r; }
+  const minimo=num(d.min_price);
+  if (minimo && subtotal<minimo){ r.falta=minimo-subtotal; return r; }
+  if (tipo==="FIXED"||tipo==="AMOUNT"||tipo==="VALUE"){
     const tot=Math.min(val,base);
     elegiveis.forEach(i=>r.porItem[i.id]=(r.porItem[i.id]||0)+tot*i.sub/base);
   } else {
@@ -4059,7 +4063,7 @@ function calcDesconto(){
   r.valor=Object.values(r.porItem).reduce((a,b)=>a+b,0);
   return r;
 }
-const rotuloCupom=d=>d?.type==="FIXED"?`−${brl(Number(d.value)||0)}`:`−${Number(d?.value)||0}%`;
+const rotuloCupom=d=>/FIXED|AMOUNT|VALUE/i.test(d?.type||"")?`−${brl(Number(d.value)||0)}`:`−${Number(d?.value)||0}%`;
 function mostrarResumo(total,dsc){
   const el=$("#resumo"), final=Math.max(0,total-dsc.valor);
   if (dsc.valor>0){
@@ -4067,6 +4071,9 @@ function mostrarResumo(total,dsc){
       <div class="linha desc"><span>Cupom ${esc(cupom)} <em>${rotuloCupom(cupomInfo)}</em></span><span>−${brl(dsc.valor)}</span></div>`;
     el.hidden=false;
     $("#total").innerHTML=`<s class="de">${brl(total)}</s>${brl(final)}`;
+  } else if (cupom && cupomInfo && dsc.fora){
+    el.innerHTML=`<div class="linha aviso">O cupom ${esc(cupom)} não vale para os itens do carrinho.</div>`; el.hidden=false;
+    $("#total").textContent=brl(total);
   } else if (cupom && cupomInfo && dsc.falta>0){
     el.innerHTML=`<div class="linha aviso">Faltam ${brl(dsc.falta)} para o cupom ${esc(cupom)} valer.</div>`; el.hidden=false;
     $("#total").textContent=brl(total);
@@ -4076,7 +4083,9 @@ function mostrarResumo(total,dsc){
 async function carregarCupom(code){
   if (!code){ cupomInfo=null; return null; }
   if (DEMO){ const n=parseInt((code.match(/\d+/)||[])[0])||10; cupomInfo={coupon:code,type:"PERCENTAGE",value:n,applies_to:[],min_price:0}; return cupomInfo; }
-  cupomInfo=await api(`/webstore/discount/${enc(code)}`); return cupomInfo;
+  cupomInfo=await api(`/webstore/discount/${enc(code)}`);
+  try { if (new URLSearchParams(location.search).get("cupom")==="debug") alert("Resposta do cupom:\n"+JSON.stringify(cupomInfo,null,1)); } catch {}
+  return cupomInfo;
 }
 $("#itens").onclick=e=>{
   const q=e.target.closest("[data-q]"), r=e.target.closest("[data-rem]");
