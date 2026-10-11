@@ -75,6 +75,10 @@ window.OLIMPO = {
   },
 
   // Cash: arte de "meteoro de moedas" gerada no site para produtos com "cash" no nome
+  // COMBO: produto da CentralCart com "combo" no nome. "itens" = nomes dos produtos avulsos que ele junta
+  // (o site soma o preço deles para mostrar quanto a pessoa economiza).
+  combo: { arte: "produtos/combo-imperial.webp", itens: ["VIP Imperador", "13.500 Cash"], cor: "#5261ff", cor2: "#ff40b3",
+    resumo: "VIP Imperador + 13.500 Cash num pacote só, mais barato que comprar separado." },
   cash: { cor: "#FFD54A", cor2: "#FF8A00",
     resumo: "Moeda premium que cai direto do céu na sua conta. Troque no /kit por itens valiosos ou Caixas Divinas dos Deuses.",
     descricao: "O <b>Cash</b> é a moeda premium do Factions Olimpo. Ele cai direto na sua conta assim que o pagamento é aprovado e pode ser trocado no <b>/kit</b>, dentro do jogo, por <b>itens valiosos</b> ou <b>Caixas Divinas dos Deuses</b>.",
@@ -663,6 +667,24 @@ body[data-view="home"] .nav{display:none}
 .cs-l{display:flex;align-items:center;gap:10px;padding:4px 0;border-bottom:1px dashed rgba(255,213,74,.12);font-size:12.5px;color:var(--texto-2)}
 .cs-l span{flex:1}.cs-l em{font-style:normal;min-width:54px;text-align:right;color:#FFD54A;font-weight:700}
 .cs-l.cab em{color:var(--texto-3);font-weight:400;font-size:11px}
+/* combo */
+.cb-dest{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:26px;align-items:center;margin:0 0 18px;padding:16px;
+  border:2px solid transparent;background:linear-gradient(#0b0f1f,#0b0f1f) padding-box,linear-gradient(90deg,var(--k1),var(--k2),#F2C230) border-box;
+  box-shadow:0 0 34px color-mix(in srgb,var(--k2) 30%,transparent)}
+.cb-arte img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}
+.cb-tag{display:inline-block;padding:4px 10px;font-size:11px;letter-spacing:.2em;color:#1a1200;background:linear-gradient(180deg,#FFE47A,#E9AC17);font-weight:800}
+.cb-txt h2{margin:12px 0 8px;font-family:var(--pixel);font-size:30px;line-height:1.05;background:linear-gradient(90deg,#9fb0ff,var(--k2));-webkit-background-clip:text;color:transparent}
+.cb-txt ul{margin:0 0 12px;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;color:var(--texto-2);font-size:14px}
+.cb-txt li::before{content:"+ ";color:#F2C230;font-weight:800}
+.cb-preco{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.cb-preco s{color:var(--texto-3);font-size:15px}.cb-preco strong{font-size:32px;color:#FFD43A}
+.cb-preco em{font-style:normal;font-size:12px;font-weight:800;color:#7be36a;border:1px solid rgba(123,227,106,.5);padding:2px 8px}
+.prod.combo{box-shadow:0 0 0 1px color-mix(in srgb,var(--k2) 60%,transparent),0 0 26px color-mix(in srgb,var(--k2) 28%,transparent)}
+.prod.combo .img{position:relative}.prod.combo .img img{width:100%;height:100%;object-fit:cover}
+.cb-fita{position:absolute;top:8px;right:8px;padding:3px 9px;font-size:10px;letter-spacing:.2em;font-weight:800;color:#fff;background:linear-gradient(90deg,var(--k1),var(--k2))}
+.cb-nome{background:linear-gradient(90deg,#9fb0ff,var(--k2));-webkit-background-clip:text;color:transparent}
+.cb-eco{margin:-4px 0 8px;font-size:12px;font-weight:700;color:#7be36a}
+@media (max-width:720px){.cb-dest{grid-template-columns:1fr}.cb-txt h2{font-size:24px}}
 .cs-l em.nao{color:var(--texto-3);font-weight:400}
 .cs-obs{margin:4px 0 0;font-size:11px;color:var(--texto-3);text-align:right}
 .dg-vestido{border-color:color-mix(in srgb,var(--dg3) 55%,transparent);background:radial-gradient(70% 55% at 50% 45%,color-mix(in srgb,var(--dg1) 35%,transparent),transparent 72%),rgba(0,0,0,.3)}
@@ -2145,6 +2167,7 @@ html.pausa *,html.pausa *::before,html.pausa *::after{animation-play-state:pause
     <div class="terminal" data-tw="14">&gt; abrindo /olimpo/loja ... ok</div>
     <div class="cab"><h1 data-tw="45">LOJA</h1><p data-tw="10">// Entrega automática no seu nick assim que o pagamento aprovar.</p></div>
     <div id="aviso"></div>
+    <div id="destaque"></div>
     <div class="cats" id="cats"></div>
     <div class="grade" id="produtos" aria-live="polite"></div>
     <div id="cmp-secao"></div>
@@ -2601,7 +2624,11 @@ const chaveArte = (nome) => { const k=chaveDe(nome); if (!k) return "";
     <span class="ca-info">NÍVEL ALEATÓRIO · 30s</span>
   </div>`; };
 
-const ehCash = nome => /\bcash\b/.test(semAcento(nome)) && !!C.cash;
+const ehCash = nome => /\bcash\b/.test(semAcento(nome)) && !ehCombo(nome) && !!C.cash;
+const ehCombo = nome => /\bcombo\b/.test(semAcento(nome)) && !!C.combo;
+// preço somado dos itens do combo comprados separados (null se algum não estiver na loja)
+const avulsoCombo = () => { const it=(C.combo||{}).itens||[]; let t=0;
+  for (const n of it){ const q=prods.find(p=>semAcento(p.name)===semAcento(n)); if (!q) return null; t+=Number(q.pricing?.price)||0; } return t; };
 const qtdCash = nome => (String(nome).match(/[\d.,]+\s*(k|mil)?/i)||[""])[0].trim();
 // moeda em pixel art: círculo com contorno, luz em cima, sombra embaixo e a estrela do cash no meio
 function moedaSVG(){
@@ -2826,7 +2853,7 @@ function botaoFx(p, vip, ch, cs){
   if (fx==="vip") extra+=[18,50,82].map((x,i)=>`<i class="faisca" style="left:${x}%;--d:${(i*.4).toFixed(1)}s">✦</i>`).join("");
   return `<div class="bt-wrap ${fx?"fx-"+fx:""}"><button class="btn" data-ver="${p.id}"><span class="bt-txt">&gt; COMPRAR</span></button>${extra?`<span class="fx" aria-hidden="true">${extra}</span>`:""}</div>`;
 }
-const resumoProd = p => { const kv=chaveVip(p.name); if (kv && C.vantagens) return resumoVip(kv); const k=chaveDe(p.name); if (k) return k.resumo; if (ehCash(p.name)) return C.cash.resumo; const t=String(p.description||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim(); return t; };
+const resumoProd = p => { if (ehCombo(p.name)) return C.combo.resumo; const kv=chaveVip(p.name); if (kv && C.vantagens) return resumoVip(kv); const k=chaveDe(p.name); if (k) return k.resumo; if (ehCash(p.name)) return C.cash.resumo; const t=String(p.description||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim(); return t; };
 const nomeHTMLbase = nome => corVip(nome) ? `<span class="vip-nome" ${vipStyle(nome)}>${esc(nome)}</span>` : esc(nome);
 const hist = url => { try { history.replaceState(null, "", url); } catch {} };
 
@@ -3957,15 +3984,30 @@ function renderLoja(){
   const ordemVip=ORDEM_VIPS(), ordemCh=Object.keys(C.chaves||{});
   const peso = p => { const v=chaveVip(p.name); if (v) return ordemVip.indexOf(v);
     const n=semAcento(p.name), k=/chave/.test(n) ? ordemCh.find(x=>n.includes(semAcento(x))) : null; if (k) return 10+ordemCh.indexOf(k);
-    if (ehCash(p.name)) return 20; return 30; };
+    if (ehCash(p.name)) return 20; if (ehCombo(p.name)) return 25; return 30; };
   const lista = (catAtual==="all" ? prods : prods.filter(p=>String(p.category_id)===String(catAtual)))
     .map((p,i)=>({p,i})).sort((a,b)=>peso(a.p)-peso(b.p) || a.i-b.i).map(x=>x.p);
+  // destaque do combo em cima da loja
+  { const cb=prods.find(p=>ehCombo(p.name)&&p.stock?.available!==false), el=$("#destaque");
+    if (cb && C.combo){ const pr=Number(cb.pricing?.price)||0, av=avulsoCombo(), eco=av&&av>pr?av-pr:0;
+      el.innerHTML=`<section class="cb-dest" style="--k1:${C.combo.cor};--k2:${C.combo.cor2}">
+        <div class="cb-arte"><img src="${esc(C.combo.arte||cb.image||"")}" alt="${esc(cb.name)}"></div>
+        <div class="cb-txt"><span class="cb-tag">★ OFERTA ESPECIAL</span><h2>${esc(cb.name).toUpperCase()}</h2>
+          <ul>${(C.combo.itens||[]).map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
+          <div class="cb-preco">${eco?`<s>${brl(av)}</s>`:""}<strong>${brl(pr)}</strong>${eco?`<em>economize ${brl(eco)}</em>`:""}</div>
+          <button class="btn btn-cheio" data-ver="${cb.id}">&gt; QUERO O COMBO</button></div></section>`;
+      el.querySelector("[data-ver]").onclick=()=>abrirProduto(cb.id);
+    } else el.innerHTML=""; }
   if (!lista.length){ $("#produtos").innerHTML='<p class="vazio">Nenhum produto nesta categoria ainda.</p>'; return; }
   $("#produtos").innerHTML = lista.map(p => {
     const pr=p.pricing||{}, disp=p.stock?.available!==false;
     const preco = pr.min!=null&&pr.max!=null&&pr.min!==pr.max ? `${brl(pr.min)} – ${brl(pr.max)}` : brl(pr.price);
     const vip = corVip(p.name), rotulo = vip ? Object.keys(C.vips).find(k=>p.name.toLowerCase().includes(k.toLowerCase())).toUpperCase() : "";
-    const ch = chaveDe(p.name), cs = !vip && !ch && ehCash(p.name);
+    const ch = chaveDe(p.name), cs = !vip && !ch && ehCash(p.name), cb = !vip && !ch && !cs && ehCombo(p.name);
+    if (cb){ const av=avulsoCombo(), eco=av&&av>pr.price?av-pr.price:0;
+      return `<article class="painel prod chave combo" style="--k1:${C.combo.cor};--k2:${C.combo.cor2}"><div class="img"><img src="${esc(C.combo.arte||p.image)}" alt="" loading="lazy"><span class="cb-fita">COMBO</span></div>
+      <div class="info"><h3><span class="cb-nome">${esc(p.name)}</span></h3><p class="resumo">${esc(C.combo.resumo)}</p><div class="preco"><strong>${preco}</strong>${eco?`<s>${brl(av)}</s>`:""}</div>
+      ${eco?`<p class="cb-eco">Você economiza ${brl(eco)}</p>`:""}${disp?botaoFx(p, true, null, false):'<span class="esgotado">ESGOTADO</span>'}</div></article>`; }
     return `<article class="painel prod${vip?" vip":""}${ch?" chave":""}${cs?" chave cash":""}" ${vip?vipStyle(p.name):(ch?`style="--k1:${ch.cor};--k2:${ch.cor2}"`:(cs?`style="--k1:${C.cash.cor};--k2:${C.cash.cor2}"`:""))}><div class="img">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy">`:(vip?(vipArte(p.name) || tagHTML(p.name) || `<span class="ph vip-nome">${rotulo}</span>`):(ch?chaveArte(p.name):(cs?cashArte(p.name):'<span class="ph">⚡</span>')))}
       ${pr.percent_discount?`<span class="selo-desc">${Math.round(pr.percent_discount)}%</span>`:""}</div>
       <div class="info"><h3>${nomeHTML(p.name)}</h3>${resumoProd(p)?`<p class="resumo">${esc(resumoProd(p))}</p>`:""}<div class="preco"><strong>${preco}</strong>${pr.compare_at?`<s>${brl(pr.compare_at)}</s>`:""}</div>
@@ -4001,7 +4043,9 @@ function abrirProduto(id){
   $("#mp-t").innerHTML=(tagHTML(p.name) || nomeHTML(p.name.toUpperCase())); const fields=p.fields||[];
   const kv = C.vantagens ? chaveVip(p.name) : null;
   $("#m-prod .caixa").classList.toggle("larga", !!kv);
-  $("#mp-c").innerHTML=`${kv ? previaVip(kv,p.name) : (p.image?`<img src="${esc(p.image)}" alt="" style="margin-bottom:14px;border:1px solid var(--ouro-sutil)">`:(chaveDe(p.name)?`<div class="mp-arte">${chaveArte(p.name)}</div>`:(ehCash(p.name)?`<div class="mp-arte">${cashArte(p.name)}</div>`:"")))}
+  const cbx=ehCombo(p.name), cbav=cbx?avulsoCombo():null, cbeco=cbav&&cbav>(p.pricing?.price||0)?cbav-p.pricing.price:0;
+  $("#mp-c").innerHTML=`${cbx ? `<img src="${esc(C.combo.arte||p.image||"")}" alt="" style="margin-bottom:14px;border:1px solid var(--ouro-sutil);width:100%">
+      <div class="mp-desc" style="margin-bottom:10px"><b>O combo inclui:</b><ul class="ch-lista">${(C.combo.itens||[]).map(i=>`<li>${esc(i)}</li>`).join("")}</ul>${cbeco?`<p style="color:#7be36a;font-weight:700">Separado sai ${brl(cbav)}. No combo você economiza ${brl(cbeco)}.</p>`:""}</div>` : ""}${cbx ? "" : kv ? previaVip(kv,p.name) : (p.image?`<img src="${esc(p.image)}" alt="" style="margin-bottom:14px;border:1px solid var(--ouro-sutil)">`:(chaveDe(p.name)?`<div class="mp-arte">${chaveArte(p.name)}</div>`:(ehCash(p.name)?`<div class="mp-arte">${cashArte(p.name)}</div>`:"")))}
     ${kv ? `<div class="vt-tit">VANTAGENS DO VIP</div>${vantagensVip(kv)}` : ""}
     <div class="mp-desc">${p.description || (chaveDe(p.name) ? textoChave(chaveDe(p.name)) : (ehCash(p.name) ? C.cash.descricao+`<ul class="ch-lista"><li><b>Onde usar:</b> digite <b>/kit</b> dentro do servidor e troque em <b>Itens valiosos</b> ou <b>Caixas Divinas dos Deuses</b>.</li><li><b>Entrega:</b> o cash cai direto no seu nick assim que o pagamento é aprovado.</li></ul>` : ""))}</div>${ehCash(p.name)?tabelaCash(valorCash(p.name)):""}
     <form id="f-prod">${fields.map(f=>campoHTML(f,"pf-")).join("")}
