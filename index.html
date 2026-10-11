@@ -4046,7 +4046,9 @@ function calcDesconto(){
   const num=v=>Number(String(v??"").replace(",","."))||0;
   const val=num(d.value??d.amount??d.discount), tipo=String(d.type||d.discount_type||"PERCENTAGE").toUpperCase();
   // applies_to pode vir como números, textos ou objetos {id}; vazio = vale para tudo
-  const lista=(Array.isArray(d.applies_to)?d.applies_to:[]).map(x=>String(x&&typeof x==="object"?(x.id??x.package_id??x.product_id):x));
+  // -1 na lista = vale para todos os produtos (é assim que a CentralCart manda)
+  let lista=(Array.isArray(d.applies_to)?d.applies_to:[]).map(x=>String(x&&typeof x==="object"?(x.id??x.package_id??x.product_id):x));
+  if (lista.includes("-1")) lista=[];
   const itens=cart.map(i=>{const p=resolvidos[i.id]||{};return {id:i.id,cat:p.category_id,sub:num(p.pricing?.price)*i.quantity};});
   const subtotal=itens.reduce((a,b)=>a+b.sub,0);
   const elegiveis=itens.filter(i=>!lista.length||lista.includes(String(i.id))||(i.cat!=null&&lista.includes(String(i.cat))));
@@ -4084,7 +4086,6 @@ async function carregarCupom(code){
   if (!code){ cupomInfo=null; return null; }
   if (DEMO){ const n=parseInt((code.match(/\d+/)||[])[0])||10; cupomInfo={coupon:code,type:"PERCENTAGE",value:n,applies_to:[],min_price:0}; return cupomInfo; }
   cupomInfo=await api(`/webstore/discount/${enc(code)}`);
-  try { if (new URLSearchParams(location.search).get("cupom")==="debug") alert("Resposta do cupom:\n"+JSON.stringify(cupomInfo,null,1)); } catch {}
   return cupomInfo;
 }
 $("#itens").onclick=e=>{
