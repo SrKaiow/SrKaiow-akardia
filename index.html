@@ -663,6 +663,7 @@ body[data-view="home"] .nav{display:none}
 .cs-l{display:flex;align-items:center;gap:10px;padding:4px 0;border-bottom:1px dashed rgba(255,213,74,.12);font-size:12.5px;color:var(--texto-2)}
 .cs-l span{flex:1}.cs-l em{font-style:normal;min-width:54px;text-align:right;color:#FFD54A;font-weight:700}
 .cs-l.cab em{color:var(--texto-3);font-weight:400;font-size:11px}
+.cs-l em.nao{color:var(--texto-3);font-weight:400}
 .cs-obs{margin:4px 0 0;font-size:11px;color:var(--texto-3);text-align:right}
 .dg-vestido{border-color:color-mix(in srgb,var(--dg3) 55%,transparent);background:radial-gradient(70% 55% at 50% 45%,color-mix(in srgb,var(--dg1) 35%,transparent),transparent 72%),rgba(0,0,0,.3)}
 .dg-vestido .fig{height:104px;margin-top:-4px}
@@ -2627,9 +2628,23 @@ function raioCaminho(x1,y1,x2,y2,seed){
   [3,5,6].forEach(k=>{ const [gx,gy]=pts[k], dir=rnd()<.5?-1:1; galhos.push(`M${gx} ${gy} L${gx+dir*(5+rnd()*5)} ${gy+4+rnd()*4} L${gx+dir*(9+rnd()*6)} ${gy+9+rnd()*5}`); });
   return { tronco:"M"+pts.map(p=>p.map(v=>v.toFixed(1)).join(" ")).join(" L"), galhos };
 }
-const tabelaCash = () => { const T=(C.cash||{}).tabela; if (!T) return ""; const n=v=>Number(v).toLocaleString("pt-BR");
-  return `<div class="cs-tab"><div class="cs-tab-t">O QUE DÁ PARA PEGAR NO /KIT</div>${T.map(g=>`<div class="cs-g"><b>${esc(g.grupo)}</b>${g.cab?`<div class="cs-l cab"><span></span>${g.cab.map(c=>`<em>${c}</em>`).join("")}</div>`:""}
-    ${g.itens.map(([nm,...v])=>`<div class="cs-l"><span>${esc(nm)}</span>${v.map(x=>`<em>${n(x)}</em>`).join("")}</div>`).join("")}</div>`).join("")}<p class="cs-obs">valores em cash</p></div>`; };
+// quanto cash vem no pacote (ex.: "1.250 Cash" -> 1250, "15k" -> 15000)
+const valorCash = nome => { const q=qtdCash(nome); if (!q) return 0; const k=/k|mil/i.test(q); const v=Number(q.replace(/k|mil/ig,"").trim().replace(/\./g,"").replace(",","."))||0; return k?v*1000:v; };
+// tabela do /kit: com "saldo", mostra só o que dá para pegar com aquele pacote
+const tabelaCash = (saldo) => { const T=(C.cash||{}).tabela; if (!T) return ""; const n=v=>Number(v).toLocaleString("pt-BR");
+  const lim=saldo>0?saldo:Infinity;
+  const grupos=T.map(g=>{
+    const nCols=Math.max(...g.itens.map(i=>i.length-1));
+    // colunas que pelo menos um item consegue pagar
+    const cols=[...Array(nCols).keys()].filter(c=>g.itens.some(i=>i[c+1]!=null&&i[c+1]<=lim));
+    const itens=g.itens.filter(i=>cols.some(c=>i[c+1]!=null&&i[c+1]<=lim));
+    if (!itens.length) return "";
+    const cab=g.cab?`<div class="cs-l cab"><span></span>${cols.map(c=>`<em>${g.cab[c]}</em>`).join("")}</div>`:"";
+    return `<div class="cs-g"><b>${esc(g.grupo)}</b>${cab}
+    ${itens.map(([nm,...v])=>`<div class="cs-l"><span>${esc(nm)}</span>${cols.map(c=>v[c]!=null&&v[c]<=lim?`<em>${n(v[c])}</em>`:`<em class="nao">—</em>`).join("")}</div>`).join("")}</div>`;
+  }).join("");
+  const tit=saldo>0?`O QUE DÁ PARA PEGAR COM ${n(saldo)} CASH`:"O QUE DÁ PARA PEGAR NO /KIT";
+  return `<div class="cs-tab"><div class="cs-tab-t">${tit}</div>${grupos}<p class="cs-obs">valores em cash</p></div>`; };
 const cashArte = (nome) => {
   const q=qtdCash(nome), id="cs"+(++cashSeq), rz=raioCaminho(53,-2,50,37,7+cashSeq*13);
   const est = Array.from({length:16},(_,i)=>`<i class="cs-est" style="left:${(i*37+11)%100}%;top:${(i*23)%38}%;--d:${(i%5)*.6}s"></i>`).join("");
@@ -3988,7 +4003,7 @@ function abrirProduto(id){
   $("#m-prod .caixa").classList.toggle("larga", !!kv);
   $("#mp-c").innerHTML=`${kv ? previaVip(kv,p.name) : (p.image?`<img src="${esc(p.image)}" alt="" style="margin-bottom:14px;border:1px solid var(--ouro-sutil)">`:(chaveDe(p.name)?`<div class="mp-arte">${chaveArte(p.name)}</div>`:(ehCash(p.name)?`<div class="mp-arte">${cashArte(p.name)}</div>`:"")))}
     ${kv ? `<div class="vt-tit">VANTAGENS DO VIP</div>${vantagensVip(kv)}` : ""}
-    <div class="mp-desc">${p.description || (chaveDe(p.name) ? textoChave(chaveDe(p.name)) : (ehCash(p.name) ? C.cash.descricao+`<ul class="ch-lista"><li><b>Onde usar:</b> digite <b>/kit</b> dentro do servidor e troque em <b>Itens valiosos</b> ou <b>Caixas Divinas dos Deuses</b>.</li><li><b>Entrega:</b> o cash cai direto no seu nick assim que o pagamento é aprovado.</li></ul>` : ""))}</div>${ehCash(p.name)?tabelaCash():""}
+    <div class="mp-desc">${p.description || (chaveDe(p.name) ? textoChave(chaveDe(p.name)) : (ehCash(p.name) ? C.cash.descricao+`<ul class="ch-lista"><li><b>Onde usar:</b> digite <b>/kit</b> dentro do servidor e troque em <b>Itens valiosos</b> ou <b>Caixas Divinas dos Deuses</b>.</li><li><b>Entrega:</b> o cash cai direto no seu nick assim que o pagamento é aprovado.</li></ul>` : ""))}</div>${ehCash(p.name)?tabelaCash(valorCash(p.name)):""}
     <form id="f-prod">${fields.map(f=>campoHTML(f,"pf-")).join("")}
       <div class="campo"><label for="pf-q">Quantidade</label><input id="pf-q" type="number" min="${p.stock?.min_amount||1}" value="${p.stock?.min_amount||1}"></div>
       <div class="total" style="margin-bottom:14px"><span>PREÇO</span><strong>${brl(p.pricing?.price)}</strong></div>
