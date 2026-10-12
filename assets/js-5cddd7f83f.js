@@ -139,6 +139,9 @@ const chaveArte = (nome) => { const k=chaveDe(nome); if (!k) return "";
 const ehCash = nome => /\bcash\b/.test(semAcento(nome)) && !ehCombo(nome) && !!C.cash;
 // cards usam a versão pequena das artes animadas (produtos/mini/...), bem mais leve de desenhar
 const mini = u => { const m=String(u||"").match(/^(.*\/)?produtos\/([\w.-]+\.webp)(\?.*)?$/i); return m ? (m[1]||"")+"produtos/mini/"+m[2] : u; };
+// desconto do próprio produto: compare_at (preço "de") definido na CentralCart
+const deProd = p => { const pr=p?.pricing||{}, a=Number(pr.compare_at)||0, v=Number(pr.price)||0; return a>v ? a : 0; };
+const pctProd = p => { const a=deProd(p), v=Number(p?.pricing?.price)||0; return a ? Math.round((1-v/a)*100) : 0; };
 const ehCombo = nome => /\bcombo\b/.test(semAcento(nome)) && !!C.combo;
 // preço somado dos itens do combo comprados separados (null se algum não estiver na loja)
 const avulsoCombo = () => { const it=(C.combo||{}).itens||[]; let t=0;
@@ -1504,10 +1507,10 @@ function renderLoja(){
     .map((p,i)=>({p,i})).sort((a,b)=>peso(a.p)-peso(b.p) || a.i-b.i).map(x=>x.p);
   // destaque do combo em cima da loja
   { const cb=prods.find(p=>ehCombo(p.name)&&p.stock?.available!==false), el=$("#destaque");
-    if (cb && C.combo){ const pr=Number(cb.pricing?.price)||0, av=avulsoCombo(), eco=av&&av>pr?av-pr:0;
+    if (cb && C.combo){ const pr=Number(cb.pricing?.price)||0, av=deProd(cb)||avulsoCombo(), eco=av&&av>pr?av-pr:0, pc=av?Math.round((1-pr/av)*100):0;
       el.innerHTML=`<section class="cb-dest" style="--k1:${C.combo.cor};--k2:${C.combo.cor2}">
         <div class="cb-arte"><img src="${esc(C.combo.arte||cb.image||"")}" alt="${esc(cb.name)}"></div>
-        <div class="cb-txt"><span class="cb-tag">★ OFERTA ESPECIAL</span><h2>${esc(cb.name).toUpperCase()}</h2>
+        <div class="cb-txt"><span class="cb-tag">★ OFERTA ESPECIAL${pc?` · ${pc}% OFF`:""}</span><h2>${esc(cb.name).toUpperCase()}</h2>
           <ul>${(C.combo.itens||[]).map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
           <div class="cb-preco">${eco?`<s>${brl(av)}</s>`:""}<strong>${brl(pr)}</strong>${eco?`<em>economize ${brl(eco)}</em>`:""}</div>
           <button class="btn btn-cheio" data-ver="${cb.id}">&gt; QUERO O COMBO</button></div></section>`;
@@ -1519,12 +1522,12 @@ function renderLoja(){
     const preco = pr.min!=null&&pr.max!=null&&pr.min!==pr.max ? `${brl(pr.min)} – ${brl(pr.max)}` : brl(pr.price);
     const vip = corVip(p.name), rotulo = vip ? Object.keys(C.vips).find(k=>p.name.toLowerCase().includes(k.toLowerCase())).toUpperCase() : "";
     const ch = chaveDe(p.name), cs = !vip && !ch && ehCash(p.name), cb = !vip && !ch && !cs && ehCombo(p.name);
-    if (cb){ const av=avulsoCombo(), eco=av&&av>pr.price?av-pr.price:0;
+    if (cb){ const av=deProd(p)||avulsoCombo(), eco=av&&av>pr.price?av-pr.price:0;
       return `<article class="painel prod chave combo" style="--k1:${C.combo.cor};--k2:${C.combo.cor2}"><div class="img"><img src="${esc(mini(C.combo.arte||p.image))}" alt="" loading="lazy" decoding="async"><span class="cb-fita">COMBO</span></div>
       <div class="info"><h3><span class="cb-nome">${esc(p.name)}</span></h3><p class="resumo">${esc(C.combo.resumo)}</p><div class="preco"><strong>${preco}</strong>${eco?`<s>${brl(av)}</s>`:""}</div>
       ${eco?`<p class="cb-eco">Você economiza ${brl(eco)}</p>`:""}${disp?botaoFx(p, true, null, false):'<span class="esgotado">ESGOTADO</span>'}</div></article>`; }
     return `<article class="painel prod${vip?" vip":""}${ch?" chave":""}${cs?" chave cash":""}" ${vip?vipStyle(p.name):(ch?`style="--k1:${ch.cor};--k2:${ch.cor2}"`:(cs?`style="--k1:${C.cash.cor};--k2:${C.cash.cor2}"`:""))}><div class="img">${p.image?`<img src="${esc(mini(p.image))}" alt="" loading="lazy" decoding="async">`:(vip?(vipArte(p.name) || tagHTML(p.name) || `<span class="ph vip-nome">${rotulo}</span>`):(ch?chaveArte(p.name):(cs?cashArte(p.name):'<span class="ph">⚡</span>')))}
-      ${pr.percent_discount?`<span class="selo-desc">${Math.round(pr.percent_discount)}%</span>`:""}</div>
+      ${pctProd(p)?`<span class="selo-desc">${pctProd(p)}% OFF</span>`:""}</div>
       <div class="info"><h3>${nomeHTML(p.name)}</h3>${resumoProd(p)?`<p class="resumo">${esc(resumoProd(p))}</p>`:""}<div class="preco"><strong>${preco}</strong>${pr.compare_at?`<s>${brl(pr.compare_at)}</s>`:""}</div>
       ${disp?botaoFx(p, vip, ch, cs):'<span class="esgotado">ESGOTADO</span>'}</div></article>`;
   }).join("");
@@ -1565,7 +1568,7 @@ function abrirProduto(id){
     <div class="mp-desc">${(p.description && limparHTML(p.description)) || (chaveDe(p.name) ? textoChave(chaveDe(p.name)) : (ehCash(p.name) ? C.cash.descricao+`<ul class="ch-lista"><li><b>Onde usar:</b> digite <b>/kit</b> dentro do servidor e troque em <b>Itens valiosos</b> ou <b>Caixas Divinas dos Deuses</b>.</li><li><b>Entrega:</b> o cash cai direto no seu nick assim que o pagamento é aprovado.</li></ul>` : ""))}</div>${ehCash(p.name)?tabelaCash(valorCash(p.name)):""}
     <form id="f-prod">${fields.map(f=>campoHTML(f,"pf-")).join("")}
       <div class="campo"><label for="pf-q">Quantidade</label><input id="pf-q" type="number" min="${p.stock?.min_amount||1}" value="${p.stock?.min_amount||1}"></div>
-      <div class="total" style="margin-bottom:14px"><span>PREÇO</span><strong>${brl(p.pricing?.price)}</strong></div>
+      <div class="total" style="margin-bottom:14px"><span>PREÇO${pctProd(p)?` <em class="selo-off">${pctProd(p)}% OFF</em>`:""}</span><strong>${deProd(p)?`<s class="de">${brl(deProd(p))}</s>`:""}${brl(p.pricing?.price)}</strong></div>
       <button class="btn btn-cheio" style="width:100%">ADICIONAR AO CARRINHO</button></form>`;
   if (kv){
     const inp=$("#pv-input");
@@ -1599,18 +1602,18 @@ async function atualizarCarrinho(){
       : await api("/webstore/cart",{method:"POST",body:JSON.stringify({items:cart.map(i=>({id:i.id,quantity:i.quantity}))})});
     resolvidos=Object.fromEntries(res.map(p=>[p.id,p])); cart=cart.filter(i=>resolvidos[i.id]); salvar();
   } catch(e){ toast(e.message); }
-  let total=0;
+  let total=0, deTot=0;
   const dsc=calcDesconto();
   $("#itens").innerHTML=cart.map((i,k)=>{
     const p=resolvidos[i.id]||{name:"Produto",pricing:{price:0}}, sub=(p.pricing?.price||0)*i.quantity; total+=sub;
-    const novo=dsc.porItem[i.id]!=null ? sub-dsc.porItem[i.id] : null;
+    const novo=dsc.porItem[i.id]!=null ? sub-dsc.porItem[i.id] : null, deI=deProd(p)*i.quantity; deTot+=deI||sub;
     const o=Object.entries(i.options||{}).map(([a,b])=>`${esc(a)}: ${esc(b)}`).join(" · ");
-    return `<div class="item"><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${tagHTML(p.name)}${nomeHTML(p.name)}</span><strong style="color:var(--ouro);text-align:right">${novo!=null&&novo<sub?`<s class="de">${brl(sub)}</s>${brl(novo)}`:brl(sub)}</strong>${o?`<span class="opts">${o}</span>`:""}
+    return `<div class="item"><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${tagHTML(p.name)}${nomeHTML(p.name)}</span><strong style="color:var(--ouro);text-align:right">${novo!=null&&novo<sub?`<s class="de">${brl(deI||sub)}</s>${brl(novo)}`:deI?`<s class="de">${brl(deI)}</s>${brl(sub)}`:brl(sub)}</strong>${o?`<span class="opts">${o}</span>`:""}
       <div class="qtd"><button data-q="${k}" data-d="-1" aria-label="Diminuir">−</button><span>${i.quantity}</span><button data-q="${k}" data-d="1" aria-label="Aumentar">+</button></div>
       <button class="rem" data-rem="${k}">remover</button></div>`;
   }).join("");
   $("#badge").textContent=cart.reduce((s,i)=>s+i.quantity,0);
-  mostrarResumo(total,dsc);
+  mostrarResumo(total,dsc,deTot);
 }
 /* ---------- cupom: mostra o desconto antes do pagamento ---------- */
 // calcula o desconto do cupom sobre os itens do carrinho (prévia: o valor final é confirmado pela loja no pagamento)
@@ -1640,8 +1643,14 @@ function calcDesconto(){
   return r;
 }
 const rotuloCupom=d=>/FIXED|AMOUNT|VALUE/i.test(d?.type||"")?`−${brl(Number(d.value)||0)}`:`−${Number(d?.value)||0}%`;
-function mostrarResumo(total,dsc){
-  const el=$("#resumo"), final=Math.max(0,total-dsc.valor);
+function mostrarResumo(total,dsc,deTot=0){
+  const el=$("#resumo"), final=Math.max(0,total-dsc.valor), ofer=deTot>total?deTot-total:0;
+  if (ofer>0 && !(dsc.valor>0)){
+    el.innerHTML=`<div class="linha"><span>Preço normal</span><span>${brl(deTot)}</span></div>
+      <div class="linha desc"><span>Descontos da loja</span><span>−${brl(ofer)}</span></div>`;
+    el.hidden=false; $("#total").innerHTML=`<s class="de">${brl(deTot)}</s>${brl(total)}`;
+    $("#total").dataset.final=brl(total); $("#total").dataset.desc=""; return;
+  }
   if (dsc.valor>0){
     el.innerHTML=`<div class="linha"><span>Subtotal</span><span>${brl(total)}</span></div>
       <div class="linha desc"><span>Cupom ${esc(cupom)} <em>${rotuloCupom(cupomInfo)}</em></span><span>−${brl(dsc.valor)}</span></div>`;
@@ -1671,7 +1680,8 @@ $("#abrir-cart").onclick=()=>{ $("#gaveta").classList.add("on"); $("#fundo").cla
 // cupom resgatado antes (ex.: o do ET) continua aplicado
 $("#cr-cart").value=criadorSalvo; campoCriador($("#cr-cart"),$("#cr-cart-st"));
 try { const sv=localStorage.getItem("olimpo_cupom"); if (sv){ cupom=sv; $("#cupom").value=sv; $("#cupom-msg").textContent="// cupom "+sv+" aplicado";
-  carregarCupom(sv).then(d=>{ $("#cupom-msg").textContent=`// cupom ${sv} aplicado: ${rotuloCupom(d)}`; atualizarCarrinho(); }).catch(()=>{}); } } catch {}
+  carregarCupom(sv).then(d=>{ $("#cupom-msg").textContent=`// cupom ${sv} aplicado: ${rotuloCupom(d)}`; atualizarCarrinho(); })
+    .catch(()=>{ cupom=""; cupomInfo=null; $("#cupom").value=""; $("#cupom-msg").textContent=""; try { localStorage.removeItem("olimpo_cupom"); } catch {} atualizarCarrinho(); }); } } catch {}
 $("#aplicar-cupom").onclick=async()=>{
   const code=$("#cupom").value.trim(), msg=$("#cupom-msg");
   if (!code){ cupom=""; cupomInfo=null; msg.textContent=""; atualizarCarrinho(); return; }
