@@ -79,9 +79,12 @@ window.OLIMPO = {
   // Cash: arte de "meteoro de moedas" gerada no site para produtos com "cash" no nome
   // COMBO: produto da CentralCart com "combo" no nome. "itens" = nomes dos produtos avulsos que ele junta
   // (o site soma o preço deles para mostrar quanto a pessoa economiza).
-  combo: { arte: "produtos/combo-imperial.webp", itens: ["VIP Imperador", "13.500 Cash"], cor: "#5261ff", cor2: "#ff40b3",
-    resumo: "VIP Imperador + 13.500 Cash num pacote só, mais barato que comprar separado." },
+  combo: { arte: "produtos/combo-imperial.webp", itens: ["VIP Imperador", "13.200 Cash"], cor: "#5261ff", cor2: "#ff40b3",
+    resumo: "VIP Imperador + 13.200 Cash num pacote só, mais barato que comprar separado." },
   cash: { cor: "#FFD54A", cor2: "#FF8A00",
+    // bônus de cada pacote (aparece no card). O nome tem que ser igual ao da CentralCart.
+    bonus: { "1.000 Cash": "1.000 + 0 bônus", "2.100 Cash": "2.000 + 100 bônus", "4.300 Cash": "4.000 + 300 bônus",
+             "8.700 Cash": "8.000 + 700 bônus", "13.200 Cash": "12.000 + 1.200 bônus", "22.500 Cash": "20.000 + 2.500 bônus" },
     resumo: "Moeda premium que cai direto do céu na sua conta. Troque no /kit por itens valiosos ou Caixas Divinas dos Deuses.",
     descricao: "O <b>Cash</b> é a moeda premium do Factions Olimpo. Ele cai direto na sua conta assim que o pagamento é aprovado e pode ser trocado no <b>/kit</b>, dentro do jogo, por <b>itens valiosos</b> ou <b>Caixas Divinas dos Deuses</b>.",
     // preços dentro do jogo (/kit), mostrados na janela do produto de cash
@@ -2481,6 +2484,6 @@ html.pausa *,html.pausa *::before,html.pausa *::after{animation-play-state:pause
   <span class="tk-sub">já aplicado no seu carrinho</span>
 </div>
 
-<script src="assets/js-5cddd7f83f.js"></script>
+<script src="assets/js-2a7cecab05.js"></script>
 </body>
 </html>

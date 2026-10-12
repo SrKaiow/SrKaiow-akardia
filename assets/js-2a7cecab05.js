@@ -370,7 +370,7 @@ function botaoFx(p, vip, ch, cs){
   if (fx==="vip") extra+=[18,50,82].map((x,i)=>`<i class="faisca" style="left:${x}%;--d:${(i*.4).toFixed(1)}s">✦</i>`).join("");
   return `<div class="bt-wrap ${fx?"fx-"+fx:""}"><button class="btn" data-ver="${p.id}"><span class="bt-txt">&gt; COMPRAR</span></button>${extra?`<span class="fx" aria-hidden="true">${extra}</span>`:""}</div>`;
 }
-const resumoProd = p => { if (ehCombo(p.name)) return C.combo.resumo; const kv=chaveVip(p.name); if (kv && C.vantagens) return resumoVip(kv); const k=chaveDe(p.name); if (k) return k.resumo; if (ehCash(p.name)) return C.cash.resumo; const t=String(p.description||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim(); return t; };
+const resumoProd = p => { if (ehCombo(p.name)) return C.combo.resumo; const kv=chaveVip(p.name); if (kv && C.vantagens) return resumoVip(kv); const k=chaveDe(p.name); if (k) return k.resumo; if (ehCash(p.name)) return ((C.cash.bonus||{})[p.name] ? C.cash.bonus[p.name]+" · " : "")+C.cash.resumo; const t=String(p.description||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim(); return t; };
 const nomeHTMLbase = nome => corVip(nome) ? `<span class="vip-nome" ${vipStyle(nome)}>${esc(nome)}</span>` : esc(nome);
 const hist = url => { try { history.replaceState(null, "", url); } catch {} };
 
@@ -1446,10 +1446,10 @@ const demoProds=[
   {id:5,category_id:2,name:"Chave do Santuário das Profundezas",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
   {id:6,category_id:2,name:"Chave da Masmorra Infernal",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
   {id:7,category_id:2,name:"Chave do Calabouço Assombrado",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
-  {id:8,category_id:3,name:"1.250 Cash",description:"",pricing:{price:7},stock:{available:true},fields:[]},
-  {id:9,category_id:3,name:"2.500 Cash",description:"",pricing:{price:14.14},stock:{available:true},fields:[]},
-  {id:10,category_id:3,name:"6.500 Cash",description:"",pricing:{price:35.57},stock:{available:true},fields:[]},
-  {id:11,category_id:3,name:"13.500 Cash",description:"",pricing:{price:71.29},stock:{available:true},fields:[]}
+  {id:8,category_id:3,name:"1.000 Cash",description:"",pricing:{price:9.9},stock:{available:true},fields:[]},
+  {id:9,category_id:3,name:"2.100 Cash",description:"",pricing:{price:18.05,compare_at:19},stock:{available:true},fields:[]},
+  {id:10,category_id:3,name:"4.300 Cash",description:"",pricing:{price:35.91,compare_at:39.9},stock:{available:true},fields:[]},
+  {id:11,category_id:3,name:"8.700 Cash",description:"",pricing:{price:67.92,compare_at:79.9},stock:{available:true},fields:[]}
 ];
 let cats=[], prods=[], catAtual="all", resolvidos={}, cupom="", cupomInfo=null, lojaOk=false, lojaP=null;
 let cart=[]; try { cart=JSON.parse(localStorage.getItem("olimpo_cart")||"[]"); } catch {}
