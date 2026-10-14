@@ -1408,7 +1408,7 @@ $("#v-parceiros").addEventListener("click", e => {
   const t=e.target.closest("[data-copia]"); if (t) copiar(t.dataset.copia, "> copiado: "+t.dataset.copia);
 });
 
-/* ================= BLOG (posts da CentralCart) ================= */
+/* ================= BLOG (postagens da configuração: window.OLIMPO.blog) ================= */
 const demoPosts=[
   {title:"Inauguração do Factions Olimpo",author:"SrKaio",published_at:"06 out 2026",content:"<p>As portas do Olimpo estão abertas. Primeira temporada valendo, com evento de abertura no spawn.</p>"},
   {title:"Temporada 1: guerra pelos tronos",author:"akahasky",published_at:"06 out 2026",content:"<p>Regras de invasão, premiação da temporada e tudo o que muda no mapa.</p>"}
@@ -1418,9 +1418,9 @@ async function iniciarBlog(){
   $("#leitor").hidden=true; $("#blog-lista").hidden=false;
   if (posts) return;
   $("#posts").innerHTML='<div class="esq"></div><div class="esq"></div>';
-  try { posts = DEMO ? demoPosts : ((await api("/webstore/post")).data||[]); }
-  catch(e){ posts=null; $("#posts").innerHTML=`<p class="vazio">Não foi possível carregar o blog: ${esc(e.message)}</p>`; return; }
-  if (!posts.length){ $("#posts").innerHTML='<p class="vazio">Nenhuma postagem ainda. Publique a primeira no painel da CentralCart.</p>'; return; }
+  // as postagens ficam na configuração do site (window.OLIMPO.blog), não na CentralCart
+  posts = Array.isArray(C.blog) ? C.blog : [];
+  if (!posts.length){ $("#posts").innerHTML=""; return; }
   $("#posts").innerHTML = posts.map((p,i) => `<button class="painel post" data-p="${i}">
     <div class="barra"><span class="pontos"><i></i><i></i><i></i></span>${esc(p.published_at||"")}<span class="tag">ATUALIZAÇÃO</span></div>
     <div class="capa">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy">`:`<span>${esc(p.title)}</span>`}</div>
