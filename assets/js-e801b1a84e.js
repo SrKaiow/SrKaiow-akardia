@@ -1226,8 +1226,8 @@ function renderDungeons(){
         <ul><li>O portal desta masmorra também aparece sozinho em <strong>coordenadas aleatórias</strong> do mundo.</li><li>O chat anuncia o nível e as coordenadas, e a entrada é liberada <strong>5 minutos</strong> depois.</li><li>Não precisa de chave, mas o <strong>PvP fica ativo</strong>.</li></ul></div>
     </div>
     <div class="dg-prints">
-      <figure><img src="assets/portal-mundo.webp" alt="Portal aleatório da Masmorra Infernal no mundo, com PvP ativo" loading="lazy"><figcaption>Portal aleatório no mundo: dificuldade, PvP <b>ativo</b> e contagem para liberar a entrada.</figcaption></figure>
-      <figure><img src="assets/portal-anuncio.webp" alt="Anúncio no chat do portal aleatório com nível e coordenadas" loading="lazy"><figcaption>Anúncio no chat com o nível e as coordenadas do portal.</figcaption></figure>
+      <figure><img src="assets/portal-mundo.webp?v=2" alt="Portal aleatório da Masmorra Infernal no mundo, com PvP ativo" loading="lazy"><figcaption>Portal aleatório no mundo: dificuldade, PvP <b>ativo</b> e contagem para liberar a entrada.</figcaption></figure>
+      <figure><img src="assets/portal-anuncio.webp?v=2" alt="Anúncio no chat do portal aleatório com nível e coordenadas" loading="lazy"><figcaption>Anúncio no chat com o nível e as coordenadas do portal.</figcaption></figure>
     </div>
     <p class="dg-alerta"><b>⚠ Cuidado:</b> só as masmorras abertas com <b>chave</b> têm PvP desligado. Nos portais que surgem em coordenadas aleatórias o PvP é <b>ativo</b>, então outras facções podem te atacar na entrada e lá dentro.</p></div>
 
