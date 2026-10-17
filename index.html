@@ -92,12 +92,13 @@ window.OLIMPO = {
       { grupo: "Caixas", cab: ["1x","5x","10x"], itens: [["Caixa Comum",250,1250,2500],["Caixa Rara",500,2500,5000],["Caixa Lendária",750,3750,7500]] },
       { grupo: "Itens especiais", itens: [["Super Creeper",1250],["Raio Mestre",750],["TNT Balística",750],["Reset de KDR",500],["Poder Máximo",1250],["Poder Instantâneo",500],
         ["Prisão de Sede",750],["Booster",1250],["Booster Nível 2",1500],["Reset de Talentos",1500],["Runa de Extração",750],["Reparador",1250]] },
-      { grupo: "Chaves de masmorra", itens: [["Chave do Santuário das Profundezas",2500],["Chave do Calabouço Assombrado",2500],["Chave da Masmorra Infernal",2500]] }
+      { grupo: "Chaves de masmorra", itens: [["Chave do Calabouço Assombrado",2500],["Chave da Masmorra Infernal",2500]] }
     ] },
 
   // Cores no mesmo padrão dos VIPs: Santuário = Cavaleiro, Calabouço = Lorde, Infernal = Soberano
+  // emBreve: true = a chave aparece bloqueada na loja (EM BREVE) e a masmorra não aparece na página Dungeons
   chaves: {
-    "santuario": { nome: "Santuário", cor: "#00a6a2", cor2: "#3b52e0", arma: "tridente", reliquia: "Tridente de Poseidon",
+    "santuario": { nome: "Santuário", emBreve: true, cor: "#00a6a2", cor2: "#3b52e0", arma: "tridente", reliquia: "Tridente de Poseidon",
       resumo: "Santuário das Profundezas: ondas de Wardens e o Mega Warden. Dá Fragmentos de Eco para o Conjunto do Warden.",
       descricao: "Abre o <b>Santuário das Profundezas</b>: enfrente ondas de Wardens e derrote o <b>Mega Warden</b>. A recompensa são os <b>Fragmentos de Eco</b>, usados para forjar o Conjunto do Warden, que dá <b>Resistência II</b> com a armadura completa." },
     "calabouco": { nome: "Calabouço", cor: "#6eff70", cor2: "#00a800", arma: "lanca", reliquia: "Lança de Atena",
@@ -151,34 +152,8 @@ window.OLIMPO = {
   ],
 
   // DUNGEONS — cada masmorra usa a chave de mesmo nome em "chaves". Sem dados (null) = aparece "em breve".
-  // As três têm a mesma dificuldade e os conjuntos têm a mesma força; muda o tema, os inimigos e o efeito do conjunto completo.
+  // As duas têm a mesma dificuldade e os conjuntos têm a mesma força; muda o tema, os inimigos e o efeito do conjunto completo.
   dungeons: {
-    santuario: {
-      titulo: "SANTUÁRIO DAS PROFUNDEZAS",
-      kick: "// ECOS DO ABISMO",
-      intro: "Desça às profundezas onde o silêncio é a única defesa. Sobreviva às ondas de <strong>Wardens</strong>, derrote o <strong>Mega Warden</strong> e junte <strong>Fragmentos de Eco</strong> para forjar o Conjunto do Warden.",
-      tema: { c1:"#13c8d8", c2:"#0b3a66", c3:"#7ff6ff", bg1:"#020a0e", bg2:"#05161d", bg3:"#082a33", t:"#dff9ff", p:"#a9c4cb", m:"#6f8f97" },
-      chaveNome: "Chave do Santuário das Profundezas", inimigos: "ondas de <strong>Wardens</strong>", chefe: "Mega Warden",
-      efeito: "Resistência II",
-      material: { img:"fragmento-de-eco", nome:"Fragmento de Eco", plural:"Fragmentos de Eco" },
-      mobs: [
-        { svg:"sonar", nome:"Warden", txt:"Warden de corpo padrão, com perseguição implacável e ataque corpo a corpo. O efeito de escuridão é cancelado dentro da dungeon." }
-      ],
-      notaMobs: "O Warden comum usa o modelo do próprio Minecraft.",
-      boss: { img:"mega-warden", nome:"MEGA WARDEN", sub:"// CHEFE DO SANTUÁRIO",
-        itens: [
-          "<strong>Ofensiva:</strong> combo de golpes laterais, impacto no chão e explosão sônica.",
-          "<strong>Explosão sônica:</strong> 16 de dano, com cegueira e confusão.",
-          "<strong>Emergência:</strong> 10 de dano em área ao sair do solo.",
-          "<strong>Perseguição:</strong> faro, investigação, sonar, acúmulo de fúria e corrida até o alvo.",
-          "<strong>Defesa:</strong> pode submergir com alta resistência e reaparecer entre rochas e sculk.",
-          "<strong>Atordoamento:</strong> sequências especiais em 75%, 50% e 25% de vida."
-        ] },
-      conjunto: [
-        ["s-capacete","Capacete do Warden",1],["s-peitoral","Peitoral do Warden",1],["s-calcas","Calças do Warden",1],["s-botas","Botas do Warden",1],
-        ["s-espada","Espada do Warden"],["s-machado","Machado do Warden"],["s-picareta","Picareta do Warden"],["s-pa","Pá do Warden"],["s-enxada","Enxada do Warden"]
-      ]
-    },
     calabouco: {
       titulo: "CALABOUÇO ASSOMBRADO",
       kick: "// ONDE OS MORTOS NÃO DESCANSAM",
@@ -517,8 +492,20 @@ body[data-view="home"] .nav{display:none}
   .gd-mob tr{border:1px solid var(--ouro-sutil);margin-bottom:12px}.gd-mob td{border:0;border-top:1px solid var(--ouro-sutil)}.gd-mob td:first-child{border-top:0;text-align:center}
   .gd-mob td[data-l]::before{content:attr(data-l);display:block;color:var(--ouro);font-size:11px;letter-spacing:.12em;margin-bottom:4px}}
 /* ===================== DUNGEONS ===================== */
+.prod.bloqueado .img{filter:grayscale(.85) brightness(.55)}
+.prod.bloqueado .img::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 10px,rgba(0,0,0,.18) 10px 20px)}
+.prod.bloqueado h3,.prod.bloqueado .preco{opacity:.55}
+.prod .breve{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1px dashed var(--ouro-sutil);color:var(--ouro);font-family:var(--pixel);font-size:12px;letter-spacing:.14em}
+.dg-modos{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.dg-modo{position:relative;padding:16px 18px;border:1px solid color-mix(in srgb,var(--c) 45%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 12%,transparent),rgba(0,0,0,.3))}
+.dg-modo h4{margin:0 0 8px;font-family:var(--pixel);letter-spacing:.1em;font-size:15px;color:var(--dgT);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.dg-modo .pvp{font-size:11px;padding:4px 8px;border:1px solid var(--c);color:var(--c);letter-spacing:.12em}
+.dg-modo ul{margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:var(--dgP)}
+.dg-alerta{margin:14px 0 0;padding:12px 14px;border:1px solid #ff4a2a;background:rgba(255,74,42,.1);color:#ffd3c9;font-size:13px}
+.dg-alerta b{color:#ff6a4a}
+@media (max-width:760px){.dg-modos{grid-template-columns:1fr}}
 #v-dungeons{--dg1:#d60000;--dg2:#7a0000;--dg3:#ff8a1f;--bg1:#0b0303;--bg2:#1a0504;--bg3:#2a0805;--dgT:#ffe2cc;--dgP:#cdb3a2;--dgM:#9c8172}
-.dg-portais{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 30px}
+.dg-portais{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:0 0 30px}
 .dg-portal{position:relative;display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--ouro-sutil);background:var(--painel);color:var(--texto);
   font:inherit;text-align:left;cursor:pointer;overflow:hidden;transition:border-color .25s,transform .25s,box-shadow .25s}
 .dg-portal::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 140% at 0% 50%,color-mix(in srgb,var(--k1) 26%,transparent),transparent 60%);opacity:.5;transition:opacity .3s}
@@ -2220,7 +2207,7 @@ html.pausa *,html.pausa *::before,html.pausa *::after{animation-play-state:pause
   <!-- ============ DUNGEONS ============ -->
   <section class="view" id="v-dungeons">
     <div class="terminal" data-tw="14">&gt; abrindo /olimpo/dungeons ... ok</div>
-    <div class="cab"><h1 data-tw="45">DUNGEONS</h1><p data-tw="10">// Três masmorras, uma chave para cada. Escolha um portal.</p></div>
+    <div class="cab"><h1 data-tw="45">DUNGEONS</h1><p data-tw="10">// Duas masmorras, uma chave para cada. Escolha um portal.</p></div>
     <div class="dg-portais" id="dg-portais"></div>
     <div class="dg-pag" id="dg-pag"></div>
   </section>

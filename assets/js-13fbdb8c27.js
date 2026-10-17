@@ -224,7 +224,7 @@ const chaveVip = nome => { const n=String(nome||"").toLowerCase(); return Object
 const tagHTML = (nome, cls="tag-vip") => { const k=chaveVip(nome), src=k && (window.OLIMPO_TAGS||{})[k]; return src ? `<img class="${cls}" src="${src}" alt="VIP ${esc(k[0].toUpperCase()+k.slice(1))}">` : ""; };
 const nomeHTML = nome => { if (!corVip(nome) && !chaveDe(nome) && ehCash(nome)) return `<span class="vip-nome" style="--g1:${C.cash.cor};--g2:${C.cash.cor2}">${esc(nome)}</span>`; const k=chaveDe(nome); if (k && !corVip(nome)) return `<span class="vip-nome" style="--g1:${k.cor};--g2:${k.cor2}">${esc(nome)}</span>`; return nomeHTMLbase(nome); };
 // texto que explica cada chave (usado no card, na janela do produto e quando a CentralCart não tiver descrição)
-const textoChave = k => `${k.descricao}<ul class="ch-lista"><li><b>Nível:</b> sorteado na hora em que a masmorra abre.</li><li><b>Como usar:</b> clique direito com a chave no mundo principal. A chave só é gasta se o portal puder ser criado.</li><li><b>Entrada:</b> o portal abre 30 segundos depois e aceita entradas por 60 segundos. Até 15 jogadores, de qualquer facção.</li><li><b>Entrega:</b> a chave cai direto no seu nick assim que o pagamento é aprovado.</li></ul>`;
+const textoChave = k => `${k.descricao}<ul class="ch-lista"><li><b>Nível:</b> sorteado na hora em que a masmorra abre.</li><li><b>Como usar:</b> clique direito com a chave no mundo principal. A chave só é gasta se o portal puder ser criado.</li><li><b>Entrada:</b> o portal abre 30 segundos depois e aceita entradas por 60 segundos. Até 15 jogadores, de qualquer facção.</li><li><b>PvP:</b> desligado. Masmorras abertas com chave são sempre sem PvP.</li><li><b>Entrega:</b> a chave cai direto no seu nick assim que o pagamento é aprovado.</li></ul>`;
 const ICONES = {
   tag:'<path d="M3 3h8l10 10-8 8L3 11z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
   back:'<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
@@ -1150,9 +1150,9 @@ $("#v-guias").addEventListener("click", e => { const a=e.target.closest("[data-g
 $("#guias").addEventListener("click", e => { const b=e.target.closest("[data-cmd]"); if (b) copiar(b.dataset.cmd, "> copiado: "+b.dataset.cmd); });
 
 /* ================= DUNGEONS ================= */
-// regras iguais nas três masmorras (só muda o tema, os inimigos e o conjunto)
+// regras iguais nas duas masmorras (só muda o tema, os inimigos e o conjunto)
 const DG_BASE = {
-  chips: [["Até","15 jogadores"],["Limite","45 min"],["PvP","desligado"],["Dificuldade","sorteada"]],
+  chips: [["Até","15 jogadores"],["Limite","45 min"],["PvP com chave","desligado"],["PvP portal aleatório","ATIVO"],["Dificuldade","sorteada"]],
   difs: [
     { nome:"FÁCIL",   cor:"#7BE07B", monstros:30, vidaMob:100, danoMob:12, vidaBoss:4000,  ataqueBoss:8,  frag:3,  dropFrag:"7%",  slot:"20%", fragBau:"4%" },
     { nome:"NORMAL",  cor:"#F2C230", monstros:50, vidaMob:200, danoMob:17, vidaBoss:7000,  ataqueBoss:13, frag:6,  dropFrag:"14%", slot:"30%", fragBau:"7%" },
@@ -1172,8 +1172,8 @@ function comprarChave(k){
   carregarLoja().then(()=>{ const p=chaveProduto(k); if (p) abrirProduto(p.id); }).catch(()=>{});
 }
 function renderDungeons(){
-  const ks = Object.keys(C.chaves||{}), DG=C.dungeons||{};
-  if (!dgAtual) dgAtual = ks.find(k=>DG[k]) || ks[0];
+  const ks = Object.keys(C.chaves||{}).filter(k=>!C.chaves[k].emBreve), DG=C.dungeons||{};
+  if (!dgAtual || !ks.includes(dgAtual)) dgAtual = ks.find(k=>DG[k]) || ks[0];
   $("#dg-portais").innerHTML = ks.map(k=>{ const ch=C.chaves[k], dd=DG[k];
     return `<button class="dg-portal ${k===dgAtual?"on":""}" data-dg="${k}" style="--k1:${ch.cor};--k2:${ch.cor2}">
       <span class="ic">${chaveArte("Chave "+ch.nome)}</span>
@@ -1193,7 +1193,7 @@ function renderDungeons(){
   const passos=[
     `Use a <strong>${d.chaveNome}</strong> com clique direito no mundo principal. A dificuldade é sorteada.`,
     `O portal fica <strong>selado por 30 segundos</strong> e, depois de aberto, aceita entradas por <strong>60 segundos</strong>.`,
-    `Até <strong>15 jogadores</strong> na mesma sessão. O PvP é bloqueado e facções diferentes cooperam normalmente.`,
+    `Até <strong>15 jogadores</strong> na mesma sessão. Aberta com chave, o <strong>PvP é bloqueado</strong> e facções diferentes cooperam normalmente.`,
     `Enfrente ${d.inimigos}: a meta é <strong>30</strong> mortes no Fácil, <strong>50</strong> no Normal ou <strong>75</strong> no Difícil.`,
     `Batida a meta, o <strong>${d.chefe}</strong> surge quando alguém se aproxima da área do chefe.`,
     `Derrotar o chefe <strong>conclui a dungeon</strong> na hora.`,
@@ -1208,7 +1208,7 @@ function renderDungeons(){
       <div class="dg-chips">${B.chips.map(c=>`<span class="dg-chip">${c[0]} <b>${c[1]}</b></span>`).join("")}<span class="dg-chip">Conjunto <b>${esc(d.efeito)}</b></span></div></div>
     <div class="dg-boss-hero">${im(d.boss.img,d.boss.nome)}</div>
   </div>
-  <nav class="dg-menu">${[["dg-s-chave","CHAVE"],["dg-s-como","COMO FUNCIONA"],["dg-s-dif","DIFICULDADES"],["dg-s-mobs","MOBS"],["dg-s-boss","CHEFE"],["dg-s-rec","RECOMPENSAS"],["dg-s-set","CONJUNTO"]]
+  <nav class="dg-menu">${[["dg-s-chave","CHAVE"],["dg-s-acesso","PORTAIS E PVP"],["dg-s-como","COMO FUNCIONA"],["dg-s-dif","DIFICULDADES"],["dg-s-mobs","MOBS"],["dg-s-boss","CHEFE"],["dg-s-rec","RECOMPENSAS"],["dg-s-set","CONJUNTO"]]
     .map(([id,tx])=>`<a data-dgir="${id}">${tx}</a>`).join("")}</nav>
 
   <div class="dg-sec dg-chave" id="dg-s-chave">
@@ -1217,6 +1217,15 @@ function renderDungeons(){
       <p>Use a chave com <strong>clique direito</strong> no mundo principal. A dificuldade é sorteada entre Fácil, Normal e Difícil, e a chave só é gasta se o portal puder ser criado.</p></div>
     <div class="lado">${preco?`<span class="preco">${preco}</span>`:""}<button class="dg-btn" data-dgcompra="${dgAtual}">COMPRAR CHAVE</button></div>
   </div>
+
+  <div class="dg-sec" id="dg-s-acesso"><h3>PORTAIS E PVP</h3>
+    <div class="dg-modos">
+      <div class="dg-modo" style="--c:#7BE07B"><h4>COM CHAVE <span class="pvp">PVP OFF</span></h4>
+        <ul><li>Você abre o portal usando a <strong>${esc(d.chaveNome)}</strong>.</li><li>O portal abre 30 segundos depois.</li><li>Lá dentro o <strong>PvP é desligado</strong>: dá para fazer a masmorra com outras facções sem risco.</li></ul></div>
+      <div class="dg-modo" style="--c:#FF4A2A"><h4>PORTAL ALEATÓRIO <span class="pvp">PVP ATIVO</span></h4>
+        <ul><li>O portal desta masmorra também aparece sozinho em <strong>coordenadas aleatórias</strong> do mundo.</li><li>O chat anuncia o nível e as coordenadas, e a entrada é liberada <strong>5 minutos</strong> depois.</li><li>Não precisa de chave, mas o <strong>PvP fica ativo</strong>.</li></ul></div>
+    </div>
+    <p class="dg-alerta"><b>⚠ Cuidado:</b> só as masmorras abertas com <b>chave</b> têm PvP desligado. Nos portais que surgem em coordenadas aleatórias o PvP é <b>ativo</b>, então outras facções podem te atacar na entrada e lá dentro.</p></div>
 
   <div class="dg-sec" id="dg-s-como"><h3>COMO FUNCIONA</h3><ol class="dg-passos">${passos.map(x=>`<li>${x}</li>`).join("")}</ol></div>
 
@@ -1230,7 +1239,7 @@ function renderDungeons(){
         <dt>Ataque do chefe</dt><dd>${x.ataqueBoss}</dd>
         <dt>${esc(M.plural)} garantidos</dt><dd style="color:${x.cor}">${x.frag}</dd>
       </dl></div>`).join("")}</div>
-    <p class="dg-nota">A dificuldade é igual nas três masmorras: o que decide é o nível sorteado ao abrir o portal. Vida e dano dos mobs variam até 5% para mais ou para menos. A vida do chefe aumenta <strong>20% para cada participante</strong> além do primeiro. A 1ª conclusão do dia <strong>dobra</strong> os fragmentos garantidos, a 2ª dá <strong>+50%</strong> e as seguintes dão o valor normal.</p></div>
+    <p class="dg-nota">A dificuldade é igual nas duas masmorras: o que decide é o nível sorteado ao abrir o portal. Vida e dano dos mobs variam até 5% para mais ou para menos. A vida do chefe aumenta <strong>20% para cada participante</strong> além do primeiro. A 1ª conclusão do dia <strong>dobra</strong> os fragmentos garantidos, a 2ª dá <strong>+50%</strong> e as seguintes dão o valor normal.</p></div>
 
   <div class="dg-sec" id="dg-s-mobs"><h3>MOBS</h3>
     <div class="dg-mobs">${d.mobs.map(m=>`<div class="dg-mob">${m.tag?`<span class="tag">${m.tag}</span>`:""}<div class="fig">${m.svg?`<span class="dg-svg">${DG_SVG[m.svg]||""}</span>`:im(m.img,m.nome)}</div>
@@ -1495,6 +1504,8 @@ async function iniciarLoja(){
   catch(e){ lojaP=null; $("#produtos").innerHTML=""; $("#aviso").innerHTML=`<div class="aviso">// não foi possível carregar a loja: ${esc(e.message)} Confira o <code>storeDomain</code>.</div>`; }
 }
 function renderLoja(){
+  { const bloq=new Set(prods.filter(p=>chaveDe(p.name)?.emBreve).map(p=>p.id));
+    if (bloq.size && cart.some(i=>bloq.has(i.id))){ cart=cart.filter(i=>!bloq.has(i.id)); salvar(); atualizarCarrinho(); } }
   $("#cats").innerHTML = [{id:"all",name:"TUDO"},...cats].map(c => `<button class="cat" data-cat="${c.id}" aria-pressed="${String(c.id)===String(catAtual)}">${esc(c.name)}</button>`).join("");
   // ordem fixa: VIPs (Cavaleiro → Imperador), depois as chaves na mesma ordem de cor dos VIPs
   // (Santuário embaixo do Cavaleiro, Calabouço embaixo do Lorde, Infernal embaixo do Soberano), depois o resto
@@ -1521,15 +1532,15 @@ function renderLoja(){
     const pr=p.pricing||{}, disp=p.stock?.available!==false;
     const preco = pr.min!=null&&pr.max!=null&&pr.min!==pr.max ? `${brl(pr.min)} – ${brl(pr.max)}` : brl(pr.price);
     const vip = corVip(p.name), rotulo = vip ? Object.keys(C.vips).find(k=>p.name.toLowerCase().includes(k.toLowerCase())).toUpperCase() : "";
-    const ch = chaveDe(p.name), cs = !vip && !ch && ehCash(p.name), cb = !vip && !ch && !cs && ehCombo(p.name);
+    const ch = chaveDe(p.name), cs = !vip && !ch && ehCash(p.name), cb = !vip && !ch && !cs && ehCombo(p.name), breve = !!(ch && ch.emBreve);
     if (cb){ const av=deProd(p)||avulsoCombo(), eco=av&&av>pr.price?av-pr.price:0;
       return `<article class="painel prod chave combo" style="--k1:${C.combo.cor};--k2:${C.combo.cor2}"><div class="img"><img src="${esc(mini(C.combo.arte||p.image))}" alt="" loading="lazy" decoding="async"><span class="cb-fita">COMBO</span></div>
       <div class="info"><h3><span class="cb-nome">${esc(p.name)}</span></h3><p class="resumo">${esc(C.combo.resumo)}</p><div class="preco"><strong>${preco}</strong>${eco?`<s>${brl(av)}</s>`:""}</div>
       ${eco?`<p class="cb-eco">Você economiza ${brl(eco)}</p>`:""}${disp?botaoFx(p, true, null, false):'<span class="esgotado">ESGOTADO</span>'}</div></article>`; }
-    return `<article class="painel prod${vip?" vip":""}${ch?" chave":""}${cs?" chave cash":""}" ${vip?vipStyle(p.name):(ch?`style="--k1:${ch.cor};--k2:${ch.cor2}"`:(cs?`style="--k1:${C.cash.cor};--k2:${C.cash.cor2}"`:""))}><div class="img">${p.image?`<img src="${esc(mini(p.image))}" alt="" loading="lazy" decoding="async">`:(vip?(vipArte(p.name) || tagHTML(p.name) || `<span class="ph vip-nome">${rotulo}</span>`):(ch?chaveArte(p.name):(cs?cashArte(p.name):'<span class="ph">⚡</span>')))}
+    return `<article class="painel prod${vip?" vip":""}${ch?" chave":""}${cs?" chave cash":""}${breve?" bloqueado":""}" ${vip?vipStyle(p.name):(ch?`style="--k1:${ch.cor};--k2:${ch.cor2}"`:(cs?`style="--k1:${C.cash.cor};--k2:${C.cash.cor2}"`:""))}><div class="img">${p.image?`<img src="${esc(mini(p.image))}" alt="" loading="lazy" decoding="async">`:(vip?(vipArte(p.name) || tagHTML(p.name) || `<span class="ph vip-nome">${rotulo}</span>`):(ch?chaveArte(p.name):(cs?cashArte(p.name):'<span class="ph">⚡</span>')))}
       ${pctProd(p)?`<span class="selo-desc">${pctProd(p)}% OFF</span>`:""}</div>
       <div class="info"><h3>${nomeHTML(p.name)}</h3>${resumoProd(p)?`<p class="resumo">${esc(resumoProd(p))}</p>`:""}<div class="preco"><strong>${preco}</strong>${pr.compare_at?`<s>${brl(pr.compare_at)}</s>`:""}</div>
-      ${disp?botaoFx(p, vip, ch, cs):'<span class="esgotado">ESGOTADO</span>'}</div></article>`;
+      ${breve?'<span class="breve">🔒 EM BREVE</span>':(disp?botaoFx(p, vip, ch, cs):'<span class="esgotado">ESGOTADO</span>')}</div></article>`;
   }).join("");
   window.etReaplicar && window.etReaplicar();
   const temVip = lista.some(p=>chaveVip(p.name));
@@ -1558,6 +1569,7 @@ const campoHTML=(f,pre)=>{
 };
 function abrirProduto(id){
   const p=prods.find(x=>x.id===id); if (!p) return;
+  if (chaveDe(p.name)?.emBreve){ toast("> chave em breve: ainda não está à venda"); return; }
   $("#mp-t").innerHTML=(tagHTML(p.name) || nomeHTML(p.name.toUpperCase())); const fields=p.fields||[];
   const kv = C.vantagens ? chaveVip(p.name) : null;
   $("#m-prod .caixa").classList.toggle("larga", !!kv);
