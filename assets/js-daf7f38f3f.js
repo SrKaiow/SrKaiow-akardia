@@ -1152,7 +1152,7 @@ $("#guias").addEventListener("click", e => { const b=e.target.closest("[data-cmd
 /* ================= DUNGEONS ================= */
 // regras iguais nas duas masmorras (só muda o tema, os inimigos e o conjunto)
 const DG_BASE = {
-  chips: [["Até","15 jogadores"],["Limite","45 min"],["PvP com chave","desligado"],["PvP portal aleatório","ATIVO"],["Dificuldade","sorteada"]],
+  chips: [["Até","15 jogadores"],["Limite","45 min"],["PvP com chave","desligado"],["PvP portal aleatório","ativo"],["Dificuldade","sorteada"]],
   difs: [
     { nome:"FÁCIL",   cor:"#7BE07B", monstros:30, vidaMob:100, danoMob:12, vidaBoss:4000,  ataqueBoss:8,  frag:3,  dropFrag:"7%",  slot:"20%", fragBau:"4%" },
     { nome:"NORMAL",  cor:"#F2C230", monstros:50, vidaMob:200, danoMob:17, vidaBoss:7000,  ataqueBoss:13, frag:6,  dropFrag:"14%", slot:"30%", fragBau:"7%" },
@@ -1220,7 +1220,7 @@ function renderDungeons(){
 
   <div class="dg-sec" id="dg-s-acesso"><h3>PORTAIS E PVP</h3>
     <div class="dg-modos">
-      <div class="dg-modo" style="--c:#7BE07B"><h4>COM CHAVE <span class="pvp">PVP OFF</span></h4>
+      <div class="dg-modo" style="--c:#7BE07B"><h4>COM CHAVE <span class="pvp">PVP DESLIGADO</span></h4>
         <ul><li>Você abre o portal usando a <strong>${esc(d.chaveNome)}</strong>.</li><li>O portal abre 30 segundos depois.</li><li>Lá dentro o <strong>PvP é desligado</strong>: dá para fazer a masmorra com outras facções sem risco.</li></ul></div>
       <div class="dg-modo" style="--c:#FF4A2A"><h4>PORTAL ALEATÓRIO <span class="pvp">PVP ATIVO</span></h4>
         <ul><li>O portal desta masmorra também aparece sozinho em <strong>coordenadas aleatórias</strong> do mundo.</li><li>O chat anuncia o nível e as coordenadas, e a entrada é liberada <strong>5 minutos</strong> depois.</li><li>Não precisa de chave, mas o <strong>PvP fica ativo</strong>.</li></ul></div>
