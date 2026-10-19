@@ -933,7 +933,7 @@ function atualizarCabecas(){
     carregarImg(img, urlsCabeca(idImg(nome), s), STEVE);
   });
 }
-const cabecaConta = (m,s,cls) => { const fixa=(window.OLIMPO_SKINS||{})[m.nick];
+const cabecaConta = (m,s,cls) => { const fixa=m.cabeca || (window.OLIMPO_SKINS||{})[m.nick];
   return fixa ? `<img class="${cls} cab-fixa" src="${fixa}" alt="${esc(m.nick)}" width="${s}" height="${s}">` : `<img class="${cls}" data-conta="${esc(contaDe(m))}" src="${STEVE}" alt="${esc(m.nick)}" width="${s}" height="${s}">`; };
 $("#cabecas").innerHTML = C.equipe.map(m => cabecaConta(m,36,"av")).join("");
 atualizarCabecas();
